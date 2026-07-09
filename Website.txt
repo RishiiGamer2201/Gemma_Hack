@@ -1,0 +1,49 @@
+Gemma
+&
+AIMS-DTU Logo
+bring to you
+
+Build with Gemma
+The next generation of open models is here. Welcome to Build with Gemma - AIMS DTU, a fast-paced, 1-day in-person hackathon where you'll get hands-on with the most capable open models from Google DeepMind.
+
+With the release of Gemma 4, a new family of open models is officially in your hands. Leverage local frontier intelligence, native function calling, and multimodal understanding to tackle core developer challenges.
+
+Tell a story. Show us the problem and how your Gemma 4 application solves it in a powerful way.
+
+While your technical execution is vital, the ability to communicate your vision through a compelling writeup and pitch is what will set the winners apart.
+
+Gemma 4
+Hackathon Tracks
+Track 1: AI for Legal Assistance
+$1000
+Use Gemma to build a multilingual AI legal assistant that a regular citizen can talk to in their own language, describe their situation in plain terms, and walk away with a clear understanding of their rights, their options, and their next steps.
+
+Track 2: AI for Public Safety
+$1000
+Traditional public safety monitoring suffers from "alarm fatigue" due to passive, high-noise surveillance that lacks semantic context, often failing to distinguish between benign activities and actual emergencies. Current systems face two critical failures: reliance on cloud-based processing creates latency and privacy risks, while "black-box" pattern matching lacks the reasoning layer needed for reliable, forensic-grade verification.
+
+Event Details
+Date: 15th July 2026
+Time: 10:00 AM – 6:00 PM
+Location: AB-3, Delhi Technological University, Bawana
+Platform: Hosted on Kaggle
+Build with Gemma Logo
+Registration
+Enter your team details below.
+
+Team Name
+Your Name
+Phone No.
+Email-ID
+College
+Roll No.
+Resume (PDF)
+No file chosen
+Are you willing to appear physically on 15th July 2026 for the hackathon?
+Yes
+No
+
+Prize money will be directly transferred to the winners' bank accounts by Gemma Team via Payoneer, and AIMS-DTU shall not be held accountable for the same. I agree to these terms.
+Submit
+Thanks for registering! We will contact you if you are shortlisted after the resume screening.
+© 2026 AIMS-DTU | Odwitiyo Dutta
