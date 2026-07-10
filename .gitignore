@@ -1,0 +1,14 @@
+# Large local data & models — see DATASET.md for how to fetch them
+data/
+models/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
