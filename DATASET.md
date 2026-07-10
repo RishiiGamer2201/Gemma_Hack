@@ -48,6 +48,15 @@ mkdir data\raw\bare_acts, data\raw\legal_aid, data\raw\benchmarks, data\processe
 | Payment of Wages Act, 1936 | Unpaid wages scenario | `pow_1936_en.pdf` |
 | Legal Services Authorities Act, 1987 | Who qualifies for FREE legal aid (great pitch fact) | `lsa_1987_en.pdf` |
 
+**Also add (from senior's review — see [SENIOR_REVIEW.md](SENIOR_REVIEW.md)):**
+
+| Source | Why | Save as |
+|---|---|---|
+| [Constitution of India](https://legislative.gov.in/constitution-of-india/) | Supreme law — top retrieval priority tier | `constitution_en.pdf` |
+| [legislative.gov.in important legislations](https://legislative.gov.in/important-legislations/) | **Hindi versions** of core acts — grounded Hindi citations without translation | `<act>_hi.pdf` |
+
+Tag each chunk with a `priority` field: 1 = Constitution, 2 = BNS/BNSS/BSA/CPC/Contract Act, 3 = other acts — rank retrieved citations by it.
+
 > Backup source if India Code is slow: [Legislative Department](https://legislative.gov.in) publishes the same official texts.
 
 **Convert PDFs to text** (run from repo root):
@@ -75,6 +84,10 @@ Then chunk **by section** (regex on `^\d+\.` section headers) into `data/process
 > 20–30 rows of accurate Delhi contacts beats a scraped all-India dump for the demo. Keep it small and correct.
 
 ---
+
+## 2b. Constitution QA pairs — eval set (optional)
+
+[Kaggle: LLM Fine Tuning Dataset of Indian Legal Texts](https://www.kaggle.com/datasets/akshatgupta7/llm-fine-tuning-dataset-of-indian-legal-texts) (CC BY-SA, also [on HF](https://huggingface.co/datasets/Techmaestro369/indian-legal-texts-finetuning)). ⚠️ **Use only the Constitution QA pairs** — the IPC/CrPC pairs reference repealed laws (see SENIOR_REVIEW.md). Good as an eval set for answer quality, not as a truth source. Save to `data/raw/benchmarks/constitution_qa/`.
 
 ## 3. IL-TUR Benchmark — for eval numbers in the writeup (optional but impressive)
 
