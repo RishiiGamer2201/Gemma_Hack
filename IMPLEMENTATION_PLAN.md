@@ -6,6 +6,11 @@
 
 > This document is the current implementation source of truth. `PLAN.md` remains as the historical planning record.
 
+**Last evidence audit:** 13 July 2026. A checked box means the repository contains
+working code/data plus automated or directly inspectable evidence. It does not treat
+agent review as human legal review, and it does not infer completion of UI, model,
+hardware, evaluation, or end-to-end demo gates from backend primitives alone.
+
 ## 1. Locked product scope
 
 ### Core journey — must work end to end
@@ -14,14 +19,18 @@
 - [ ] Accept Hindi/English voice input and display the transcript before legal processing.
 - [ ] Accept a photo/PDF of an FIR, notice, summons, wage document, or rental document.
 - [ ] Extract a structured case summary: people, dates, location, dispute, documents, urgency, and missing facts.
-- [ ] Restate the situation in plain language and require confirmation or correction.
-- [ ] Detect legal domain, jurisdiction, incident date, urgency, and power imbalance.
+- [x] Restate explicit facts in plain language and require confirmation before backend retrieval.
+- [ ] Add an interactive correction path to the future UI.
+- [x] Route missing jurisdiction/date, confirmed urgency, and possible power-role patterns from confirmed fields.
+- [ ] Automatically classify domain and extract jurisdiction/date from free-form input.
 - [ ] Retrieve applicable official law using hybrid keyword and semantic search.
-- [ ] Distinguish current law from repealed or superseded law.
+- [x] Provide backend effective-date/status filters and IPC/BNS temporal-routing primitives.
+- [ ] Integrate current/repealed-law routing into the production answer journey.
 - [ ] Generate a plain-language answer containing rights, options, evidence, deadlines, and next steps.
 - [ ] Verify each legal claim against retrieved official sources.
 - [ ] Display act name, section number, effective date, source excerpt, and official URL.
-- [ ] Abstain and route to legal aid when the evidence is insufficient or the matter is high-risk.
+- [x] Abstain on unsupported submitted verdicts and route confirmed high-risk matters before retrieval.
+- [ ] Connect abstention/high-risk results to the Legal Aid Finder in the end-to-end journey.
 
 ### Locked differentiators
 
@@ -29,20 +38,22 @@
 - [ ] Devil's Advocate mode using sequential roles on one loaded Gemma model.
 - [ ] Rights Card image generator with section citations, helplines, disclaimer, and QR link.
 - [ ] “What happens if I do nothing?” citation-grounded consequence explanation.
-- [ ] Power-imbalance protection prompts for tenant/landlord, worker/employer, and citizen/police situations.
+- [x] Power-role protection prompts for tenant/landlord, worker/employer, and citizen/police situations.
 - [ ] Community Elder / Panchayat Bridge explanation for a trusted intermediary.
-- [ ] Legal Aid Finder using an offline NALSA/SLSA/DLSA snapshot and Tele-Law fallback.
-- [ ] Rights and evidence checklist tailored to the case type.
+- [x] Legal Aid Finder using offline NALSA/DLSA snapshots and Tele-Law fallback.
+- [ ] Extend the Legal Aid Finder with state-specific SLSA snapshots.
+- [x] Evidence/action preparation checklist tailored to the three demo case types.
+- [ ] Add sourced rights checklist content tailored to each case type.
 
 ### Explicit non-goals for the hackathon
 
-- [ ] Do **not** predict win probability, settlement percentage, sentence, or case outcome.
-- [ ] Do **not** present an LLM confidence number as legal reliability.
-- [ ] Do **not** fine-tune Gemma before the RAG system and evaluation gates pass.
-- [ ] Do **not** ingest a large case-law corpus for the MVP.
-- [ ] Do **not** load two Gemma E4B instances simultaneously.
-- [ ] Do **not** promise all 22 languages in the demo; label languages as tested, beta, or roadmap.
-- [ ] Do **not** send user queries or documents to a cloud API during the offline demo.
+- [x] Do **not** predict win probability, settlement percentage, sentence, or case outcome; the safety router hard-abstains.
+- [x] Do **not** present an LLM confidence number as legal reliability; no output contract contains one.
+- [x] Do **not** fine-tune Gemma before the RAG system and evaluation gates pass; no fine-tuned model is used.
+- [x] Do **not** ingest a large case-law corpus for the MVP; evaluation data stays outside the production index.
+- [x] Do **not** load two Gemma E4B instances simultaneously; no dual-model runtime path exists.
+- [x] Do **not** promise all 22 languages; implemented scope is labeled English, Hindi, and Hinglish.
+- [x] Do **not** send implemented user-query/document paths to cloud APIs; inference endpoints are loopback-only.
 
 ## 2. Team ownership
 
@@ -96,8 +107,9 @@ Devil's Advocate / Rights Card / Checklist / Legal Aid / Community mode
 - [ ] EmbeddingGemma for multilingual semantic embeddings.
 - [ ] FAISS for dense vectors.
 - [ ] `rank-bm25` or SQLite FTS5 for exact retrieval.
-- [x] Pydantic models for every workflow input/output.
-- [ ] PyMuPDF/pdfplumber for digital PDFs; OCR fallback for scans.
+- [x] Strict Pydantic schemas for legal intake, safety, mapping, answer, and verification boundaries.
+- [x] PyMuPDF extraction for digitally readable PDFs.
+- [ ] Add OCR fallback for scanned PDFs.
 - [ ] Pillow + `qrcode` for Rights Cards.
 - [ ] Pytest for deterministic components and scenario tests.
 
@@ -108,14 +120,18 @@ Devil's Advocate / Rights Card / Checklist / Legal Aid / Community mode
 - [x] Create `src/config.py` for paths, model choice, limits, and feature flags.
 - [x] Create `src/models/` for Pydantic schemas.
 - [x] Create `src/intake/` with deterministic text intake; voice and OCR remain pending.
-- [ ] Create `src/retrieval/` for chunking, BM25, vector search, filtering, and reranking.
+- [x] Create `src/retrieval/` for BM25, optional embedding callbacks, filtering, fusion, deduplication, and debug traces.
+- [ ] Add the concrete EmbeddingGemma/FAISS vector implementation to `src/retrieval/`.
 - [x] Create `src/legal_time/` for effective-date logic and IPC/BNS mapping.
 - [ ] Create `src/agents/` for researcher, strategist, verifier, and Devil's Advocate prompts.
 - [ ] Create `src/tools/` for legal aid, Rights Card, checklist, and document explanation.
 - [x] Create `src/workflow/` for the deterministic state machine.
-- [x] Create `scripts/` for corpus download/import/index/evaluation commands.
-- [x] Create `tests/` with unit, retrieval, and end-to-end fixtures.
-- [ ] Create `data/raw/`, `data/processed/`, and `data/indexes/`; retain them in `.gitignore`.
+- [x] Create `scripts/` for corpus download/import and implemented local feature commands.
+- [ ] Add index-building and evaluation commands to `scripts/`.
+- [x] Create `tests/` with unit, component-integration, and retrieval fixtures.
+- [ ] Add true end-to-end demo-scenario fixtures.
+- [x] Create ignored `data/raw/` and `data/processed/` directories.
+- [ ] Create and populate the ignored `data/indexes/` directory.
 - [x] Add `.env.example` containing only non-secret configuration keys.
 - [x] Add a dependency file and reproducible setup instructions.
 - [x] Add a one-command local launcher.
@@ -164,8 +180,10 @@ Blocker for: trustworthy answers
 - [x] Download BNS 2023 from MHA/India Code.
 - [x] Download BNSS 2023 from MHA/India Code.
 - [x] Download BSA 2023 from MHA/India Code.
-- [ ] Download Consumer Protection Act 2019 and relevant current rules.
-- [ ] Download Delhi Rent Control Act 1958 and record its applicability limitations.
+- [x] Download and process the Consumer Protection Act 2019.
+- [ ] Download and review relevant current Consumer Protection rules.
+- [x] Download and process the Delhi Rent Control Act 1958.
+- [ ] Record substantive Delhi Rent Control Act applicability limitations for retrieval.
 - [x] Download Code on Wages 2019.
 - [x] Download Code on Wages implementation material and Central Rules 2026.
 - [x] Download current Ministry of Labour FAQs.
@@ -178,7 +196,7 @@ Blocker for: trustworthy answers
 
 ### Processing
 
-- [x] Extract text while preserving page numbers and headings.
+- [x] Extract digitally readable sources while preserving page numbers and headings.
 - [ ] Detect scanned pages and flag OCR-derived text.
 - [x] Split statutes by section boundaries, not arbitrary token windows.
 - [ ] Keep provisos, explanations, illustrations, schedules, and amendments attached correctly.
@@ -204,10 +222,10 @@ Dependency: official criminal-law corpus
 - [x] Obtain NCRB Sankalan old/new-law comparison material.
 - [ ] Select 50 high-value IPC sections for the first mapping set.
 - [ ] Include sections relevant to theft, cheating, breach of trust, assault, harassment, intimidation, public-order offences, and document scenarios.
-- [x] Store old code/section and new code/section.
-- [x] Classify mapping as exact, partial, split, merged, omitted, or no direct equivalent.
-- [x] Store change notes rather than claiming every mapping is one-to-one.
-- [x] Store official evidence and reviewer identity for each mapping.
+- [x] Generate pending-review candidates containing old/new references and official snapshot provenance.
+- [x] Define a curated mapping schema for exact, partial, split, merged, omitted, or no direct equivalent.
+- [x] Require change notes in the curated schema rather than claiming every mapping is one-to-one.
+- [x] Require official evidence and reviewer identity in every curated mapping record.
 - [x] Add `incident_date_required` and effective-date fields.
 - [x] Implement lookup by “IPC 420,” “section 420,” offence name, and plain-language description.
 - [x] Return both historical and current provisions when the date is unknown.
@@ -248,8 +266,9 @@ Dependency: processed corpus
 - [x] Filter by jurisdiction, incident date, language, act, status, and document type.
 - [x] Merge BM25 and dense results using reciprocal-rank fusion.
 - [x] Deduplicate only provenance-compatible, genuinely overlapping subsections.
-- [x] Rerank the merged candidates.
-- [x] Return evidence bundles containing complete citation metadata.
+- [ ] Add a separate post-fusion reranker.
+- [x] Preserve all provenance metadata supplied by corpus records in retrieval results.
+- [ ] Validate that every returned evidence bundle contains all required citation fields.
 - [x] Add an immutable retrieval-debug trace/API for development.
 - [ ] Add the retrieval-debug trace to the future UI.
 - [x] Generate deterministic corpus hashes and embedding version keys.
@@ -304,16 +323,18 @@ Owner: Member C with Member D review
 
 Owner: Member C + Member A
 
-- [ ] Define a structured answer schema.
-- [ ] Require sections for situation, applicable law, rights, options, evidence, deadlines, consequences, next steps, and limitations.
+- [x] Define a strict structured legal-answer schema.
+- [x] Require fields for situation, applicable law, rights, options, evidence, deadlines, consequences, next steps, and limitations.
 - [ ] Pass only retrieved sources and confirmed facts to the legal-answer prompt.
 - [ ] Prohibit invented sections, cases, contacts, dates, and statistics in the system prompt.
 - [ ] Split generated text into verifiable claims.
-- [ ] Match each legal claim to one or more retrieved chunks.
-- [ ] Mark claims as supported, contradicted, or insufficient.
+- [x] Enforce that claim citations and verifier evidence IDs belong to the retrieved/displayed evidence bundle.
+- [ ] Implement semantic claim-to-excerpt support matching.
+- [x] Define supported, contradicted, and insufficient verdicts and require exactly one verdict per claim.
 - [ ] Remove or rewrite insufficient claims.
 - [ ] Trigger one constrained re-retrieval attempt when evidence is missing.
 - [ ] Abstain after the retry fails.
+- [x] Prevent publication and abstain when a submitted verdict is contradicted or insufficient.
 - [ ] Display verbatim supporting excerpts in expandable citation cards.
 - [ ] Show effective date and source freshness.
 - [ ] Keep “legal information, not legal advice” visible but non-obstructive.
@@ -394,7 +415,7 @@ Owner: Member C
 
 Owner: Member C
 
-- [ ] Bind local services to localhost by default.
+- [x] Bind implemented local inference services to loopback hosts and reject remote endpoints.
 - [ ] Verify the app works with Wi-Fi disabled.
 - [ ] Disable analytics, telemetry, remote fonts, and CDN assets.
 - [ ] Do not persist uploaded documents by default.
@@ -403,7 +424,8 @@ Owner: Member C
 - [ ] Redact sensitive case facts before application logs.
 - [ ] Keep logs opt-in and local.
 - [ ] Validate file types, size, and decompression limits.
-- [ ] Protect against prompt injection in uploaded text.
+- [x] Detect and ignore prompt-injection patterns in caller-supplied untrusted document text.
+- [ ] Integrate prompt-injection protection with the future upload/OCR pipeline.
 - [ ] Document exactly what stays on the device.
 
 **Offline exit gate:** End-to-end demo passes after disabling Wi-Fi before application launch.
@@ -429,7 +451,7 @@ Owner: Member D with all members reviewing failures
 - [ ] Obtain IL-TUR access and record license restrictions.
 - [ ] Use only relevant IL-TUR subsets for evaluation.
 - [ ] Obtain ILSIC and confirm the dataset license separately from the code license.
-- [ ] Treat IPC-era labels as historical, not current production truth.
+- [x] Label downloaded IPC/CrPC-era evaluation data as historical and exclude it from production truth.
 - [ ] Use IN22 samples to evaluate translation fallback if IndicTrans2 is used.
 
 ### Metrics
@@ -480,7 +502,8 @@ Owner: Member D with all members reviewing failures
 - [ ] Jurisdiction and tenancy facts confirmation.
 - [ ] Retrieval without assuming the Delhi Rent Control Act always applies.
 - [ ] Consumer/contract/rent-source distinction.
-- [x] Negotiation/action checklist.
+- [x] Evidence/preparation checklist.
+- [ ] Negotiation/action checklist.
 - [ ] Landlord-side argument and rebuttal.
 - [ ] Shareable Rights Card or intermediary explanation.
 
@@ -513,16 +536,17 @@ Do work in this order. Later items must not delay earlier gates.
 1. [ ] Model feasibility and repository scaffold.
 2. [ ] Official corpus ingestion and metadata validation.
 3. [ ] Hybrid retrieval and evaluation baseline.
-4. [ ] Text intake, confirmation, jurisdiction/date routing.
+4. [x] Text intake, confirmation, jurisdiction/date routing backend.
 5. [ ] Grounded answer plus verifier.
 6. [ ] One complete text-only demo scenario.
 7. [ ] Voice and document-photo adapters.
 8. [ ] BNS/IPC converter.
-9. [ ] Legal Aid Finder, checklist, and consequence mode.
-10. [ ] Devil's Advocate.
-11. [ ] Rights Card and community mode.
-12. [ ] Offline/privacy hardening.
-13. [ ] Evaluation freeze, rehearsal, video, and submission.
+9. [x] Legal Aid Finder and evidence checklist.
+10. [ ] Consequence mode backed by verified deadline/procedure records.
+11. [ ] Devil's Advocate.
+12. [ ] Rights Card and community mode.
+13. [ ] Offline/privacy hardening.
+14. [ ] Evaluation freeze, rehearsal, video, and submission.
 
 ## 20. Cut order if time runs short
 
