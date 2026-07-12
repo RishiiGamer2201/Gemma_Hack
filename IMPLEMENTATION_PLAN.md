@@ -285,16 +285,16 @@ Owner: Member A + Member C
 
 Owner: Member C with Member D review
 
-- [ ] Implement domain labels: criminal, labour, consumer, tenancy/property, constitutional, other.
-- [ ] Detect jurisdiction and ask when missing.
-- [ ] Detect incident date and ask when legally material.
+- [x] Implement domain labels: criminal, labour, consumer, tenancy/property, constitutional, other.
+- [x] Detect missing jurisdiction and ask before retrieval.
+- [x] Detect missing incident date for date-material domains and ask before retrieval.
 - [x] Implement conservative, confirmation-required text urgency signals for arrest/detention, violence, immediate eviction, expiring deadline, child safety, self-harm, and medical emergency.
-- [ ] Implement power relationships without declaring the user legally “weak.”
-- [ ] Activate protective information for police/citizen, employer/worker, landlord/tenant, and abuser/survivor patterns.
-- [ ] Keep emergency and human-help routing ahead of general explanation.
-- [ ] Define hard abstention conditions.
-- [ ] Test false positives so ordinary disputes do not receive alarmist output.
-- [ ] Test prompt-injection attempts embedded inside uploaded documents.
+- [x] Implement possible power-role patterns without declaring the user legally “weak.”
+- [x] Activate protective preparation information for police/citizen, employer/worker, landlord/tenant, and abuser/survivor patterns.
+- [x] Keep confirmed emergency and human-help routing ahead of general explanation.
+- [x] Define hard abstention conditions for prohibited outcome and sentence predictions.
+- [x] Test false positives so ordinary disputes do not receive alarmist output.
+- [x] Treat uploaded-document text as untrusted data and test embedded prompt-injection attempts.
 
 **Exit gate:** Every high-risk fixture routes to immediate-safety/human-help content before ordinary legal explanation.
 

@@ -21,7 +21,8 @@ The first implementation milestone provides:
 - receipt-verified local PDF extraction and deterministic section-aware JSONL builds;
 - a strict offline Delhi DLSA finder with NALSA and Tele-Law fallbacks;
 - validated evidence-preparation checklists for the three demo scenarios;
-- deterministic English, Hindi, and Hinglish text intake with a hard confirmation gate.
+- deterministic English, Hindi, and Hinglish text intake with a hard confirmation gate;
+- confirmed-facts safety and power routing with prompt-injection isolation.
 
 The fixture corpus is deliberately synthetic and must never be used for real legal
 answers. Official-source chunks remain marked `pending_human_review` until the corpus
@@ -42,6 +43,7 @@ python scripts/build_legal_aid_directory.py
 python scripts/find_legal_aid.py --district "Rouse Avenue" --state Delhi
 python scripts/get_evidence_checklist.py --template unpaid_wages
 python scripts/process_text_intake.py --text "Mera rent deposit nahi mila" --domain tenancy_property --missing-fact "Incident date"
+python scripts/route_safety.py --summary "My landlord has my deposit" --incident-date 2026-06-01 --jurisdiction Delhi --domain tenancy_property --party Tenant --party Landlord --confirmed-at 2026-07-13T02:30:00+05:30
 ```
 
 Optional dependencies can later be installed with:
