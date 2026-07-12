@@ -6,7 +6,11 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from src.legal_aid.directory import build_delhi_contacts, build_tele_law_fallback
+from src.legal_aid.directory import (
+    build_delhi_contacts,
+    build_nalsa_fallback,
+    build_tele_law_fallback,
+)
 
 
 def write_snapshot(root: Path, name: str, source_id: str, body: bytes) -> Path:
@@ -53,6 +57,17 @@ class LegalAidDirectoryTests(unittest.TestCase):
             )
             fallback = build_tele_law_fallback(path)
         self.assertEqual(fallback.phone, "14454")
+
+    def test_nalsa_fallback_requires_verified_national_directory(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = write_snapshot(
+                Path(directory),
+                "nalsa.html",
+                "nalsa_directory",
+                b"<html>NATIONAL LEGAL SERVICES AUTHORITY helpline 15100</html>",
+            )
+            fallback = build_nalsa_fallback(path)
+        self.assertEqual(fallback.phone, "15100")
 
 
 if __name__ == "__main__":

@@ -150,3 +150,23 @@ def build_tele_law_fallback(snapshot_path: str | Path) -> LegalAidFallback:
             "the Tele-Law mobile application, video or telephone facilities."
         ),
     )
+
+
+def build_nalsa_fallback(snapshot_path: str | Path) -> LegalAidFallback:
+    text, receipt = _verified_snapshot(Path(snapshot_path), "nalsa_directory")
+    if "15100" not in text or "NATIONAL LEGAL SERVICES AUTHORITY" not in text:
+        raise DirectoryError("verified NALSA snapshot does not support the national fallback")
+    retrieved = datetime.fromisoformat(str(receipt["retrieved_at"]).replace("Z", "+00:00")).date()
+    return LegalAidFallback(
+        fallback_id="nalsa-15100",
+        service="National Legal Services Authority helpline",
+        scope="India",
+        phone="15100",
+        official_url=str(receipt["url"]),
+        verified_date=retrieved,
+        source_sha256=str(receipt["sha256"]),
+        description=(
+            "National legal-aid helpline and directory fallback when a verified "
+            "district contact is unavailable."
+        ),
+    )

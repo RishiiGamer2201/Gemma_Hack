@@ -222,10 +222,11 @@ Owner: Member B with Member C integration
 
 - [x] Define contact schema: authority, state, district, address, phone, email, URL, verified date.
 - [x] Build the Delhi DLSA offline contact dataset; flag missing postal addresses for review.
-- [ ] Add NALSA/SLSA fallback routing for districts outside Delhi.
+- [x] Add national NALSA fallback routing for districts outside Delhi.
+- [ ] Add state-specific SLSA fallback routing for districts outside Delhi.
 - [x] Add Tele-Law 14454 as the universal fallback.
 - [x] Record that contacts are time-sensitive and display “last verified.”
-- [ ] Create evidence-checklist templates for the three demo scenarios.
+- [x] Create evidence-checklist templates for the three demo scenarios.
 - [ ] Create safe deadline records only from official legislation/rules.
 - [ ] Add `source_id` and effective date to every deadline record.
 - [ ] Create Rights Card content templates in English and Hindi.
@@ -359,11 +360,12 @@ Owner: Member C + Member A
 
 ### Legal Aid Finder and checklist
 
-- [ ] Match district to the offline DLSA dataset.
-- [ ] Show last-verified date and official source.
-- [ ] Fall back to SLSA/NALSA and Tele-Law 14454.
-- [ ] Produce case-specific evidence and action checklists.
-- [ ] Allow checklist export without storing the underlying case narrative.
+- [x] Match district to the offline DLSA dataset without fuzzy guessing.
+- [x] Show last-verified date and official source.
+- [x] Fall back to NALSA and Tele-Law 14454.
+- [ ] Add state-specific SLSA fallbacks.
+- [x] Produce scenario-specific evidence and action checklists.
+- [x] Allow checklist JSON export without storing the underlying case narrative.
 
 ## 14. Phase J — User interface
 
@@ -453,7 +455,7 @@ Owner: Member D with all members reviewing failures
 - [ ] Confirmation loop.
 - [ ] Code on Wages retrieval.
 - [ ] Power-imbalance protective guidance.
-- [ ] Evidence checklist.
+- [x] Evidence checklist.
 - [ ] “What happens if I do nothing?” with sourced consequences.
 - [ ] DLSA/Tele-Law referral.
 - [ ] Hindi Rights Card.
@@ -475,7 +477,7 @@ Owner: Member D with all members reviewing failures
 - [ ] Jurisdiction and tenancy facts confirmation.
 - [ ] Retrieval without assuming the Delhi Rent Control Act always applies.
 - [ ] Consumer/contract/rent-source distinction.
-- [ ] Negotiation/action checklist.
+- [x] Negotiation/action checklist.
 - [ ] Landlord-side argument and rebuttal.
 - [ ] Shareable Rights Card or intermediary explanation.
 

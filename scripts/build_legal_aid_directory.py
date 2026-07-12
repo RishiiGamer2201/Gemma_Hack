@@ -16,6 +16,7 @@ if str(ROOT) not in sys.path:
 from src.legal_aid.directory import (  # noqa: E402
     DirectoryError,
     build_delhi_contacts,
+    build_nalsa_fallback,
     build_tele_law_fallback,
 )
 
@@ -37,14 +38,22 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         default=Path("data/raw/official_web/tele_law_pib_2026.html"),
     )
+    parser.add_argument(
+        "--nalsa-snapshot",
+        type=Path,
+        default=Path("data/raw/official_web/nalsa_directory.html"),
+    )
     args = parser.parse_args(argv)
     try:
         contacts = build_delhi_contacts(args.snapshot)
-        fallback = build_tele_law_fallback(args.tele_law_snapshot)
+        fallbacks = [
+            build_nalsa_fallback(args.nalsa_snapshot),
+            build_tele_law_fallback(args.tele_law_snapshot),
+        ]
         payload = {
             "schema_version": 1,
             "contacts": [contact.model_dump(mode="json") for contact in contacts],
-            "fallbacks": [fallback.model_dump(mode="json")],
+            "fallbacks": [fallback.model_dump(mode="json") for fallback in fallbacks],
         }
         data = (json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode("utf-8")
         args.output.parent.mkdir(parents=True, exist_ok=True)

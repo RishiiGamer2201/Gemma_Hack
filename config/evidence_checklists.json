@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "templates": [
+    {
+      "template_id": "unpaid_wages",
+      "title": "Unpaid wages preparation checklist",
+      "scenario": "unpaid_wages",
+      "domain": "labour",
+      "guidance_label": "General preparation guidance; applicable law and deadlines must be retrieved separately.",
+      "items": [
+        {"item_id": "employment_proof", "label": "Collect appointment letters, contracts, identity cards, attendance records, or other proof of work.", "sensitive": true},
+        {"item_id": "wage_records", "label": "Keep payslips, wage statements, bank entries, and records of partial payments.", "sensitive": true},
+        {"item_id": "work_log", "label": "Write a dated chronology of work performed, pay periods, amounts expected, and amounts received.", "sensitive": false},
+        {"item_id": "communications", "label": "Preserve messages or emails about wages, payment promises, deductions, or termination.", "sensitive": true},
+        {"item_id": "employer_details", "label": "Record the employer's legal name, workplace address, supervisor, and available contact details.", "sensitive": true},
+        {"item_id": "preserve_originals", "label": "Keep original records unchanged and work from copies when sharing documents.", "sensitive": false}
+      ]
+    },
+    {
+      "template_id": "fir_or_legal_notice",
+      "title": "FIR or legal notice preparation checklist",
+      "scenario": "fir_or_legal_notice",
+      "domain": "criminal",
+      "guidance_label": "General document-preparation guidance; urgency, applicable law, and response dates require verified review.",
+      "items": [
+        {"item_id": "complete_document", "label": "Capture every page, including stamps, signatures, annexures, and the reverse side where used.", "sensitive": true},
+        {"item_id": "document_identifiers", "label": "Record the FIR, diary, case, notice, or reference number exactly as printed.", "sensitive": true},
+        {"item_id": "issuing_authority", "label": "Record the issuing police station, court, department, lawyer, or other named authority.", "sensitive": false},
+        {"item_id": "received_details", "label": "Preserve the envelope or delivery record and note when and how the document was received.", "sensitive": true},
+        {"item_id": "incident_chronology", "label": "Prepare a factual chronology and separate what you directly know from what others allege.", "sensitive": true},
+        {"item_id": "human_review", "label": "Seek prompt qualified human help when the document mentions arrest, detention, appearance, a hearing, or an expiring response period.", "sensitive": false}
+      ]
+    },
+    {
+      "template_id": "security_deposit",
+      "title": "Rental security-deposit preparation checklist",
+      "scenario": "security_deposit",
+      "domain": "tenancy_property",
+      "guidance_label": "General preparation guidance; tenancy-law applicability depends on jurisdiction and facts.",
+      "items": [
+        {"item_id": "agreement", "label": "Keep the complete rent, lease, licence, or occupancy agreement and any renewal documents.", "sensitive": true},
+        {"item_id": "deposit_proof", "label": "Collect receipts, bank entries, or written acknowledgements showing the deposit amount and date.", "sensitive": true},
+        {"item_id": "property_details", "label": "Record the property address, tenancy dates, monthly payment, and the names used in the agreement.", "sensitive": true},
+        {"item_id": "condition_evidence", "label": "Preserve dated move-in and move-out photographs, videos, inventories, and inspection records.", "sensitive": true},
+        {"item_id": "handover_evidence", "label": "Keep proof of key handover, possession return, meter readings, and final payment reconciliation.", "sensitive": true},
+        {"item_id": "communications", "label": "Preserve refund requests, replies, claimed deductions, estimates, invoices, and settlement proposals.", "sensitive": true}
+      ]
+    }
+  ]
+}

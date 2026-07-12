@@ -19,6 +19,8 @@ The first implementation milestone provides:
 - a command-line smoke-test application using a synthetic corpus;
 - a reviewed official-source manifest and hostile-network downloader;
 - receipt-verified local PDF extraction and deterministic section-aware JSONL builds.
+- a strict offline Delhi DLSA finder with NALSA and Tele-Law fallbacks;
+- validated evidence-preparation checklists for the three demo scenarios.
 
 The fixture corpus is deliberately synthetic and must never be used for real legal
 answers. Official-source chunks remain marked `pending_human_review` until the corpus
@@ -36,6 +38,8 @@ python scripts/download_official_snapshots.py --manifest config/official_web_sou
 python scripts/build_corpus.py --manifest config/official_sources.json --raw-dir data/raw/official_law --output-dir data/processed/sections
 python scripts/build_sankalan_candidates.py
 python scripts/build_legal_aid_directory.py
+python scripts/find_legal_aid.py --district "Rouse Avenue" --state Delhi
+python scripts/get_evidence_checklist.py --template unpaid_wages
 ```
 
 Optional dependencies can later be installed with:
