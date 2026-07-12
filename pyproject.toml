@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nyaya-navigator"
+version = "0.1.0"
+description = "Offline, multilingual, citation-grounded Indian legal navigation assistant"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary - hackathon prototype" }
+dependencies = [
+  "pydantic>=2.7,<3",
+]
+
+[project.optional-dependencies]
+ui = ["streamlit>=1.40,<2"]
+retrieval = [
+  "faiss-cpu>=1.9,<2; python_version < '3.13'",
+  "sentence-transformers>=3.3,<4",
+]
+dev = [
+  "pytest>=8.3,<9",
+  "pytest-cov>=6,<7",
+  "ruff>=0.9,<1",
+]
+
+[project.scripts]
+nyaya = "src.app:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]

@@ -1,0 +1,47 @@
+[
+  {
+    "source_id": "synthetic-current-law",
+    "jurisdiction": "India",
+    "act": "Synthetic Current Law",
+    "section": "10",
+    "heading": "Current provision",
+    "language": "en",
+    "text": "This synthetic fixture demonstrates retrieval of a current provision.",
+    "effective_from": "2024-07-01",
+    "effective_to": null,
+    "status": "in_force",
+    "priority": 2,
+    "official_url": "https://example.invalid/current",
+    "page": 1
+  },
+  {
+    "source_id": "synthetic-old-law",
+    "jurisdiction": "India",
+    "act": "Synthetic Historical Code",
+    "section": "420",
+    "heading": "Historical provision",
+    "language": "en",
+    "text": "This synthetic fixture demonstrates an old section mapping query.",
+    "effective_from": "1860-01-01",
+    "effective_to": "2024-06-30",
+    "status": "repealed",
+    "priority": 3,
+    "official_url": "https://example.invalid/historical",
+    "page": 2
+  },
+  {
+    "source_id": "synthetic-hindi",
+    "jurisdiction": "India",
+    "act": "Synthetic Bilingual Act",
+    "section": "5",
+    "heading": "Demo Hindi",
+    "language": "hi",
+    "text": "यह केवल खोज और भाषा परीक्षण के लिए कृत्रिम उदाहरण है।",
+    "effective_from": "2025-01-01",
+    "effective_to": null,
+    "status": "in_force",
+    "priority": 2,
+    "official_url": "https://example.invalid/hindi",
+    "page": 3
+  }
+]

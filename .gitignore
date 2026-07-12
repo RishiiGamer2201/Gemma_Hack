@@ -1,6 +1,6 @@
 # Large local data & models — see DATASET.md for how to fetch them
-data/
-models/
+/data/
+/models/
 
 # Python
 __pycache__/
@@ -12,3 +12,6 @@ venv/
 .DS_Store
 Thumbs.db
 .vscode/
+
+# Project-local third-party agent profiles (installed from contains-studio/agents)
+.agents/
