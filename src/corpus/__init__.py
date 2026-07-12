@@ -1,7 +1,7 @@
 """Official-source corpus acquisition and deterministic processing."""
 
-from .chunker import SectionChunk, chunk_sections, write_jsonl
-from .extract import ExtractionError, ExtractedDocument, ExtractedPage, extract_document
+from .chunker import SectionChunk, chunk_gazette_rules_english, chunk_sections, write_jsonl
+from .extract import ExtractedDocument, ExtractedPage, ExtractionError, extract_document
 from .manifest import OfficialSource, SourceManifest, load_manifest
 from .pipeline import (
     CorpusBuildError,
@@ -23,6 +23,7 @@ __all__ = [
     "SourceBuildFailure",
     "SourceBuildResult",
     "build_corpus",
+    "chunk_gazette_rules_english",
     "chunk_sections",
     "extract_document",
     "load_manifest",

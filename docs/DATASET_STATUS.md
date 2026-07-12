@@ -1,15 +1,20 @@
 # Dataset acquisition status
 
-Last acquisition run: 2026-07-12. Raw data and model files remain ignored by Git;
+Last acquisition run: 2026-07-13. Raw data and model files remain ignored by Git;
 manifests, downloaders, receipts, and processing code are versioned.
 
 ## Production grounding sources
 
-- [x] Download 18 official PDFs with URL, timestamp, byte count, and SHA-256 receipts.
+- [x] Download 30 official PDFs with URL, timestamp, byte count, and SHA-256 receipts.
 - [x] Download and process the current 2026 English Constitution.
 - [x] Download and process the current 2026 Hindi-English diglot Constitution.
 - [x] Download and process BNS, BNSS, BSA, Consumer Protection Act, Delhi Rent Control Act, Code on
   Wages, 2026 Central Rules, implementation material, and wage/labour FAQs.
+- [x] Download, receipt-verify, and process 12 current citizen-facing Consumer Protection
+  rules/regulations/corrigenda/amendments with explicit amendment relationships.
+- [x] Add a bilingual-Gazette chunker that separates bundled instruments and emits the
+  English operative rules without splitting numbered fee tables from their parent rule.
+- [ ] Complete the designated human source audit for the Consumer Protection rule chunks.
 - [x] Download the Legal Services Authorities Act and core NALSA/DSLSA rules and regulations.
 - [ ] Process all legal-aid PDFs for retrieval.
   - [x] Process digitally readable legal-aid PDFs.

@@ -15,6 +15,13 @@ citizen-facing legal claim.
 7. Write deterministic JSONL into `data/processed/sections/`.
 8. Build lexical/vector indexes only from audited chunks.
 
+For Hindi-English Gazette rules, `chunking_strategy: gazette_rules_en` detects each
+English instrument's rule 1, accepts only monotonically increasing top-level rule
+numbers, and stops at the next Hindi or English instrument. This prevents a bundled
+PDF or numbered fee table from being interpreted as a single mixed statute. It does
+not consolidate amendments; `relationship`, `modifies_source_ids`, and
+`target_instrument_title` preserve that chain for later current-text assembly.
+
 ## Safety rules
 
 - Downloads must use HTTPS and an explicitly allowed government host.

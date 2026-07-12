@@ -17,7 +17,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from .chunker import SectionChunk, chunk_sections
+from .chunker import SectionChunk, chunk_gazette_rules_english, chunk_sections
 from .extract import extract_document
 from .manifest import OfficialSource, SourceManifest, load_manifest
 
@@ -191,7 +191,12 @@ def _build_source(
         )
 
     metadata = _source_metadata(source, receipt, digest, parser=document.parser)
-    chunks = chunk_sections(document, source_id=source.source_id, metadata=metadata)
+    if source.chunking_strategy == "gazette_rules_en":
+        chunks = chunk_gazette_rules_english(
+            document, source_id=source.source_id, metadata=metadata
+        )
+    else:
+        chunks = chunk_sections(document, source_id=source.source_id, metadata=metadata)
     if not chunks:
         raise CorpusBuildError("extraction produced no non-empty chunks")
     output_filename = f"{source.source_id}.jsonl"
@@ -278,6 +283,9 @@ def _source_metadata(
         "jurisdiction": source.jurisdiction,
         "language": source.language,
         "document_type": source.document_type,
+        "publication_date": (
+            source.publication_date.isoformat() if source.publication_date else None
+        ),
         "effective_from": source.effective_from.isoformat() if source.effective_from else None,
         "effective_to": source.effective_to.isoformat() if source.effective_to else None,
         "status": source.status,
@@ -288,6 +296,12 @@ def _source_metadata(
         "sha256": digest,
         "parser": parser,
         "parser_requested": source.parser,
+        "chunking_strategy": source.chunking_strategy,
+        "relationship": source.relationship,
+        "modifies_source_ids": list(source.modifies_source_ids),
+        "target_instrument_title": source.target_instrument_title,
+        "gazette_reference": source.gazette_reference,
+        "review_note": source.review_note,
         "audit_status": "pending_human_review",
     }
 

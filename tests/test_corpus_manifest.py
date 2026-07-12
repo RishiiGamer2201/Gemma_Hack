@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from copy import deepcopy
-import json
-from pathlib import Path
 import tempfile
 import unittest
+from copy import deepcopy
+from pathlib import Path
 
 from pydantic import ValidationError
 
@@ -103,6 +102,33 @@ class ManifestTests(unittest.TestCase):
                 source_payload(effective_from="2025-01-01", effective_to="2024-12-31")
             )
 
+    def test_amendment_relationships_must_be_explicit_and_resolvable(self) -> None:
+        principal = source_payload()
+        amendment = source_payload(
+            source_id="synthetic_amendment_en",
+            filename="synthetic_amendment.pdf",
+            relationship="amendment",
+            modifies_source_ids=["synthetic_act_en"],
+            target_instrument_title="Synthetic Act",
+        )
+        manifest = SourceManifest.model_validate({"sources": [principal, amendment]})
+        self.assertEqual(manifest.sources[1].modifies_source_ids, ("synthetic_act_en",))
+
+        for update, message in (
+            ({"relationship": "amendment"}, "require modifies_source_ids"),
+            ({"modifies_source_ids": ["synthetic_act_en"]}, "principal sources"),
+            (
+                {
+                    "relationship": "corrigendum",
+                    "modifies_source_ids": ["missing_source"],
+                    "target_instrument_title": "Missing source",
+                },
+                "unknown source_id",
+            ),
+        ):
+            with self.subTest(update=update), self.assertRaisesRegex(ValidationError, message):
+                SourceManifest.model_validate({"sources": [source_payload(**update)]})
+
     def test_load_manifest_reports_invalid_json(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "manifest.json"
@@ -114,6 +140,36 @@ class ManifestTests(unittest.TestCase):
         manifest = load_manifest("config/official_sources.json")
         self.assertGreater(len(manifest.sources), 0)
         self.assertTrue(all(source.allows_url(source.url) for source in manifest.sources))
+
+    def test_committed_consumer_rules_preserve_current_amendment_chain(self) -> None:
+        manifest = load_manifest("config/official_sources.json")
+        sources = {source.source_id: source for source in manifest.sources}
+        consumer_rules = [
+            source
+            for source in manifest.sources
+            if source.source_id.startswith("consumer_")
+            and source.source_id != "consumer_protection_act_2019_en"
+        ]
+
+        self.assertEqual(len(consumer_rules), 12)
+        self.assertTrue(
+            all(source.chunking_strategy == "gazette_rules_en" for source in consumer_rules)
+        )
+        self.assertTrue(all(source.language == "hi-en" for source in consumer_rules))
+        current_fee_table = sources["consumer_cdrc_amendment_rules_2023_hi_en"]
+        self.assertEqual(current_fee_table.gazette_reference, "G.S.R. 606(E)")
+        self.assertEqual(
+            current_fee_table.modifies_source_ids,
+            ("consumer_cdrc_general_rules_2020_hi_en",),
+        )
+        self.assertIn("G.S.R. 892(E)", current_fee_table.review_note or "")
+        self.assertEqual(
+            current_fee_table.target_instrument_title,
+            "Consumer Protection (Consumer Disputes Redressal Commissions) Rules, 2020",
+        )
+        corrigendum = sources["consumer_ecommerce_corrigendum_2020_hi_en"]
+        self.assertIsNone(corrigendum.effective_from)
+        self.assertEqual(corrigendum.relationship, "corrigendum")
 
 
 if __name__ == "__main__":

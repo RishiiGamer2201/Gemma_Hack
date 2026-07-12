@@ -1,16 +1,15 @@
 from __future__ import annotations
 
-from contextlib import redirect_stderr, redirect_stdout
 import hashlib
 import io
 import json
-from pathlib import Path
 import tempfile
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
+from pathlib import Path
 
 from scripts.build_corpus import main as build_cli
 from src.corpus.pipeline import CorpusBuildError, build_corpus
-
 
 DOWNLOADED_AT = "2026-07-12T09:30:00+00:00"
 
@@ -25,9 +24,9 @@ class PipelineFixture:
         self.source_id = "synthetic_act_en"
         self.filename = "synthetic_act.txt"
         self.body = (
-            "THE SYNTHETIC ACT\nBe it enacted\n1. First right\nPage one body"
-            "\fContinuation on page two\n2. Second right\nPage two body"
-        ).encode("utf-8")
+            b"THE SYNTHETIC ACT\nBe it enacted\n1. First right\nPage one body"
+            b"\fContinuation on page two\n2. Second right\nPage two body"
+        )
         source = {
             "source_id": self.source_id,
             "title": "The Synthetic Act",
@@ -37,11 +36,15 @@ class PipelineFixture:
             "language": "en",
             "jurisdiction": "India",
             "document_type": "act",
+            "publication_date": "2024-06-30",
             "effective_from": "2024-07-01",
             "effective_to": None,
             "status": "in_force",
             "priority": 1,
             "parser": "text",
+            "relationship": "principal",
+            "gazette_reference": "G.S.R. 1(E)",
+            "review_note": "Synthetic fixture only.",
             "required": required,
             "allowed_hosts": ["law.gov.in"],
         }
@@ -98,9 +101,16 @@ class CorpusPipelineTests(unittest.TestCase):
         self.assertEqual(metadata["official_url"], "https://law.gov.in/files/synthetic_act.txt")
         self.assertEqual(metadata["retrieved_at"], DOWNLOADED_AT)
         self.assertEqual(metadata["effective_from"], "2024-07-01")
+        self.assertEqual(metadata["publication_date"], "2024-06-30")
+        self.assertEqual(metadata["relationship"], "principal")
+        self.assertEqual(metadata["modifies_source_ids"], [])
+        self.assertIsNone(metadata["target_instrument_title"])
+        self.assertEqual(metadata["gazette_reference"], "G.S.R. 1(E)")
+        self.assertEqual(metadata["review_note"], "Synthetic fixture only.")
         self.assertEqual(metadata["audit_status"], "pending_human_review")
         self.assertFalse(metadata["ocr_used"])
         self.assertEqual(metadata["parser"], "text")
+        self.assertEqual(metadata["chunking_strategy"], "statute_sections")
 
     def test_tampered_source_bytes_are_rejected_by_receipt_digest(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

@@ -181,7 +181,7 @@ Blocker for: trustworthy answers
 - [x] Download BNSS 2023 from MHA/India Code.
 - [x] Download BSA 2023 from MHA/India Code.
 - [x] Download and process the Consumer Protection Act 2019.
-- [ ] Download and review relevant current Consumer Protection rules.
+- [x] Download and review relevant current Consumer Protection rules.
 - [x] Download and process the Delhi Rent Control Act 1958.
 - [ ] Record substantive Delhi Rent Control Act applicability limitations for retrieval.
 - [x] Download Code on Wages 2019.
