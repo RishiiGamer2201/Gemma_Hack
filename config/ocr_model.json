@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "runtime": {
+    "package": "UB-Mannheim.TesseractOCR",
+    "version": "5.4.0.20240606",
+    "license": "Apache-2.0",
+    "installer_url": "https://github.com/UB-Mannheim/tesseract/releases/download/v5.4.0.20240606/tesseract-ocr-w64-setup-5.4.0.20240606.exe",
+    "installer_sha256": "c885fff6998e0608ba4bb8ab51436e1c6775c2bafc2559a19b423e18678b60c9",
+    "executable_size": 1585024,
+    "executable_sha256": "babb405f4366b480d02cd8ff2bac8d497170f6c1711ce6f3d5d8bf0fb7fa6ed9",
+    "tsv_config": {"size": 22, "sha256": "59d079bb75d8b3d7c839a3564580cb559e362c93a9d70f234e421c0c3e767e04"}
+  },
+  "tessdata": {
+    "repository": "tesseract-ocr/tessdata_fast",
+    "revision": "87416418657359cb625c412a48b6e1d6d41c29bd",
+    "license": "Apache-2.0",
+    "files": {
+      "eng.traineddata": {"size": 4113088, "sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2"},
+      "hin.traineddata": {"size": 1122751, "sha256": "4c73ffc59d497c186b19d1e90f5d721d678ea6b2e277b719bee4e2af12271825"},
+      "osd.traineddata": {"size": 10562727, "sha256": "9cf5d576fcc47564f11265841e5ca839001e7e6f38ff7f7aacf46d15a96b00ff"}
+    }
+  }
+}

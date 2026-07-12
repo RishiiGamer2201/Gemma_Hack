@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
 import json
-from pathlib import Path
 import re
-from typing import Iterable, Mapping, Any
+from collections.abc import Iterable, Mapping
+from dataclasses import asdict, dataclass
+from pathlib import Path
+from typing import Any
 
 from .extract import ExtractedDocument
-
 
 _SECTION = re.compile(
     r"^\s*(?:(?:section|sec\.)\s+)?(?P<number>\d+[A-Za-z]?)\.\s+(?P<title>\S.*)$",
@@ -55,6 +55,8 @@ def chunk_sections(
     if not source_id.strip():
         raise ValueError("source_id must not be empty")
     base_metadata = dict(metadata or {})
+    document_scan_review_pages = list(document.scan_review_pages)
+    document_ocr_pages = list(document.ocr_pages)
     lines: list[tuple[int, str]] = []
     boundary_indices: list[tuple[int, str, str]] = []
     contents_mode = False
@@ -79,13 +81,30 @@ def chunk_sections(
     starts = [item[0] for item in boundary_indices]
     duplicate_count: dict[str, int] = {}
 
-    def add_chunk(
-        start: int, end: int, section_id: str | None, heading: str, slug: str
-    ) -> None:
+    def add_chunk(start: int, end: int, section_id: str | None, heading: str, slug: str) -> None:
         text = _clean(line for _, line in lines[start:end])
         if not text:
             return
         pages = [page for page, _ in lines[start:end]]
+        page_start = min(pages)
+        page_end = max(pages)
+        span_pages = tuple(
+            page for page in document.pages if page_start <= page.page_number <= page_end
+        )
+        chunk_metadata = dict(base_metadata)
+        chunk_metadata.update(
+            {
+                # `ocr_used` is true only when a contributing page explicitly
+                # declares that supplied text came from OCR.
+                "ocr_used": any(page.ocr_used for page in span_pages),
+                "document_ocr_used": bool(document_ocr_pages),
+                "ocr_pages": document_ocr_pages,
+                "scan_review_required": bool(document_scan_review_pages),
+                "scan_review_pages": document_scan_review_pages,
+                "chunk_scan_review_required": any(page.scan_review_required for page in span_pages),
+                "page_extraction": [page.extraction_record() for page in span_pages],
+            }
+        )
         count = duplicate_count.get(slug, 0) + 1
         duplicate_count[slug] = count
         suffix = "" if count == 1 else f"-{count}"
@@ -96,9 +115,9 @@ def chunk_sections(
                 section_id=section_id,
                 heading=heading,
                 text=text,
-                page_start=min(pages),
-                page_end=max(pages),
-                metadata=base_metadata,
+                page_start=page_start,
+                page_end=page_end,
+                metadata=chunk_metadata,
             )
         )
 

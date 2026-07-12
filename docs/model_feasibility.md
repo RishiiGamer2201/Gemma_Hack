@@ -11,8 +11,9 @@ out-of-memory error. Set the current production context ceiling to 8,192 tokens 
 keep the output ceiling at 1,200 tokens.
 
 The compact Ollama manifests expose `completion`, `tools`, and `thinking`, but do not
-advertise `vision` or audio capability. Image and audio acceptance therefore remain
-open until the local OCR/ASR fallbacks are benchmarked. The upstream Gemma 4 models
+advertise `vision` or audio capability. The offline image and audio fallbacks are now
+benchmarked in `docs/ocr_feasibility.md` and `docs/asr_feasibility.md`. Native Gemma
+multimodal input remains unverified. The upstream Gemma 4 models
 do support text, image, and audio, but upstream capability does not prove that these
 particular quantized runtime packages expose every modality.
 
@@ -105,8 +106,9 @@ model run to avoid cross-model residency.
 - E4B structured output and all tested contexts pass without OOM.
 - Warm deterministic responses complete in about 0.3–0.5 seconds; cold loads take
   7–9 seconds and must be hidden by startup preloading.
-- The three-stage text workflow completes in about 6–8 seconds, but visible stage
-  streaming is not implemented yet.
+- The three-stage text workflow completes in about 6–8 seconds. The hardened live
+  workflow emitted 271 visible token events across advocate, opponent, and rebuttal;
+  a warm single-stage probe produced its first visible token in about 405 ms.
 - E2B passes every currently implemented text probe.
-- Printed-notice, phone-photo, Hindi-audio, and English-audio probes remain mandatory
-  before the full Phase A gate can close.
+- Printed-notice and synthetic phone-style image probes pass through the local OCR
+  fallback. A real consented camera photograph remains a pre-release evaluation item.

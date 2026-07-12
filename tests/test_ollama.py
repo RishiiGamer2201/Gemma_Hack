@@ -91,10 +91,59 @@ class OllamaTests(unittest.TestCase):
             client.version()
         self.assertEqual(context.exception.code, "invalid_response")
 
+    def test_generation_stream_yields_visible_chunks_and_final_marker(self) -> None:
+        client = OllamaClient()
+        client._opener = Mock()  # type: ignore[assignment]
+        client._opener.open.return_value = _Response(
+            b'{"model":"m","response":"Arg","done":false}\n'
+            b'{"model":"m","response":"ument","done":true}\n'
+        )
+        chunks = list(client.generate_stream(model="m", prompt="p", think=False))
+        self.assertEqual("".join(chunk.text for chunk in chunks), "Argument")
+        self.assertTrue(chunks[-1].done)
+        request = client._opener.open.call_args.args[0]
+        payload = json.loads(request.data)
+        self.assertTrue(payload["stream"])
+        self.assertFalse(payload["think"])
+
+    def test_generation_stream_requires_final_marker(self) -> None:
+        client = OllamaClient()
+        client._opener = Mock()  # type: ignore[assignment]
+        client._opener.open.return_value = _Response(
+            b'{"model":"m","response":"partial","done":false}\n'
+        )
+        with self.assertRaises(OllamaError) as context:
+            list(client.generate_stream(model="m", prompt="p"))
+        self.assertEqual(context.exception.code, "invalid_response")
+
+    def test_generation_stream_rejects_data_after_final_marker(self) -> None:
+        client = OllamaClient()
+        client._opener = Mock()  # type: ignore[assignment]
+        client._opener.open.return_value = _Response(
+            b'{"model":"m","response":"done","done":true}\n'
+            b'{"model":"m","response":"trailing","done":false}\n'
+        )
+        with self.assertRaises(OllamaError) as context:
+            list(client.generate_stream(model="m", prompt="p"))
+        self.assertEqual(context.exception.code, "invalid_response")
+
+    def test_generation_stream_rejects_trailing_data_after_blank_lines(self) -> None:
+        client = OllamaClient()
+        client._opener = Mock()  # type: ignore[assignment]
+        client._opener.open.return_value = _Response(
+            b'{"model":"m","response":"done","done":true}\n'
+            b"\n\r\n"
+            b'{"model":"m","response":"trailing","done":false}\n'
+        )
+        with self.assertRaises(OllamaError) as context:
+            list(client.generate_stream(model="m", prompt="p"))
+        self.assertEqual(context.exception.code, "invalid_response")
+
 
 class _Response:
-    def __init__(self, payload: object) -> None:
-        self._body = io.BytesIO(json.dumps(payload).encode())
+    def __init__(self, payload: object | bytes) -> None:
+        body = payload if isinstance(payload, bytes) else json.dumps(payload).encode()
+        self._body = io.BytesIO(body)
         self.headers = Message()
 
     def __enter__(self):
@@ -105,6 +154,9 @@ class _Response:
 
     def read(self, size: int = -1) -> bytes:
         return self._body.read(size)
+
+    def readline(self, size: int = -1) -> bytes:
+        return self._body.readline(size)
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import ipaddress
 import json
-from collections.abc import Mapping
+from collections.abc import Iterator, Mapping
 from dataclasses import dataclass
 from http.client import HTTPException
 from typing import Any
@@ -40,6 +40,14 @@ class OllamaError(RuntimeError):
 
 @dataclass(frozen=True, slots=True)
 class OllamaResponse:
+    text: str
+    model: str
+    done: bool
+    raw: Mapping[str, Any]
+
+
+@dataclass(frozen=True, slots=True)
+class OllamaStreamChunk:
     text: str
     model: str
     done: bool
@@ -115,23 +123,16 @@ class OllamaClient:
         keep_alive: str | int | None = None,
         think: bool | None = None,
     ) -> OllamaResponse:
-        if not model.strip():
-            raise ValueError("model must not be empty")
-        payload: dict[str, Any] = {
-            "model": model,
-            "prompt": prompt,
-            "stream": False,
-        }
-        if system is not None:
-            payload["system"] = system
-        if options is not None:
-            payload["options"] = dict(options)
-        if format is not None:
-            payload["format"] = format
-        if keep_alive is not None:
-            payload["keep_alive"] = keep_alive
-        if think is not None:
-            payload["think"] = think
+        payload = self._generate_payload(
+            model=model,
+            prompt=prompt,
+            stream=False,
+            system=system,
+            options=options,
+            format=format,
+            keep_alive=keep_alive,
+            think=think,
+        )
         response = self._post_json("/api/generate", payload)
         text = response.get("response")
         if not isinstance(text, str):
@@ -145,6 +146,121 @@ class OllamaClient:
             done=done,
             raw=response,
         )
+
+    def generate_stream(
+        self,
+        *,
+        model: str,
+        prompt: str,
+        system: str | None = None,
+        options: Mapping[str, Any] | None = None,
+        format: str | Mapping[str, Any] | None = None,
+        keep_alive: str | int | None = None,
+        think: bool | None = None,
+    ) -> Iterator[OllamaStreamChunk]:
+        """Yield bounded NDJSON chunks from a loopback-only generation call."""
+        payload = self._generate_payload(
+            model=model,
+            prompt=prompt,
+            stream=True,
+            system=system,
+            options=options,
+            format=format,
+            keep_alive=keep_alive,
+            think=think,
+        )
+        request = Request(
+            self.base_url + "/api/generate",
+            data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
+            headers={"Content-Type": "application/json", "Accept": "application/x-ndjson"},
+            method="POST",
+        )
+        total = 0
+        saw_done = False
+        try:
+            with self._opener.open(request, timeout=self.timeout) as response:
+                while True:
+                    line = response.readline(self.max_response_bytes + 1)
+                    if not line:
+                        break
+                    total += len(line)
+                    if total > self.max_response_bytes:
+                        raise OllamaError(
+                            "response_too_large", "Ollama response exceeded the configured limit"
+                        )
+                    chunk = self._decode_object(line)
+                    text = chunk.get("response")
+                    done = chunk.get("done")
+                    if not isinstance(text, str) or not isinstance(done, bool):
+                        raise OllamaError(
+                            "invalid_response", "Ollama returned an invalid stream chunk"
+                        )
+                    saw_done = saw_done or done
+                    yield OllamaStreamChunk(
+                        text=text,
+                        model=str(chunk.get("model", model)),
+                        done=done,
+                        raw=chunk,
+                    )
+                    if done:
+                        while trailing := response.readline(self.max_response_bytes + 1):
+                            total += len(trailing)
+                            if total > self.max_response_bytes:
+                                raise OllamaError(
+                                    "response_too_large",
+                                    "Ollama response exceeded the configured limit",
+                                )
+                            if trailing.strip():
+                                raise OllamaError(
+                                    "invalid_response",
+                                    "Ollama returned data after the final stream chunk",
+                                )
+                        break
+        except OllamaError:
+            raise
+        except HTTPError as exc:
+            error_body = exc.read(4096).decode("utf-8", errors="replace")
+            raise OllamaError(
+                "http_error",
+                f"Local Ollama returned HTTP {exc.code}",
+                status=exc.code,
+                details={"body": error_body},
+            ) from exc
+        except (URLError, TimeoutError, OSError, HTTPException) as exc:
+            raise OllamaError(
+                "connection_error",
+                "Could not reach the local Ollama runtime",
+                details={"reason": str(exc)},
+            ) from exc
+        if not saw_done:
+            raise OllamaError("invalid_response", "Ollama stream ended before a final chunk")
+
+    @staticmethod
+    def _generate_payload(
+        *,
+        model: str,
+        prompt: str,
+        stream: bool,
+        system: str | None,
+        options: Mapping[str, Any] | None,
+        format: str | Mapping[str, Any] | None,
+        keep_alive: str | int | None,
+        think: bool | None,
+    ) -> dict[str, Any]:
+        if not model.strip():
+            raise ValueError("model must not be empty")
+        payload: dict[str, Any] = {"model": model, "prompt": prompt, "stream": stream}
+        if system is not None:
+            payload["system"] = system
+        if options is not None:
+            payload["options"] = dict(options)
+        if format is not None:
+            payload["format"] = format
+        if keep_alive is not None:
+            payload["keep_alive"] = keep_alive
+        if think is not None:
+            payload["think"] = think
+        return payload
 
     def version(self) -> str:
         """Return the version reported by the loopback-only runtime."""
@@ -218,6 +334,10 @@ class OllamaClient:
             ) from exc
         if len(body) > self.max_response_bytes:
             raise OllamaError("response_too_large", "Ollama response exceeded the configured limit")
+        return self._decode_object(body)
+
+    @staticmethod
+    def _decode_object(body: bytes) -> dict[str, Any]:
         try:
             decoded = json.loads(body.decode("utf-8"))
         except (UnicodeDecodeError, json.JSONDecodeError) as exc:

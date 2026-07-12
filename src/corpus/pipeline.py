@@ -7,14 +7,15 @@ then labels every output chunk as pending human review.
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
-from datetime import datetime
 import hashlib
 import json
 import os
-from pathlib import Path
 import tempfile
-from typing import Any, Iterable, Mapping
+from collections.abc import Iterable, Mapping
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 from .chunker import SectionChunk, chunk_sections
 from .extract import extract_document
@@ -36,6 +37,9 @@ class SourceBuildResult:
     page_count: int
     chunk_count: int
     empty_page_count: int
+    scan_review_page_count: int
+    ocr_page_count: int
+    scan_review_required: bool
     sha256: str
     parser: str
 
@@ -51,6 +55,8 @@ class SourceBuildFailure:
     page_count: int | None = None
     chunk_count: int | None = None
     empty_page_count: int | None = None
+    scan_review_page_count: int | None = None
+    ocr_page_count: int | None = None
     sha256: str | None = None
     parser: str | None = None
 
@@ -134,7 +140,7 @@ def build_corpus(
             successes.append(result)
 
     report = CorpusBuildReport(
-        schema_version=1,
+        schema_version=2,
         manifest_schema_version=manifest.schema_version,
         selected_source_ids=tuple(source.source_id for source in selected),
         successes=tuple(successes),
@@ -176,10 +182,12 @@ def _build_source(
     if page_count == 0:
         raise CorpusBuildError("extraction returned no pages")
     empty_page_count = sum(not page.text.strip() for page in document.pages)
+    scan_review_page_count = len(document.scan_review_pages)
+    ocr_page_count = len(document.ocr_pages)
     if empty_page_count and not allow_empty_pages:
         raise CorpusBuildError(
             f"extraction returned {empty_page_count} empty page(s); "
-            "review or use --allow-empty-pages"
+            "possible scanned pages require review or use --allow-empty-pages to retain flags"
         )
 
     metadata = _source_metadata(source, receipt, digest, parser=document.parser)
@@ -196,6 +204,9 @@ def _build_source(
         page_count=page_count,
         chunk_count=len(chunks),
         empty_page_count=empty_page_count,
+        scan_review_page_count=scan_review_page_count,
+        ocr_page_count=ocr_page_count,
+        scan_review_required=bool(scan_review_page_count),
         sha256=digest,
         parser=document.parser,
     )
@@ -277,7 +288,6 @@ def _source_metadata(
         "sha256": digest,
         "parser": parser,
         "parser_requested": source.parser,
-        "ocr_used": False,
         "audit_status": "pending_human_review",
     }
 
@@ -291,9 +301,7 @@ def _load_json_object(path: Path) -> dict[str, Any]:
             result[key] = value
         return result
 
-    payload = json.loads(
-        path.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate_keys
-    )
+    payload = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate_keys)
     if not isinstance(payload, dict):
         raise ValueError("JSON root must be an object")
     return payload
@@ -309,18 +317,14 @@ def _is_datetime(value: str) -> bool:
 
 def _atomic_write_jsonl(path: Path, chunks: Iterable[SectionChunk]) -> None:
     lines = [
-        json.dumps(
-            chunk.as_record(), ensure_ascii=False, sort_keys=True, separators=(",", ":")
-        )
+        json.dumps(chunk.as_record(), ensure_ascii=False, sort_keys=True, separators=(",", ":"))
         for chunk in chunks
     ]
     _atomic_replace(path, "".join(line + "\n" for line in lines).encode("utf-8"))
 
 
 def _atomic_write_json(path: Path, record: Mapping[str, Any]) -> None:
-    data = (
-        json.dumps(record, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
-    ).encode("utf-8")
+    data = (json.dumps(record, ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode("utf-8")
     _atomic_replace(path, data)
 
 

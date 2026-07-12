@@ -155,7 +155,7 @@ Blocker for: agent pipeline and full UI
 - [x] Test Hindi, English, and Hinglish comprehension.
 - [x] Test system-role and structured JSON output.
 - [ ] Test image input on one printed notice and one phone photograph.
-- [ ] Test Hindi/English audio or establish the ASR fallback.
+- [x] Test Hindi/English audio or establish the ASR fallback.
 - [x] Test sequential advocate → opponent → rebuttal calls.
 - [x] Set production context/output limits based on measured memory.
 - [x] Save results in `docs/model_feasibility.md`.
@@ -164,7 +164,7 @@ Blocker for: agent pipeline and full UI
 
 - [x] E4B produces valid structured output on the demo laptop without out-of-memory errors.
 - [x] Normal answer latency is acceptable for a live demo.
-- [ ] Devil's Advocate stages stream visibly instead of appearing frozen.
+- [x] Devil's Advocate stages stream visibly instead of appearing frozen.
 - [ ] E2B fallback can complete every demo path if E4B is too slow.
 
 ## 6. Phase B — Official legal corpus
@@ -197,7 +197,7 @@ Blocker for: trustworthy answers
 ### Processing
 
 - [x] Extract digitally readable sources while preserving page numbers and headings.
-- [ ] Detect scanned pages and flag OCR-derived text.
+- [x] Detect scanned pages and flag OCR-derived text.
 - [x] Split statutes by section boundaries, not arbitrary token windows.
 - [ ] Keep provisos, explanations, illustrations, schedules, and amendments attached correctly.
 - [x] Generate stable `source_id` values.
@@ -287,7 +287,7 @@ Owner: Member A + Member C
 
 - [x] Implement deterministic English, Hindi, and Hinglish language/script detection.
 - [x] Normalize line endings while preserving names, quoted text, dates, money, and section numbers.
-- [ ] Implement local voice transcription.
+- [x] Implement local voice transcription.
 - [ ] Show the transcript and allow correction before extraction.
 - [ ] Implement digital PDF text extraction.
 - [ ] Implement OCR fallback for scanned PDFs/images.
@@ -351,8 +351,8 @@ Owner: Member C + Member A
 ### Devil's Advocate
 
 - [ ] Build a redacted, structured case summary from confirmed facts.
-- [ ] Run advocate, opponent, and rebuttal sequentially on one model instance.
-- [ ] Give the opponent only confirmed facts and verified source excerpts.
+- [x] Run advocate, opponent, and rebuttal sequentially on one model instance.
+- [x] Give the opponent only confirmed facts and verified source excerpts.
 - [ ] Prevent either side from adding new uncited law.
 - [ ] Label allegations, assumptions, missing evidence, and legal rules separately.
 - [ ] Stream stage labels and provide a cancel button.

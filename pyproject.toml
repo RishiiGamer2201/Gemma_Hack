@@ -20,6 +20,14 @@ retrieval = [
   "faiss-cpu>=1.9,<2; python_version < '3.13'",
   "sentence-transformers>=3.3,<4",
 ]
+speech = [
+  "faster-whisper==1.2.1",
+  "ctranslate2==4.8.1",
+  "tokenizers==0.23.1",
+  "onnxruntime==1.27.0",
+  "av==18.0.0",
+]
+ocr = ["pillow==12.3.0"]
 dev = [
   "pytest>=8.3,<9",
   "pytest-cov>=6,<7",

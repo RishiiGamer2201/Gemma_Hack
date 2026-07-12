@@ -2,9 +2,16 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable
+
+# A page with fewer than both of these counts is not trusted as digitally
+# extractable. The conservative thresholds catch image-only/blank pages while
+# keeping short headings and numbered provisions as digital text. This is a
+# review signal, not proof that a page is scanned.
+MIN_DIGITAL_NON_WHITESPACE_CHARACTERS = 20
+MIN_DIGITAL_ALPHANUMERIC_CHARACTERS = 5
 
 
 class ExtractionError(RuntimeError):
@@ -15,6 +22,54 @@ class ExtractionError(RuntimeError):
 class ExtractedPage:
     page_number: int
     text: str
+    ocr_used: bool = False
+
+    def __post_init__(self) -> None:
+        if self.page_number < 1:
+            raise ValueError("page_number must be at least 1")
+        if self.ocr_used and not self.text.strip():
+            raise ValueError("ocr_used requires supplied non-empty OCR text")
+
+    @property
+    def non_whitespace_character_count(self) -> int:
+        return sum(not character.isspace() for character in self.text)
+
+    @property
+    def alphanumeric_character_count(self) -> int:
+        return sum(character.isalnum() for character in self.text)
+
+    @property
+    def extraction_status(self) -> str:
+        """Return a deterministic, non-diagnostic page extraction signal."""
+
+        if self.ocr_used:
+            return "ocr_text_supplied"
+        if not self.text.strip():
+            return "no_extracted_text"
+        if (
+            self.non_whitespace_character_count < MIN_DIGITAL_NON_WHITESPACE_CHARACTERS
+            and self.alphanumeric_character_count < MIN_DIGITAL_ALPHANUMERIC_CHARACTERS
+        ):
+            return "insufficient_extracted_text"
+        return "digital_text"
+
+    @property
+    def scan_review_required(self) -> bool:
+        """Flag likely scanned/blank pages without claiming scan certainty."""
+
+        return self.extraction_status in {
+            "no_extracted_text",
+            "insufficient_extracted_text",
+        }
+
+    def extraction_record(self) -> dict[str, int | bool | str]:
+        return {
+            "page_number": self.page_number,
+            "status": self.extraction_status,
+            "ocr_used": self.ocr_used,
+            "non_whitespace_character_count": self.non_whitespace_character_count,
+            "alphanumeric_character_count": self.alphanumeric_character_count,
+        }
 
 
 @dataclass(frozen=True, slots=True)
@@ -22,6 +77,14 @@ class ExtractedDocument:
     path: Path
     parser: str
     pages: tuple[ExtractedPage, ...]
+
+    @property
+    def scan_review_pages(self) -> tuple[int, ...]:
+        return tuple(page.page_number for page in self.pages if page.scan_review_required)
+
+    @property
+    def ocr_pages(self) -> tuple[int, ...]:
+        return tuple(page.page_number for page in self.pages if page.ocr_used)
 
 
 def _extract_text(path: Path) -> ExtractedDocument:

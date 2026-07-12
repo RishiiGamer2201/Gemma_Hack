@@ -13,7 +13,8 @@ manifests, downloaders, receipts, and processing code are versioned.
 - [x] Download the Legal Services Authorities Act and core NALSA/DSLSA rules and regulations.
 - [ ] Process all legal-aid PDFs for retrieval.
   - [x] Process digitally readable legal-aid PDFs.
-  - [ ] Add page-level OCR provenance and process the three scanned PDFs.
+  - [x] Add deterministic page-level scan-review and OCR provenance metadata.
+  - [ ] Process the three scanned PDFs with the local OCR pipeline.
 - [x] Snapshot the NCRB Sankalan IPC/BNS table with content validation and receipts.
 - [x] Snapshot NALSA schemes and the national directory with content validation and receipts.
 - [x] Snapshot the Delhi DLSA directory with content validation and receipts.
@@ -56,5 +57,7 @@ manifests, downloaders, receipts, and processing code are versioned.
 - [ ] Download Aalap for evaluation-only use after Hugging Face authentication.
 - [ ] Download bounded IndicVoices validation subsets for selected languages after authentication.
   - [x] Exclude the complete 745 GB corpus from the hackathon download scope.
+  - [x] Record that IndicVoices remains gated pending the user's terms acceptance.
+  - [x] Download a bounded CC-BY-4.0 FLEURS `hi_in` validation fallback at pinned revision `70bb2e84b976b7e960aa89f1c648e09c59f894dd` for the local ASR probe.
 
 Evaluation datasets must never enter the production legal index.
