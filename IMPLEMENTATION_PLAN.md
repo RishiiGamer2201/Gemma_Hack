@@ -10,7 +10,7 @@
 
 ### Core journey — must work end to end
 
-- [ ] Accept English, Hindi, and Hinglish text input.
+- [x] Accept English, Hindi, and Hinglish text input through the local intake interface.
 - [ ] Accept Hindi/English voice input and display the transcript before legal processing.
 - [ ] Accept a photo/PDF of an FIR, notice, summons, wage document, or rental document.
 - [ ] Extract a structured case summary: people, dates, location, dispute, documents, urgency, and missing facts.
@@ -107,7 +107,7 @@ Devil's Advocate / Rights Card / Checklist / Legal Aid / Community mode
 - [ ] Create `src/app.py` as the UI entry point.
 - [x] Create `src/config.py` for paths, model choice, limits, and feature flags.
 - [x] Create `src/models/` for Pydantic schemas.
-- [ ] Create `src/intake/` for text, voice, OCR, and fact extraction.
+- [x] Create `src/intake/` with deterministic text intake; voice and OCR remain pending.
 - [ ] Create `src/retrieval/` for chunking, BM25, vector search, filtering, and reranking.
 - [x] Create `src/legal_time/` for effective-date logic and IPC/BNS mapping.
 - [ ] Create `src/agents/` for researcher, strategist, verifier, and Devil's Advocate prompts.
@@ -264,18 +264,19 @@ Dependency: processed corpus
 
 Owner: Member A + Member C
 
-- [ ] Implement text language/script detection.
-- [ ] Normalize Hinglish carefully while preserving names, quoted text, dates, money, and section numbers.
+- [x] Implement deterministic English, Hindi, and Hinglish language/script detection.
+- [x] Normalize line endings while preserving names, quoted text, dates, money, and section numbers.
 - [ ] Implement local voice transcription.
 - [ ] Show the transcript and allow correction before extraction.
 - [ ] Implement digital PDF text extraction.
 - [ ] Implement OCR fallback for scanned PDFs/images.
 - [ ] Use Gemma vision to cross-check OCR and identify document type.
 - [ ] Preserve page references for extracted facts.
+- [x] Define a strict Pydantic intake schema for parties, dates, location, dispute, documents, urgency signals, and missing facts.
 - [ ] Extract structured facts using a strict Pydantic schema.
 - [ ] Ask only material missing questions.
-- [ ] Generate a simple-language restatement.
-- [ ] Block downstream legal answers until confirmation.
+- [x] Generate a deterministic simple-language restatement from explicit fields only.
+- [x] Block downstream retrieval and legal answers until explicit confirmation.
 - [ ] Allow the user to edit extracted facts directly.
 
 **Exit gate:** All three demo scenarios survive deliberate ASR/OCR mistakes because the user can correct facts before retrieval.
@@ -287,7 +288,7 @@ Owner: Member C with Member D review
 - [ ] Implement domain labels: criminal, labour, consumer, tenancy/property, constitutional, other.
 - [ ] Detect jurisdiction and ask when missing.
 - [ ] Detect incident date and ask when legally material.
-- [ ] Implement urgency signals: arrest/detention, violence, immediate eviction, expiring deadline, child safety, self-harm, medical emergency.
+- [x] Implement conservative, confirmation-required text urgency signals for arrest/detention, violence, immediate eviction, expiring deadline, child safety, self-harm, and medical emergency.
 - [ ] Implement power relationships without declaring the user legally “weak.”
 - [ ] Activate protective information for police/citizen, employer/worker, landlord/tenant, and abuser/survivor patterns.
 - [ ] Keep emergency and human-help routing ahead of general explanation.

@@ -18,9 +18,10 @@ The first implementation milestone provides:
 - a localhost-only optional Ollama adapter;
 - a command-line smoke-test application using a synthetic corpus;
 - a reviewed official-source manifest and hostile-network downloader;
-- receipt-verified local PDF extraction and deterministic section-aware JSONL builds.
+- receipt-verified local PDF extraction and deterministic section-aware JSONL builds;
 - a strict offline Delhi DLSA finder with NALSA and Tele-Law fallbacks;
-- validated evidence-preparation checklists for the three demo scenarios.
+- validated evidence-preparation checklists for the three demo scenarios;
+- deterministic English, Hindi, and Hinglish text intake with a hard confirmation gate.
 
 The fixture corpus is deliberately synthetic and must never be used for real legal
 answers. Official-source chunks remain marked `pending_human_review` until the corpus
@@ -40,6 +41,7 @@ python scripts/build_sankalan_candidates.py
 python scripts/build_legal_aid_directory.py
 python scripts/find_legal_aid.py --district "Rouse Avenue" --state Delhi
 python scripts/get_evidence_checklist.py --template unpaid_wages
+python scripts/process_text_intake.py --text "Mera rent deposit nahi mila" --domain tenancy_property --missing-fact "Incident date"
 ```
 
 Optional dependencies can later be installed with:

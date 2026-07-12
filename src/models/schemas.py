@@ -11,7 +11,15 @@ from datetime import date, datetime
 from enum import StrEnum
 from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl, model_validator
+from pydantic import (
+    AwareDatetime,
+    BaseModel,
+    ConfigDict,
+    Field,
+    HttpUrl,
+    StrictBool,
+    model_validator,
+)
 
 
 NonEmptyText = Annotated[str, Field(min_length=1, max_length=20_000)]
@@ -73,8 +81,8 @@ class ConfirmedFacts(StrictModel):
     material_facts: tuple[NonEmptyText, ...] = ()
     missing_material_facts: tuple[ShortText, ...] = ()
     input_language: Annotated[str, Field(min_length=2, max_length=35)] = "en"
-    confirmed: bool = False
-    confirmed_at: datetime | None = None
+    confirmed: StrictBool = False
+    confirmed_at: AwareDatetime | None = None
 
     @model_validator(mode="after")
     def confirmation_is_explicit_and_consistent(self) -> "ConfirmedFacts":
