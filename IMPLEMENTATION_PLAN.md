@@ -243,15 +243,17 @@ Dependency: processed corpus
 - [ ] Generate multilingual embeddings with EmbeddingGemma.
 - [ ] Build a FAISS index.
 - [x] Normalize section-number queries before search.
-- [ ] Expand IPC terms with reviewed BNS mappings.
-- [ ] Add Hindi/English legal-term synonym expansion.
-- [ ] Filter by jurisdiction, incident date, language, act status, and document type.
+- [x] Support IPC-term expansion only through caller-supplied, human-reviewed BNS aliases.
+- [x] Add opt-in reviewed Hindi/English legal-term synonym expansion.
+- [x] Filter by jurisdiction, incident date, language, act, status, and document type.
 - [x] Merge BM25 and dense results using reciprocal-rank fusion.
-- [ ] Deduplicate overlapping subsections.
+- [x] Deduplicate only provenance-compatible, genuinely overlapping subsections.
 - [x] Rerank the merged candidates.
 - [x] Return evidence bundles containing complete citation metadata.
-- [ ] Add a retrieval-debug view for development.
-- [ ] Cache embeddings and index versions using corpus hashes.
+- [x] Add an immutable retrieval-debug trace/API for development.
+- [ ] Add the retrieval-debug trace to the future UI.
+- [x] Generate deterministic corpus hashes and embedding version keys.
+- [ ] Persist and reuse embedding/index caches keyed by those hashes.
 
 **Retrieval exit gate:**
 

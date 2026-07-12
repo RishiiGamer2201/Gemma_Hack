@@ -65,7 +65,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--corpus", type=Path, default=DEFAULT_FIXTURE)
     parser.add_argument("--jurisdiction")
     parser.add_argument("--language")
+    parser.add_argument("--act")
     parser.add_argument("--status")
+    parser.add_argument("--document-type")
     parser.add_argument("--effective-on", type=date.fromisoformat)
     parser.add_argument("--limit", type=int, default=5)
     return parser
@@ -82,7 +84,9 @@ def run(argv: Sequence[str] | None = None) -> int:
     filters = SearchFilters(
         jurisdiction=args.jurisdiction,
         language=args.language,
+        act=args.act,
         status=args.status,
+        document_type=args.document_type,
         effective_on=args.effective_on,
     )
     results = retriever.search(args.query, limit=args.limit, filters=filters)

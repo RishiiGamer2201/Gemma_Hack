@@ -5,7 +5,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from src.app import load_documents
+from src.app import build_parser, load_documents
 
 
 class CorpusLoadingTests(unittest.TestCase):
@@ -57,6 +57,15 @@ class CorpusLoadingTests(unittest.TestCase):
         document = load_documents(self._write(json.dumps(payload)))[0]
         self.assertEqual(document.metadata["source_text"], "Exact official excerpt.")
         self.assertIn("Synthetic Act 7 Synthetic heading Exact official excerpt.", document.text)
+
+    def test_cli_exposes_act_and_document_type_filters(self) -> None:
+        args = build_parser().parse_args([
+            "--query", "section",
+            "--act", "Synthetic Act",
+            "--document-type", "statute",
+        ])
+        self.assertEqual(args.act, "Synthetic Act")
+        self.assertEqual(args.document_type, "statute")
 
 
 if __name__ == "__main__":

@@ -16,6 +16,16 @@ from typing import Any, Mapping
 DateLike = date | datetime | str
 
 
+def _freeze_metadata(value: Any) -> Any:
+    if isinstance(value, Mapping):
+        return MappingProxyType({key: _freeze_metadata(item) for key, item in value.items()})
+    if isinstance(value, (list, tuple)):
+        return tuple(_freeze_metadata(item) for item in value)
+    if isinstance(value, (set, frozenset)):
+        return frozenset(_freeze_metadata(item) for item in value)
+    return value
+
+
 def _as_date(value: DateLike | None, *, field_name: str) -> date | None:
     if value is None:
         return None
@@ -43,7 +53,7 @@ class RetrievalDocument:
         if not self.text.strip():
             raise ValueError("text must not be empty")
         # Copy first so callers cannot mutate provenance after indexing.
-        object.__setattr__(self, "metadata", MappingProxyType(dict(self.metadata)))
+        object.__setattr__(self, "metadata", _freeze_metadata(self.metadata))
 
 
 @dataclass(frozen=True, slots=True)
@@ -58,9 +68,17 @@ class SearchFilters:
     jurisdiction: str | None = None
     language: str | None = None
     status: str | None = None
+    act: str | None = None
+    document_type: str | None = None
     effective_on: DateLike | None = None
 
     def __post_init__(self) -> None:
+        for field_name in ("jurisdiction", "language", "status", "act", "document_type"):
+            value = getattr(self, field_name)
+            if value is not None and not isinstance(value, str):
+                raise TypeError(f"{field_name} filter must be a string")
+            if isinstance(value, str) and not value.strip():
+                raise ValueError(f"{field_name} filter must not be blank")
         object.__setattr__(
             self,
             "effective_on",
@@ -82,6 +100,10 @@ class SearchFilters:
         if not self._matches_text(metadata.get("language"), self.language):
             return False
         if not self._matches_text(metadata.get("status"), self.status):
+            return False
+        if not self._matches_text(metadata.get("act"), self.act):
+            return False
+        if not self._matches_text(metadata.get("document_type"), self.document_type):
             return False
 
         if self.effective_on is None:

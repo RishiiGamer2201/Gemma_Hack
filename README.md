@@ -23,6 +23,7 @@ The first implementation milestone provides:
 - validated evidence-preparation checklists for the three demo scenarios;
 - deterministic English, Hindi, and Hinglish text intake with a hard confirmation gate;
 - confirmed-facts safety and power routing with prompt-injection isolation.
+- provenance-safe retrieval expansion, deduplication, filters, hashes, and debug traces.
 
 The fixture corpus is deliberately synthetic and must never be used for real legal
 answers. Official-source chunks remain marked `pending_human_review` until the corpus

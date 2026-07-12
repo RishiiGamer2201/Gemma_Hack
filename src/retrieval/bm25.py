@@ -68,12 +68,14 @@ class BM25Index:
     ) -> list[RetrievalResult]:
         if limit < 0:
             raise ValueError("limit must not be negative")
+        if filters is not None and not isinstance(filters, SearchFilters):
+            raise TypeError("filters must be a SearchFilters instance")
         if limit == 0 or not self.documents:
             return []
         query_terms = tuple(dict.fromkeys(self.tokenizer(query)))
         if not query_terms and not include_zero_scores:
             return []
-        active_filters = filters or SearchFilters()
+        active_filters = filters if filters is not None else SearchFilters()
         scored: list[tuple[float, RetrievalDocument]] = []
 
         for position, document in enumerate(self.documents):
