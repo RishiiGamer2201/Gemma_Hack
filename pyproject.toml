@@ -15,6 +15,7 @@ dependencies = [
 
 [project.optional-dependencies]
 ui = ["streamlit>=1.40,<2"]
+corpus = ["pymupdf>=1.24,<2"]
 retrieval = [
   "faiss-cpu>=1.9,<2; python_version < '3.13'",
   "sentence-transformers>=3.3,<4",

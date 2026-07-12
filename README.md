@@ -16,11 +16,13 @@ The first implementation milestone provides:
 - date-aware IPC/BNS mapping primitives;
 - dependency-light BM25 and hybrid retrieval interfaces;
 - a localhost-only optional Ollama adapter;
-- a command-line smoke-test application using a synthetic corpus.
+- a command-line smoke-test application using a synthetic corpus;
+- a reviewed official-source manifest and hostile-network downloader;
+- receipt-verified local PDF extraction and deterministic section-aware JSONL builds.
 
 The fixture corpus is deliberately synthetic and must never be used for real legal
-answers. Production ingestion of official statutes is tracked in
-`IMPLEMENTATION_PLAN.md`.
+answers. Official-source chunks remain marked `pending_human_review` until the corpus
+audit in `IMPLEMENTATION_PLAN.md` is complete.
 
 ## Quick start
 
@@ -29,12 +31,14 @@ Python 3.11 or newer is required.
 ```powershell
 python -m src.app --query "old section mapping"
 python -m unittest discover -s tests -v
+python scripts/download_official_sources.py --manifest config/official_sources.json --list
+python scripts/build_corpus.py --manifest config/official_sources.json --raw-dir data/raw/official_law --output-dir data/processed/sections
 ```
 
 Optional dependencies can later be installed with:
 
 ```powershell
-uv sync --extra ui --extra retrieval --extra dev
+uv sync --extra corpus --extra ui --extra retrieval --extra dev
 ```
 
 Ollama is optional. When enabled, the adapter accepts only loopback hosts such as

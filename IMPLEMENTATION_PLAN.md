@@ -160,39 +160,39 @@ Blocker for: trustworthy answers
 ### Mandatory documents
 
 - [ ] Download Constitution of India 2026 — English.
-- [ ] Download Constitution of India 2026 — Hindi/English diglot.
-- [ ] Download BNS 2023 from MHA/India Code.
-- [ ] Download BNSS 2023 from MHA/India Code.
-- [ ] Download BSA 2023 from MHA/India Code.
+- [x] Download Constitution of India 2026 — Hindi/English diglot.
+- [x] Download BNS 2023 from MHA/India Code.
+- [x] Download BNSS 2023 from MHA/India Code.
+- [x] Download BSA 2023 from MHA/India Code.
 - [ ] Download Consumer Protection Act 2019 and relevant current rules.
 - [ ] Download Delhi Rent Control Act 1958 and record its applicability limitations.
-- [ ] Download Code on Wages 2019.
-- [ ] Download Code on Wages implementation material and Central Rules 2026.
+- [x] Download Code on Wages 2019.
+- [x] Download Code on Wages implementation material and Central Rules 2026.
 - [ ] Download current Ministry of Labour FAQs.
-- [ ] Download Legal Services Authorities Act 1987.
+- [x] Download Legal Services Authorities Act 1987.
 - [ ] Download NALSA free-legal-service regulations and eligibility material.
 - [ ] Snapshot the NALSA state authority directory.
 - [ ] Snapshot Delhi SLSA/DLSA contacts.
 - [ ] Record Tele-Law 14454 and official portal metadata.
-- [ ] Store official URL, download date, published/effective date, and SHA-256 for every source.
+- [x] Store official URL, download date, published/effective date, and SHA-256 for every downloaded source; retain explicit `null` where an effective date still needs review.
 
 ### Processing
 
-- [ ] Extract text while preserving page numbers and headings.
+- [x] Extract text while preserving page numbers and headings.
 - [ ] Detect scanned pages and flag OCR-derived text.
-- [ ] Split statutes by section/subsection, not arbitrary token windows.
+- [x] Split statutes by section boundaries, not arbitrary token windows.
 - [ ] Keep provisos, explanations, illustrations, schedules, and amendments attached correctly.
-- [ ] Generate stable `source_id` values.
-- [ ] Add metadata: jurisdiction, act, section, language, effective dates, status, priority, URL, page.
-- [ ] Mark Constitution priority 1; current core codes priority 2; supporting laws priority 3.
+- [x] Generate stable `source_id` values.
+- [x] Add metadata: jurisdiction, act, section, language, effective dates, status, priority, URL, page.
+- [x] Mark Constitution priority 1; current core codes priority 2; supporting laws priority 3.
 - [ ] Validate 20 random chunks against the original PDFs.
 - [ ] Have a second team member approve every act parser.
 
 ### Required chunk schema
 
-- [ ] Implement fields: `source_id`, `jurisdiction`, `act`, `section`, `heading`, `language`, `text`.
-- [ ] Implement fields: `effective_from`, `effective_to`, `status`, `priority`.
-- [ ] Implement fields: `official_url`, `page`, `retrieved_at`, `sha256`, `ocr_used`.
+- [x] Implement fields: `source_id`, `jurisdiction`, `act`, `section`, `heading`, `language`, `text`.
+- [x] Implement fields: `effective_from`, `effective_to`, `status`, `priority`.
+- [x] Implement fields: `official_url`, `page`, `retrieved_at`, `sha256`, `ocr_used`.
 
 **Corpus exit gate:** At least 95% of a 40-section audit has correct act, section, text boundaries, page, and source URL.
 
