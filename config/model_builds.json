@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "runtime": {
+    "name": "Ollama",
+    "version": "0.31.2",
+    "package_id": "Ollama.Ollama",
+    "endpoint": "http://127.0.0.1:11434"
+  },
+  "models": [
+    {
+      "role": "primary",
+      "tag": "gemma4:e4b-it-q4_K_M",
+      "expected_digest": "c6eb396dbd5992bbe3f5cdb947e8bbc0ee413d7c17e2beaae69f5d569cf982eb",
+      "expected_size_bytes": 9608350718,
+      "quantization": "Q4_K_M",
+      "official_registry_url": "https://ollama.com/library/gemma4:e4b-it-q4_K_M",
+      "official_model_card_url": "https://huggingface.co/google/gemma-4-E4B",
+      "license": "Apache-2.0"
+    },
+    {
+      "role": "fallback",
+      "tag": "gemma4:e2b-it-q4_K_M",
+      "expected_digest": "7fbdbf8f5e45a75bb122155ed546e765b4d9c53a1285f62fd9f506baa1c5a47e",
+      "expected_size_bytes": 7162405886,
+      "quantization": "Q4_K_M",
+      "official_registry_url": "https://ollama.com/library/gemma4:e2b-it-q4_K_M",
+      "official_model_card_url": "https://huggingface.co/google/gemma-4-E2B",
+      "license": "Apache-2.0"
+    }
+  ]
+}

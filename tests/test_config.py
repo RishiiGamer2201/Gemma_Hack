@@ -47,7 +47,8 @@ class ConfigurationTests(unittest.TestCase):
             for name in names:
                 os.environ.pop(name, None)
             settings = Settings.from_env()
-        self.assertEqual(settings.max_context_tokens, 4096)
+        self.assertEqual(settings.max_context_tokens, 8192)
+        self.assertEqual(settings.ollama_model, "gemma4:e4b-it-q4_K_M")
         self.assertEqual(settings.max_output_tokens, 1200)
 
 

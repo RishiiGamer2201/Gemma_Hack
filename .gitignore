@@ -15,3 +15,6 @@ Thumbs.db
 
 # Project-local third-party agent profiles (installed from contains-studio/agents)
 .agents/
+
+# Ephemeral local runtime logs and PID state
+.runtime/

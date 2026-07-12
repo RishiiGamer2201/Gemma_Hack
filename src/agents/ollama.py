@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import ipaddress
-from http.client import HTTPException
 import json
-import socket
-from typing import Any, Mapping
+from collections.abc import Mapping
+from dataclasses import dataclass
+from http.client import HTTPException
+from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
@@ -112,6 +112,8 @@ class OllamaClient:
         system: str | None = None,
         options: Mapping[str, Any] | None = None,
         format: str | Mapping[str, Any] | None = None,
+        keep_alive: str | int | None = None,
+        think: bool | None = None,
     ) -> OllamaResponse:
         if not model.strip():
             raise ValueError("model must not be empty")
@@ -126,18 +128,47 @@ class OllamaClient:
             payload["options"] = dict(options)
         if format is not None:
             payload["format"] = format
+        if keep_alive is not None:
+            payload["keep_alive"] = keep_alive
+        if think is not None:
+            payload["think"] = think
         response = self._post_json("/api/generate", payload)
         text = response.get("response")
         if not isinstance(text, str):
-            raise OllamaError(
-                "invalid_response", "Ollama response did not contain generated text"
-            )
+            raise OllamaError("invalid_response", "Ollama response did not contain generated text")
+        done = response.get("done")
+        if not isinstance(done, bool):
+            raise OllamaError("invalid_response", "Ollama response did not contain a boolean done")
         return OllamaResponse(
             text=text,
             model=str(response.get("model", model)),
-            done=bool(response.get("done", False)),
+            done=done,
             raw=response,
         )
+
+    def version(self) -> str:
+        """Return the version reported by the loopback-only runtime."""
+        response = self._get_json("/api/version")
+        version = response.get("version")
+        if not isinstance(version, str) or not version.strip():
+            raise OllamaError("invalid_response", "Ollama response did not contain a version")
+        return version.strip()
+
+    def list_models(self) -> tuple[dict[str, Any], ...]:
+        """Return installed model metadata from the local runtime."""
+        response = self._get_json("/api/tags")
+        models = response.get("models")
+        if not isinstance(models, list) or not all(isinstance(item, dict) for item in models):
+            raise OllamaError("invalid_response", "Ollama response did not contain a model list")
+        return tuple(models)
+
+    def _get_json(self, path: str) -> dict[str, Any]:
+        request = Request(
+            self.base_url + path,
+            headers={"Accept": "application/json"},
+            method="GET",
+        )
+        return self._open_json(request)
 
     def _post_json(self, path: str, payload: Mapping[str, Any]) -> dict[str, Any]:
         request = Request(
@@ -146,13 +177,28 @@ class OllamaClient:
             headers={"Content-Type": "application/json", "Accept": "application/json"},
             method="POST",
         )
+        return self._open_json(request)
+
+    def _open_json(self, request: Request) -> dict[str, Any]:
         try:
             with self._opener.open(request, timeout=self.timeout) as response:
                 declared_length = response.headers.get("Content-Length")
-                if declared_length and int(declared_length) > self.max_response_bytes:
-                    raise OllamaError(
-                        "response_too_large", "Ollama response exceeded the configured limit"
-                    )
+                if declared_length:
+                    try:
+                        parsed_length = int(declared_length)
+                    except ValueError as exc:
+                        raise OllamaError(
+                            "invalid_response", "Ollama returned an invalid Content-Length"
+                        ) from exc
+                    if parsed_length < 0:
+                        raise OllamaError(
+                            "invalid_response", "Ollama returned an invalid Content-Length"
+                        )
+                    if parsed_length > self.max_response_bytes:
+                        raise OllamaError(
+                            "response_too_large",
+                            "Ollama response exceeded the configured limit",
+                        )
                 body = response.read(self.max_response_bytes + 1)
         except OllamaError:
             raise
@@ -164,16 +210,14 @@ class OllamaClient:
                 status=exc.code,
                 details={"body": error_body},
             ) from exc
-        except (URLError, socket.timeout, TimeoutError, OSError, HTTPException) as exc:
+        except (URLError, TimeoutError, OSError, HTTPException) as exc:
             raise OllamaError(
                 "connection_error",
                 "Could not reach the local Ollama runtime",
                 details={"reason": str(exc)},
             ) from exc
         if len(body) > self.max_response_bytes:
-            raise OllamaError(
-                "response_too_large", "Ollama response exceeded the configured limit"
-            )
+            raise OllamaError("response_too_large", "Ollama response exceeded the configured limit")
         try:
             decoded = json.loads(body.decode("utf-8"))
         except (UnicodeDecodeError, json.JSONDecodeError) as exc:

@@ -48,13 +48,15 @@ class Settings:
     index_path: Path
 
     @classmethod
-    def from_env(cls) -> "Settings":
+    def from_env(cls) -> Settings:
         return cls(
             ollama_url=ensure_loopback_url(
                 os.getenv("NYAYA_OLLAMA_URL", "http://127.0.0.1:11434")
             ),
-            ollama_model=os.getenv("NYAYA_OLLAMA_MODEL", "gemma4:e4b").strip(),
-            max_context_tokens=_positive_int("NYAYA_MAX_CONTEXT_TOKENS", 4096),
+            ollama_model=os.getenv(
+                "NYAYA_OLLAMA_MODEL", "gemma4:e4b-it-q4_K_M"
+            ).strip(),
+            max_context_tokens=_positive_int("NYAYA_MAX_CONTEXT_TOKENS", 8192),
             max_output_tokens=_positive_int("NYAYA_MAX_OUTPUT_TOKENS", 1200),
             corpus_path=Path(os.getenv("NYAYA_CORPUS_PATH", "data/processed/sections")),
             index_path=Path(os.getenv("NYAYA_INDEX_PATH", "data/indexes")),

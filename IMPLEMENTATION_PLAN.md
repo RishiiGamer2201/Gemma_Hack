@@ -144,26 +144,26 @@ Owner: Member A
 Dependency: none
 Blocker for: agent pipeline and full UI
 
-- [ ] Record demo laptop CPU, RAM, GPU, VRAM, OS, and free disk space.
-- [ ] Install the approved local inference runtime.
-- [ ] Download Gemma 4 E4B Q4.
-- [ ] Download Gemma 4 E2B Q4 as a fallback.
-- [ ] Verify the exact model build and license.
-- [ ] Measure cold-start time.
-- [ ] Measure tokens/second for a 1K-token text prompt.
-- [ ] Measure peak RAM/VRAM for 2K, 4K, and 8K contexts.
-- [ ] Test Hindi, English, and Hinglish comprehension.
-- [ ] Test system-role and structured JSON output.
+- [x] Record demo laptop CPU, RAM, GPU, VRAM, OS, and free disk space.
+- [x] Install the approved local inference runtime.
+- [x] Download Gemma 4 E4B Q4.
+- [x] Download Gemma 4 E2B Q4 as a fallback.
+- [x] Verify the exact model build and license.
+- [x] Measure cold-start time.
+- [x] Measure tokens/second for a 1K-token text prompt.
+- [x] Measure peak RAM/VRAM for 2K, 4K, and 8K contexts.
+- [x] Test Hindi, English, and Hinglish comprehension.
+- [x] Test system-role and structured JSON output.
 - [ ] Test image input on one printed notice and one phone photograph.
 - [ ] Test Hindi/English audio or establish the ASR fallback.
-- [ ] Test sequential advocate → opponent → rebuttal calls.
-- [ ] Set production context/output limits based on measured memory.
-- [ ] Save results in `docs/model_feasibility.md`.
+- [x] Test sequential advocate → opponent → rebuttal calls.
+- [x] Set production context/output limits based on measured memory.
+- [x] Save results in `docs/model_feasibility.md`.
 
 **Acceptance gate:**
 
-- [ ] E4B produces valid structured output on the demo laptop without out-of-memory errors.
-- [ ] Normal answer latency is acceptable for a live demo.
+- [x] E4B produces valid structured output on the demo laptop without out-of-memory errors.
+- [x] Normal answer latency is acceptable for a live demo.
 - [ ] Devil's Advocate stages stream visibly instead of appearing frozen.
 - [ ] E2B fallback can complete every demo path if E4B is too slow.
 
