@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "source_id": "ncrb_sankalan_ipc_bns",
+      "title": "NCRB Sankalan Corresponding Section Table of BNS with IPC",
+      "url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_landing_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/Index.html",
+      "filename": "ncrb_sankalan_ipc_bns.html",
+      "category": "mapping",
+      "required_text": ["Corresponding Section Table", "Indian Penal Code, 1860"],
+      "allowed_hosts": ["cytrain.ncrb.gov.in"]
+    },
+    {
+      "source_id": "nalsa_schemes",
+      "title": "NALSA Preventive and Strategic Legal Services Schemes",
+      "url": "https://nalsa.gov.in/preventive-strategic-legal-services-schemes/",
+      "official_landing_url": "https://nalsa.gov.in/",
+      "filename": "nalsa_schemes.html",
+      "category": "legal_aid",
+      "required_text": ["Preventive &amp; Strategic Legal Services Schemes"],
+      "allowed_hosts": ["nalsa.gov.in"]
+    },
+    {
+      "source_id": "nalsa_directory",
+      "title": "National Legal Services Authority Directory",
+      "url": "https://nalsa.gov.in/directory/",
+      "official_landing_url": "https://nalsa.gov.in/",
+      "filename": "nalsa_directory.html",
+      "category": "directory",
+      "required_text": ["List of Names and Addresses", "State Legal Services Authorities"],
+      "allowed_hosts": ["nalsa.gov.in"]
+    },
+    {
+      "source_id": "dslsa_directory",
+      "title": "Delhi State Legal Services Authority Directory",
+      "url": "https://delhi.nalsa.gov.in/directory/",
+      "official_landing_url": "https://delhi.nalsa.gov.in/",
+      "filename": "dslsa_directory.html",
+      "category": "directory",
+      "required_text": ["Secretary, Central DLSA", "Secretary, South DLSA"],
+      "allowed_hosts": ["delhi.nalsa.gov.in"]
+    },
+    {
+      "source_id": "tele_law_pib_2026",
+      "title": "Department of Justice Tele-Law Programme Information",
+      "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2227725&lang=1&reg=3",
+      "official_landing_url": "https://www.pib.gov.in/",
+      "filename": "tele_law_pib_2026.html",
+      "category": "legal_aid",
+      "required_text": ["Tele-Law", "14454"],
+      "allowed_hosts": ["www.pib.gov.in"]
+    },
+    {
+      "source_id": "legislative_publications",
+      "title": "Legislative Department Publications and Legal Glossary Portal",
+      "url": "https://www.legislative.gov.in/documents/publications",
+      "official_landing_url": "https://www.legislative.gov.in/",
+      "filename": "legislative_publications.html",
+      "category": "glossary",
+      "required_text": ["Legal Glossary"],
+      "allowed_hosts": ["www.legislative.gov.in"]
+    },
+    {
+      "source_id": "constitution_regional_languages",
+      "title": "Constitution of India in Regional Languages Portal",
+      "url": "https://www.legislative.gov.in/department/our-division/details/dummy-cTO3kTMtQWa",
+      "official_landing_url": "https://www.legislative.gov.in/documents/constitution-of-india/constitution-of-india-AjN2EjMtQWa?pageTitle=Constitution-of-India",
+      "filename": "constitution_regional_languages.html",
+      "category": "regional_language",
+      "required_text": ["Constitution of India in Regional Languages"],
+      "allowed_hosts": ["www.legislative.gov.in"]
+    }
+  ]
+}

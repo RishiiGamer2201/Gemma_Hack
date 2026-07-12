@@ -2,6 +2,11 @@
 
 Owner: **Member B (Data + RAG)** · Supports Phase 2 of [PLAN.md](PLAN.md)
 
+> Implementation note (2026-07-12): the active acquisition layout and verified
+> status are documented in `docs/DATASET_STATUS.md`. The secure manifests now use
+> `data/raw/official_law`, `data/raw/official_web`, and `data/raw/evaluation`; older
+> paths below are retained as historical setup guidance.
+
 ## Folder layout (create this first)
 
 All data lives under `data/` in this repo. Large files stay local — they are git-ignored; only scripts and this guide get committed.

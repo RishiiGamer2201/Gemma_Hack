@@ -32,7 +32,10 @@ Python 3.11 or newer is required.
 python -m src.app --query "old section mapping"
 python -m unittest discover -s tests -v
 python scripts/download_official_sources.py --manifest config/official_sources.json --list
+python scripts/download_official_snapshots.py --manifest config/official_web_sources.json --list
 python scripts/build_corpus.py --manifest config/official_sources.json --raw-dir data/raw/official_law --output-dir data/processed/sections
+python scripts/build_sankalan_candidates.py
+python scripts/build_legal_aid_directory.py
 ```
 
 Optional dependencies can later be installed with:

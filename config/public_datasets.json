@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "datasets": [
+    {
+      "dataset_id": "il_tur_full",
+      "repository": "Exploration-Lab/IL-TUR",
+      "revision": "d16219ad0423cc181ec8460d930fd10a907664b6",
+      "output_directory": "il_tur_full",
+      "purpose": "Evaluation only; never a citizen-facing legal authority"
+    },
+    {
+      "dataset_id": "indian_legal_qa_full",
+      "repository": "Techmaestro369/indian-legal-texts-finetuning",
+      "revision": "653a6e3fcf03b7d587e44d7a5ed09358c5bc660c",
+      "output_directory": "indian_legal_qa_full",
+      "purpose": "Evaluation only; use Constitution QA subset by default because IPC and CrPC are historical"
+    }
+  ]
+}

@@ -113,7 +113,7 @@ Devil's Advocate / Rights Card / Checklist / Legal Aid / Community mode
 - [ ] Create `src/agents/` for researcher, strategist, verifier, and Devil's Advocate prompts.
 - [ ] Create `src/tools/` for legal aid, Rights Card, checklist, and document explanation.
 - [x] Create `src/workflow/` for the deterministic state machine.
-- [ ] Create `scripts/` for corpus download/import/index/evaluation commands.
+- [x] Create `scripts/` for corpus download/import/index/evaluation commands.
 - [x] Create `tests/` with unit, retrieval, and end-to-end fixtures.
 - [ ] Create `data/raw/`, `data/processed/`, and `data/indexes/`; retain them in `.gitignore`.
 - [x] Add `.env.example` containing only non-secret configuration keys.
@@ -159,7 +159,7 @@ Blocker for: trustworthy answers
 
 ### Mandatory documents
 
-- [ ] Download Constitution of India 2026 — English.
+- [x] Download Constitution of India 2026 — English.
 - [x] Download Constitution of India 2026 — Hindi/English diglot.
 - [x] Download BNS 2023 from MHA/India Code.
 - [x] Download BNSS 2023 from MHA/India Code.
@@ -168,12 +168,12 @@ Blocker for: trustworthy answers
 - [ ] Download Delhi Rent Control Act 1958 and record its applicability limitations.
 - [x] Download Code on Wages 2019.
 - [x] Download Code on Wages implementation material and Central Rules 2026.
-- [ ] Download current Ministry of Labour FAQs.
+- [x] Download current Ministry of Labour FAQs.
 - [x] Download Legal Services Authorities Act 1987.
-- [ ] Download NALSA free-legal-service regulations and eligibility material.
-- [ ] Snapshot the NALSA state authority directory.
-- [ ] Snapshot Delhi SLSA/DLSA contacts.
-- [ ] Record Tele-Law 14454 and official portal metadata.
+- [x] Download NALSA free-legal-service regulations and eligibility material.
+- [x] Snapshot the NALSA state authority directory.
+- [x] Snapshot Delhi SLSA/DLSA contacts.
+- [x] Record Tele-Law 14454 and official portal metadata.
 - [x] Store official URL, download date, published/effective date, and SHA-256 for every downloaded source; retain explicit `null` where an effective date still needs review.
 
 ### Processing
@@ -201,7 +201,7 @@ Blocker for: trustworthy answers
 Owner: Member B with Member D review
 Dependency: official criminal-law corpus
 
-- [ ] Obtain NCRB Sankalan old/new-law comparison material.
+- [x] Obtain NCRB Sankalan old/new-law comparison material.
 - [ ] Select 50 high-value IPC sections for the first mapping set.
 - [ ] Include sections relevant to theft, cheating, breach of trust, assault, harassment, intimidation, public-order offences, and document scenarios.
 - [x] Store old code/section and new code/section.
@@ -209,7 +209,7 @@ Dependency: official criminal-law corpus
 - [x] Store change notes rather than claiming every mapping is one-to-one.
 - [x] Store official evidence and reviewer identity for each mapping.
 - [x] Add `incident_date_required` and effective-date fields.
-- [ ] Implement lookup by “IPC 420,” “section 420,” offence name, and plain-language description.
+- [x] Implement lookup by “IPC 420,” “section 420,” offence name, and plain-language description.
 - [x] Return both historical and current provisions when the date is unknown.
 - [x] Require a date clarification before applying the mapping to a real situation.
 - [ ] Unit-test every curated mapping.
@@ -220,11 +220,11 @@ Dependency: official criminal-law corpus
 
 Owner: Member B with Member C integration
 
-- [ ] Define contact schema: authority, state, district, address, phone, email, URL, verified date.
-- [ ] Build the Delhi DLSA offline contact dataset.
+- [x] Define contact schema: authority, state, district, address, phone, email, URL, verified date.
+- [x] Build the Delhi DLSA offline contact dataset; flag missing postal addresses for review.
 - [ ] Add NALSA/SLSA fallback routing for districts outside Delhi.
-- [ ] Add Tele-Law 14454 as the universal fallback.
-- [ ] Record that contacts are time-sensitive and display “last verified.”
+- [x] Add Tele-Law 14454 as the universal fallback.
+- [x] Record that contacts are time-sensitive and display “last verified.”
 - [ ] Create evidence-checklist templates for the three demo scenarios.
 - [ ] Create safe deadline records only from official legislation/rules.
 - [ ] Add `source_id` and effective date to every deadline record.
