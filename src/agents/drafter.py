@@ -41,6 +41,60 @@ DRAFTER_SYSTEM = (
 )
 
 
+def _string_list(description: str) -> dict[str, object]:
+    return {"type": "array", "items": {"type": "string"}, "description": description}
+
+
+# Ollama compiles `format` into a sampling grammar and cannot resolve the
+# "$defs"/"$ref" indirection that Pydantic emits, failing with "failed to parse
+# grammar". The schema is therefore declared flat here. The model's output is still
+# validated against StructuredLegalAnswer, so this constrains generation without
+# weakening the contract.
+ANSWER_SCHEMA: dict[str, object] = {
+    "type": "object",
+    "properties": {
+        "situation": {"type": "string"},
+        "applicable_law": _string_list("Acts and sections drawn only from the excerpts."),
+        "rights": _string_list("What the person may do, grounded in the excerpts."),
+        "options": _string_list("Available courses of action."),
+        "evidence_to_preserve": _string_list("Documents and records to keep."),
+        "deadlines": _string_list("Only deadlines stated in the excerpts."),
+        "consequences_of_inaction": _string_list("Only consequences stated in the excerpts."),
+        "next_steps": _string_list("Concrete next steps."),
+        "limitations": _string_list("What this answer cannot tell them."),
+        "claims": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "claim_id": {"type": "string"},
+                    "text": {"type": "string"},
+                    "cited_source_ids": {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {"type": "string"},
+                    },
+                },
+                "required": ["claim_id", "text", "cited_source_ids"],
+            },
+        },
+    },
+    "required": [
+        "situation",
+        "applicable_law",
+        "rights",
+        "options",
+        "evidence_to_preserve",
+        "deadlines",
+        "consequences_of_inaction",
+        "next_steps",
+        "limitations",
+        "claims",
+    ],
+}
+
+
 class DraftError(RuntimeError):
     """A bounded failure while drafting a grounded answer."""
 
@@ -113,7 +167,7 @@ def draft_answer(
                 "num_predict": max_output_tokens,
                 "num_ctx": context_tokens,
             },
-            format=StructuredLegalAnswer.model_json_schema(),
+            format=ANSWER_SCHEMA,
             keep_alive="10m",
             think=False,
         )
