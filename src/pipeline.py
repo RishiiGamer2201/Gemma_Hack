@@ -18,7 +18,12 @@ from dataclasses import dataclass, field
 
 from src.agents.drafter import DraftError, draft_answer
 from src.agents.ollama import OllamaClient
-from src.agents.researcher import EvidenceBundle, ResearchError, retrieve_evidence
+from src.agents.researcher import (
+    MAX_EVIDENCE,
+    EvidenceBundle,
+    ResearchError,
+    retrieve_evidence,
+)
 from src.agents.verifier import VerificationError, unsupported_claims, verify_answer
 from src.intake import UrgencyCategory, process_text_intake
 from src.intake.models import TextIntakeResult
@@ -115,36 +120,44 @@ def run_confirmed_request(
             bundle=bundle,
         )
 
-    workflow.start_retrieval()
-    workflow.complete_retrieval(bundle.evidence)
-    workflow.start_drafting()
-
+    # Draft, verify, and — if a claim could not be supported — repair once, before
+    # anything is submitted to the workflow. A single unsupported claim used to
+    # withhold the whole answer, which threw away everything the sources *did*
+    # support. The repair pass tells the model exactly what failed and requires it to
+    # drop that, so the retry can only ever say less.
+    #
+    # The gates are unchanged: whatever survives is submitted to the workflow, and
+    # publication still requires every remaining claim to be verified as supported.
+    repair_notes: list[str] = []
     try:
-        answer = draft_answer(
-            client, model=model, facts=facts, evidence=bundle.evidence
+        bundle, answer, verifications = _draft_verify_repair(
+            client,
+            model=model,
+            facts=facts,
+            documents=documents,
+            bundle=bundle,
+            approved_profiles=approved_profiles,
+            evidence_limit=evidence_limit,
+            repair_notes=repair_notes,
         )
     except DraftError as exc:
         return _abstain(workflow, route, f"A grounded answer could not be drafted: {exc}", bundle)
-
-    snapshot = workflow.submit_draft(answer)
-
-    try:
-        verifications = verify_answer(
-            client, model=model, answer=answer, evidence=bundle.evidence
-        )
     except VerificationError as exc:
-        return _abstain(
-            workflow, route, f"The answer could not be verified: {exc}", bundle, answer
-        )
+        return _abstain(workflow, route, f"The answer could not be verified: {exc}", bundle)
 
+    workflow.start_retrieval()
+    workflow.complete_retrieval(bundle.evidence)
+    workflow.start_drafting()
+    workflow.submit_draft(answer)
     snapshot = workflow.complete_verification(verifications)
 
-    warnings = list(bundle.warnings)
+    warnings = [*bundle.warnings, *repair_notes]
     if snapshot.stage is WorkflowStage.ABSTAINED:
         failed = unsupported_claims(answer, verifications)
         warnings.append(
-            f"{len(failed)} claim(s) were not supported by the retrieved official "
-            "sources and the answer was withheld rather than shown."
+            f"{len(failed)} claim(s) still could not be supported by the retrieved "
+            "official sources after a second attempt, so the answer was withheld "
+            "rather than shown."
         )
         return PipelineResult(
             stage=snapshot.stage,
@@ -166,6 +179,65 @@ def run_confirmed_request(
         verifications=verifications,
         warnings=tuple(warnings),
     )
+
+
+def _draft_verify_repair(
+    client: OllamaClient,
+    *,
+    model: str,
+    facts: ConfirmedFacts,
+    documents: Sequence[RetrievalDocument],
+    bundle: EvidenceBundle,
+    approved_profiles: frozenset[str],
+    evidence_limit: int,
+    repair_notes: list[str],
+) -> tuple[EvidenceBundle, StructuredLegalAnswer, tuple[ClaimVerification, ...]]:
+    """Draft and verify, with exactly one repair attempt. Never more than one."""
+
+    answer = draft_answer(client, model=model, facts=facts, evidence=bundle.evidence)
+    verifications = verify_answer(
+        client, model=model, answer=answer, evidence=bundle.evidence
+    )
+    failed = unsupported_claims(answer, verifications)
+    if not failed:
+        return bundle, answer, verifications
+
+    # One constrained re-retrieval: widen the evidence slightly in case the claim was
+    # sound but its supporting provision simply was not retrieved. If widening fails,
+    # keep what we have and still attempt the repair draft.
+    wider = bundle
+    if evidence_limit < MAX_EVIDENCE:
+        try:
+            candidate = retrieve_evidence(
+                facts,
+                documents,
+                approved_profiles=approved_profiles,
+                limit=min(MAX_EVIDENCE, evidence_limit + 2),
+            )
+            if candidate.evidence:
+                wider = candidate
+        except ResearchError:
+            wider = bundle
+
+    reasons = {item.claim_id: item.reason for item in verifications}
+    rejected = tuple((claim.text, reasons.get(claim.claim_id, "unsupported")) for claim in failed)
+
+    repaired = draft_answer(
+        client,
+        model=model,
+        facts=facts,
+        evidence=wider.evidence,
+        rejected_claims=rejected,
+    )
+    repaired_verifications = verify_answer(
+        client, model=model, answer=repaired, evidence=wider.evidence
+    )
+    repair_notes.append(
+        f"{len(failed)} statement(s) in the first draft could not be supported by the "
+        "official sources and were removed; the answer was rewritten using only what "
+        "the sources support."
+    )
+    return wider, repaired, repaired_verifications
 
 
 def _as_unconfirmed(facts: ConfirmedFacts) -> ConfirmedFacts:

@@ -147,11 +147,19 @@ def test_a_verified_answer_is_published_with_its_verdicts(client_factory) -> Non
     assert body["evidence"][0]["section"] == "17"
 
 
-def test_an_unsupported_claim_is_not_sent_to_the_client_at_all(client_factory) -> None:
-    """A withheld answer must not travel over the wire, where it could still render."""
+def test_a_claim_failing_twice_is_not_sent_to_the_client_at_all(client_factory) -> None:
+    """A withheld answer must not travel over the wire, where it could still render.
+
+    The pipeline repairs once. A claim that fails verification again is withheld.
+    """
 
     client, _ = client_factory(
-        [draft("You are owed three months' compensation."), verdict("insufficient", [])]
+        [
+            draft("You are owed three months' compensation."),
+            verdict("insufficient", []),
+            draft("You are owed three months' compensation."),
+            verdict("insufficient", []),
+        ]
     )
     body = client.post("/api/answer", json={"facts": CONFIRMED, "limit": 1}).json()
 
@@ -161,7 +169,7 @@ def test_an_unsupported_claim_is_not_sent_to_the_client_at_all(client_factory) -
     assert body["claims"] == []
     # The retrieved sources remain available; only the unverified prose is withheld.
     assert len(body["evidence"]) == 1
-    assert any("not supported" in warning for warning in body["warnings"])
+    assert any("could not be supported" in warning for warning in body["warnings"])
 
 
 def test_confirmed_urgency_never_calls_the_model(client_factory) -> None:

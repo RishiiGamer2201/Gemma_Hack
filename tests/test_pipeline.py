@@ -22,9 +22,11 @@ class FakeClient:
     def __init__(self, responses: list[str]) -> None:
         self._responses = responses
         self.calls = 0
+        self.prompts: list[str] = []
 
     def generate(self, **kwargs: Any) -> OllamaResponse:
         self.calls += 1
+        self.prompts.append(str(kwargs.get("prompt", "")))
         return OllamaResponse(
             text=self._responses.pop(0), model=kwargs["model"], done=True, raw={}
         )
@@ -138,9 +140,13 @@ def test_full_journey_publishes_only_a_verified_answer() -> None:
     assert result.evidence_bundle.evidence[0].section == "17"
 
 
-def test_unsupported_claim_withholds_the_answer() -> None:
+def test_a_claim_that_fails_twice_withholds_the_answer() -> None:
+    """The repair pass gets one chance. A claim that fails again is never published."""
+
     client = FakeClient(
         [
+            draft("You are entitled to compensation of three months' wages."),
+            verdict("insufficient", []),
             draft("You are entitled to compensation of three months' wages."),
             verdict("insufficient", []),
         ]
@@ -151,7 +157,8 @@ def test_unsupported_claim_withholds_the_answer() -> None:
 
     assert result.published is False
     assert result.stage is WorkflowStage.ABSTAINED
-    assert any("not supported" in warning for warning in result.warnings)
+    assert result.answer is not None  # withheld, not shown
+    assert any("could not be supported" in warning for warning in result.warnings)
 
 
 def test_confirmed_urgency_routes_to_human_help_before_any_retrieval() -> None:
@@ -215,3 +222,51 @@ def test_empty_retrieval_abstains_instead_of_answering_from_memory() -> None:
 
     assert result.stage is WorkflowStage.ABSTAINED
     assert client.calls == 0
+
+
+def test_an_unsupported_claim_is_repaired_and_the_rest_still_publishes() -> None:
+    """One bad claim must not throw away everything the sources did support."""
+
+    client = FakeClient(
+        [
+            # First draft: one supportable claim plus one that is not.
+            draft("You are entitled to three months' compensation."),
+            verdict("insufficient", []),
+            # Repair draft: the unsupported assertion is dropped.
+            draft("Wages must be paid within the wage period."),
+            verdict("supported", ["code_on_wages_2019_en:section-17"]),
+        ]
+    )
+    result = run_confirmed_request(
+        facts(), [wage_document()], client=client, model="gemma4"
+    )
+
+    assert result.published is True
+    assert result.verifications[0].verdict.value == "supported"
+    assert any("were removed" in warning for warning in result.warnings)
+    # The repair prompt must name the rejected claim so the model drops it.
+    repair_prompt = client.prompts[2]
+    assert "three months' compensation" in repair_prompt
+    assert "Do NOT repeat those statements" in repair_prompt
+
+
+def test_the_repair_runs_at_most_once_then_abstains() -> None:
+    """A second failure must abstain, not loop. The retry can only ever say less."""
+
+    client = FakeClient(
+        [
+            draft("You are entitled to compensation."),
+            verdict("insufficient", []),
+            draft("You are still entitled to compensation."),
+            verdict("insufficient", []),
+        ]
+    )
+    result = run_confirmed_request(
+        facts(), [wage_document()], client=client, model="gemma4"
+    )
+
+    assert result.published is False
+    assert result.stage is WorkflowStage.ABSTAINED
+    assert any("after a second attempt" in warning for warning in result.warnings)
+    # Exactly two drafts and two verifications: no third attempt.
+    assert client.calls == 4

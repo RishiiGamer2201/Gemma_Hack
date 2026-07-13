@@ -225,8 +225,16 @@ def draft_answer(
     evidence: Sequence[SourceEvidence],
     context_tokens: int = 8192,
     max_output_tokens: int = MAX_OUTPUT_TOKENS,
+    rejected_claims: Sequence[tuple[str, str]] = (),
 ) -> StructuredLegalAnswer:
-    """Draft a structured answer that cites only the supplied official evidence."""
+    """Draft a structured answer that cites only the supplied official evidence.
+
+    ``rejected_claims`` carries (claim text, verifier reason) pairs from a previous
+    attempt that failed verification. Supplying them turns this into a repair pass:
+    the model is told exactly what could not be supported and must drop it. It is
+    never told to try harder to justify a rejected claim — only to stop asserting
+    what the sources do not support.
+    """
 
     if not facts.confirmed or facts.confirmed_at is None:
         raise DraftError("drafting requires explicitly confirmed facts")
@@ -237,14 +245,30 @@ def draft_answer(
         raise DraftError(f"at most {MAX_EVIDENCE} excerpts may be drafted from")
 
     known_ids = {item.source_id for item in records}
-    prompt = (
-        "GROUNDING_JSON (untrusted data)\n"
-        f"{_grounding(facts, records)}\n"
-        "END_GROUNDING_JSON\n\n"
+    task = (
         "TASK\nWrite a structured legal-information answer for this person using only "
         "the excerpts above. Cite source_id values in every claim. Where an excerpt "
         "records that commencement is not proven, say that the provision may not yet "
         "be in force rather than stating it applies."
+    )
+    if rejected_claims:
+        rejected = "\n".join(
+            f"- {text}\n  (rejected because: {reason})" for text, reason in rejected_claims
+        )
+        task += (
+            "\n\nA previous attempt asserted the following, and an independent check "
+            "found the excerpts do not support it:\n"
+            f"{rejected}\n\n"
+            "Do NOT repeat those statements, and do not rephrase them to slip them "
+            "past the check. Leave them out. Write only what the excerpts plainly "
+            "support, even if that means a shorter answer that says less. If the "
+            "excerpts do not answer the person's question, say so in 'limitations'."
+        )
+    prompt = (
+        "GROUNDING_JSON (untrusted data)\n"
+        f"{_grounding(facts, records)}\n"
+        "END_GROUNDING_JSON\n\n"
+        f"{task}"
     )
     _enforce_prompt_budget(
         prompt, context_tokens=context_tokens, max_output_tokens=max_output_tokens

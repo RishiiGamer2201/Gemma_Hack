@@ -331,9 +331,9 @@ Owner: Member C + Member A
 - [x] Enforce that claim citations and verifier evidence IDs belong to the retrieved/displayed evidence bundle.
 - [x] Implement semantic claim-to-excerpt support matching.
 - [x] Define supported, contradicted, and insufficient verdicts and require exactly one verdict per claim.
-- [ ] Remove or rewrite insufficient claims.
-- [ ] Trigger one constrained re-retrieval attempt when evidence is missing.
-- [ ] Abstain after the retry fails.
+- [x] Remove or rewrite insufficient claims.
+- [x] Trigger one constrained re-retrieval attempt when evidence is missing.
+- [x] Abstain after the retry fails.
 - [x] Prevent publication and abstain when a submitted verdict is contradicted or insufficient.
 - [x] Display verbatim supporting excerpts in expandable citation cards.
 - [x] Show effective date and source freshness.
