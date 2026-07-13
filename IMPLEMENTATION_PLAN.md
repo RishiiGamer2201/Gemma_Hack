@@ -39,7 +39,7 @@ hardware, evaluation, or end-to-end demo gates from backend primitives alone.
 - [x] Rights Card image generator with section citations, helplines, disclaimer, and QR link.
 - [ ] “What happens if I do nothing?” citation-grounded consequence explanation.
 - [x] Power-role protection prompts for tenant/landlord, worker/employer, and citizen/police situations.
-- [ ] Community Elder / Panchayat Bridge explanation for a trusted intermediary.
+- [x] Community Elder / Panchayat Bridge explanation for a trusted intermediary.
 - [x] Legal Aid Finder using offline NALSA/DLSA snapshots and Tele-Law fallback.
 - [ ] Extend the Legal Aid Finder with state-specific SLSA snapshots.
 - [x] Evidence/action preparation checklist tailored to the three demo case types.
@@ -124,7 +124,7 @@ Devil's Advocate / Rights Card / Checklist / Legal Aid / Community mode
 - [x] Add the concrete EmbeddingGemma/FAISS vector implementation to `src/retrieval/`.
 - [x] Create `src/legal_time/` for effective-date logic and IPC/BNS mapping.
 - [x] Create `src/agents/` for researcher, strategist, verifier, and Devil's Advocate prompts.
-- [ ] Create `src/tools/` for legal aid, Rights Card, checklist, and document explanation.
+- [x] Create `src/tools/` for legal aid, Rights Card, checklist, and document explanation.
 - [x] Create `src/workflow/` for the deterministic state machine.
 - [x] Create `scripts/` for corpus download/import and implemented local feature commands.
 - [ ] Add index-building and evaluation commands to `scripts/`. (`scripts/build_index.py` done; evaluation command pending the Phase L golden set.)
@@ -376,11 +376,11 @@ Owner: Member C + Member A
 
 ### Community Elder / Panchayat Bridge
 
-- [ ] Generate a respectful third-person explanation.
-- [ ] Explain what help the user is requesting from the intermediary.
-- [ ] Preserve legal citations and next steps.
-- [ ] Remove sensitive details unless the user explicitly includes them.
-- [ ] State that informal mediation cannot override legal rights or urgent safety needs.
+- [x] Generate a respectful third-person explanation.
+- [x] Explain what help the user is requesting from the intermediary.
+- [x] Preserve legal citations and next steps.
+- [x] Remove sensitive details unless the user explicitly includes them.
+- [x] State that informal mediation cannot override legal rights or urgent safety needs.
 
 ### Legal Aid Finder and checklist
 

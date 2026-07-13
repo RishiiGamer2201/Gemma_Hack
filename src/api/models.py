@@ -193,6 +193,26 @@ class RightsCardRequest(ApiModel):
     limit: Annotated[int, Field(ge=1, le=MAX_EVIDENCE)] = 4
 
 
+class CommunityRequest(ApiModel):
+    """Build a third-person intermediary brief from a published answer."""
+
+    facts: ConfirmedFacts
+    approved_profiles: tuple[Annotated[str, Field(pattern=r"^[a-z0-9_]+$")], ...] = ()
+    include_sensitive: bool = False
+    limit: Annotated[int, Field(ge=1, le=MAX_EVIDENCE)] = 4
+
+
+class CommunityResponse(ApiModel):
+    heading: str
+    what_help_is_needed: str
+    situation: str
+    rights: tuple[str, ...]
+    next_steps: tuple[str, ...]
+    citations: tuple[str, ...]
+    caveats: tuple[str, ...]
+    text: str
+
+
 # -------------------------------------------------------------------------- legal aid
 
 

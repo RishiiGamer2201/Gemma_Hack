@@ -272,6 +272,25 @@ export async function streamDevilsAdvocate(
   }
 }
 
+export interface CommunityResponse {
+  heading: string;
+  what_help_is_needed: string;
+  situation: string;
+  rights: string[];
+  next_steps: string[];
+  citations: string[];
+  caveats: string[];
+  text: string;
+}
+
+/** Build a third-person intermediary brief from a published case. */
+export function postCommunity(
+  payload: { facts: ConfirmedFacts; approved_profiles?: string[]; limit?: number },
+  signal?: AbortSignal,
+): Promise<CommunityResponse> {
+  return postJson<CommunityResponse>("/api/community", payload, signal);
+}
+
 /** Fetch a Rights Card PNG for a published case. Returns an object URL to revoke. */
 export async function postRightsCard(
   payload: {

@@ -52,6 +52,7 @@ from src.pipeline import PipelineError, run_confirmed_request
 from src.retrieval import CorpusLoadError
 from src.retrieval.collections import CollectionError
 from src.safety import SafetyRouteDecision, route_confirmed_case
+from src.tools.community import build_community_explanation
 from src.tools.rights_card import RightsCardContent, RightsCardError, render_rights_card
 from src.workflow import WorkflowError
 
@@ -60,6 +61,8 @@ from .models import (
     AnswerResponse,
     ChecklistListResponse,
     ClaimView,
+    CommunityRequest,
+    CommunityResponse,
     DelhiRentRequest,
     DevilsAdvocateRequest,
     ErrorResponse,
@@ -562,6 +565,54 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
                 temp_path.unlink(missing_ok=True)
             except OSError:
                 pass
+
+    @app.post(
+        "/api/community",
+        response_model=CommunityResponse,
+        responses=_ERROR_RESPONSES,
+        tags=["answer"],
+    )
+    async def community(payload: CommunityRequest) -> CommunityResponse:
+        """Reformat a verified answer as a brief for a trusted intermediary.
+
+        Built deterministically from a published answer: every legal sentence was
+        already verified, so reformatting cannot introduce a new claim. Personal
+        identifiers are dropped by default.
+        """
+
+        _require_confirmed(payload.facts)
+        documents = state.documents_for_domain(payload.facts.domain)
+        result = run_confirmed_request(
+            payload.facts,
+            documents,
+            client=state.model_client(),
+            model=state.settings.ollama_model,
+            approved_profiles=frozenset(payload.approved_profiles),
+            evidence_limit=payload.limit,
+        )
+        if not result.published or result.answer is None or result.evidence_bundle is None:
+            raise ApiError(
+                409,
+                "not_verified",
+                "A community explanation summarises a verified answer. This case did not "
+                f"produce one (stage: {result.stage.value}).",
+            )
+        brief = build_community_explanation(
+            result.answer,
+            result.evidence_bundle.evidence,
+            include_sensitive=payload.include_sensitive,
+            warnings=result.warnings,
+        )
+        return CommunityResponse(
+            heading=brief.heading,
+            what_help_is_needed=brief.what_help_is_needed,
+            situation=brief.situation,
+            rights=brief.rights,
+            next_steps=brief.next_steps,
+            citations=brief.citations,
+            caveats=brief.caveats,
+            text=brief.as_text(),
+        )
 
     @app.post("/api/rights-card", responses=_ERROR_RESPONSES, tags=["answer"])
     async def rights_card(payload: RightsCardRequest) -> Response:

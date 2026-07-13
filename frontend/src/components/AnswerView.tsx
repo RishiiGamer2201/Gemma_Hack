@@ -8,6 +8,7 @@ import type {
   EvidenceItem,
   Facts,
 } from "../api/types";
+import { CommunityBrief } from "./CommunityBrief";
 import { DevilsAdvocate } from "./DevilsAdvocate";
 import { Empty } from "./Feedback";
 import { EvidenceCard, evidenceDomId } from "./EvidenceCard";
@@ -296,6 +297,7 @@ export function AnswerView({
         <>
           <DevilsAdvocate facts={confirmedFacts} approvedProfiles={[]} />
           <RightsCard facts={confirmedFacts} approvedProfiles={[]} />
+          <CommunityBrief facts={confirmedFacts} approvedProfiles={[]} />
         </>
       ) : null}
     </div>

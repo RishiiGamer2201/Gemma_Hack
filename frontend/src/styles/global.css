@@ -885,3 +885,17 @@ button:disabled {
   border: 1px solid var(--border, #d1d5db);
   border-radius: 8px;
 }
+
+/* Community brief */
+.community-text {
+  white-space: pre-wrap;
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  background: var(--surface-muted, #f9fafb);
+  border: 1px solid var(--border, #d1d5db);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 0 0 12px;
+  overflow-x: auto;
+}
