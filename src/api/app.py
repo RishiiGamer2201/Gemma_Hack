@@ -11,7 +11,8 @@ Design rules enforced here:
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator
+import json
+from collections.abc import AsyncIterator, Iterator
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
@@ -19,11 +20,12 @@ from typing import Any
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import ValidationError
 from starlette.formparsers import MultiPartParser
 
 from src.actions.checklists import ChecklistError, ChecklistTemplate
+from src.agents.devils_advocate import DevilsAdvocateError, run_devils_advocate_stream
 from src.agents.ollama import OllamaError
 from src.agents.researcher import ResearchError, retrieve_evidence
 from src.applicability.delhi_rent import (
@@ -47,6 +49,7 @@ from .models import (
     ChecklistListResponse,
     ClaimView,
     DelhiRentRequest,
+    DevilsAdvocateRequest,
     ErrorResponse,
     EvidenceRequest,
     EvidenceResponse,
@@ -394,6 +397,62 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
             evidence=bundle.evidence if bundle else (),
             warnings=result.warnings,
             query=bundle.query if bundle else None,
+        )
+
+    @app.post("/api/devils-advocate", responses=_ERROR_RESPONSES, tags=["answer"])
+    async def devils_advocate(payload: DevilsAdvocateRequest) -> StreamingResponse:
+        """Stream advocate, opponent, and rebuttal over a verified answer.
+
+        The stress test runs only on an answer that already published: the underlying
+        module refuses anything less, so a case that was routed to a human, refused,
+        or abstained cannot be argued about. Stages stream as server-sent events so
+        the three sequential local generations do not look frozen.
+        """
+
+        _require_confirmed(payload.facts)
+        documents = state.documents_for_domain(payload.facts.domain)
+        result = run_confirmed_request(
+            payload.facts,
+            documents,
+            client=state.model_client(),
+            model=state.settings.ollama_model,
+            approved_profiles=frozenset(payload.approved_profiles),
+            evidence_limit=payload.limit,
+        )
+        if not result.published:
+            raise ApiError(
+                409,
+                "not_verified",
+                "A stress test needs a verified answer. This case did not produce one, "
+                f"so there is nothing to argue about (stage: {result.stage.value}).",
+            )
+
+        def events() -> Iterator[bytes]:
+            def send(payload_dict: dict[str, Any]) -> bytes:
+                return f"data: {json.dumps(payload_dict, ensure_ascii=False)}\n\n".encode()
+
+            try:
+                for event in run_devils_advocate_stream(
+                    state.model_client(),
+                    model=state.settings.ollama_model,
+                    workflow=result.snapshot,
+                ):
+                    yield send(
+                        {
+                            "stage": event.stage.value,
+                            "kind": event.kind.value,
+                            "text": event.text,
+                        }
+                    )
+            except DevilsAdvocateError as exc:
+                # The stress test is optional. A failure here must not be able to
+                # retract or contradict the verified answer already shown.
+                yield send({"kind": "error", "message": str(exc)})
+
+        return StreamingResponse(
+            events(),
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
         )
 
     @app.post(

@@ -108,16 +108,55 @@ def run_devils_advocate_stream(
         output = "".join(pieces).strip()
         if not output:
             raise DevilsAdvocateError(f"The {stage.value} stage returned no visible text.")
-        has_citation = any(source.source_id in output for source in evidence)
-        has_legal_reference = re.search(
-            r"\b(?:section|article|धारा|अनुच्छेद)\s*[0-9]+", output, re.IGNORECASE
-        )
-        if has_legal_reference and not has_citation:
+        unsupported = _ungrounded_references(output, evidence)
+        if unsupported:
             raise DevilsAdvocateError(
-                f"The {stage.value} stage made an uncited legal-reference claim."
+                f"The {stage.value} stage referred to provision {unsupported[0]}, which "
+                "is not in the verified evidence for this case."
             )
         prior[stage] = output
         yield AdvocateEvent(stage=stage, kind=EventKind.COMPLETED, text=output)
+
+
+_LEGAL_REFERENCE = re.compile(
+    r"\b(?:section|sec\.|article|art\.|rule|धारा|अनुच्छेद)\s*([0-9]+[A-Za-z]?)",
+    re.IGNORECASE,
+)
+
+
+def _ungrounded_references(output: str, evidence: Sequence[SourceEvidence]) -> tuple[str, ...]:
+    """Return provisions named in the text that the verified evidence does not contain.
+
+    The earlier rule demanded that the raw ``source_id`` string appear verbatim in the
+    prose before any section number was allowed. Opposing counsel naturally writes
+    "section 17", not "code_on_wages_2019_en:section-17", so every stage that argued
+    about the law at all was rejected.
+
+    What actually matters is that the provision is one of the verified sources. A
+    reference is accepted when its number matches a source's section, appears in a
+    cited excerpt, or the source_id itself is quoted. Anything else is a provision the
+    model brought in from memory, and the stress test fails closed rather than let an
+    invented section be argued as if it were law.
+    """
+
+    if not _LEGAL_REFERENCE.search(output):
+        return ()
+    grounded: set[str] = set()
+    for source in evidence:
+        if source.section:
+            grounded.add(source.section.casefold())
+        grounded.update(found.casefold() for found in _LEGAL_REFERENCE.findall(source.excerpt))
+
+    ungrounded: list[str] = []
+    for reference in _LEGAL_REFERENCE.findall(output):
+        if reference.casefold() in grounded:
+            continue
+        if any(source.source_id in output for source in evidence):
+            # The stage quoted a verified source_id explicitly; treat the reference
+            # as attributed to it.
+            continue
+        ungrounded.append(reference)
+    return tuple(dict.fromkeys(ungrounded))
 
 
 def _grounding_block(facts: ConfirmedFacts, evidence: Sequence[SourceEvidence]) -> str:

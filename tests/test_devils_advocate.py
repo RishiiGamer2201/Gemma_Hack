@@ -147,7 +147,10 @@ def test_uncited_output_and_non_official_evidence_fail_closed() -> None:
         def generate_stream(self, **kwargs: object):
             yield OllamaStreamChunk("Section 999 creates a right.", "model", True, {})
 
-    with pytest.raises(DevilsAdvocateError, match="uncited"):
+    # Section 999 is not in the verified evidence, so the stage fails closed. A stage
+    # that names a real, verified provision without repeating the raw source_id is
+    # accepted: opposing counsel writes "section 17", not the corpus identifier.
+    with pytest.raises(DevilsAdvocateError, match="not in the verified evidence"):
         list(
             run_devils_advocate_stream(UncitedClient(), model="model", workflow=verified_workflow())
         )
@@ -180,3 +183,27 @@ def test_utf8_prompt_budget_fails_before_stage_start_or_generation() -> None:
             )
         )
     assert not client.calls
+
+
+def test_a_verified_provision_may_be_argued_without_quoting_the_source_id() -> None:
+    """Opposing counsel writes "section 1", not "wages_s1"; that must not fail closed.
+
+    The guard previously demanded the raw corpus identifier appear verbatim in the
+    prose before any section number was permitted, so every stage that argued about
+    the law at all was rejected and the stress test could never complete.
+    """
+
+    class GroundedClient(FakeStreamingClient):
+        def generate_stream(self, **kwargs: object):
+            yield OllamaStreamChunk(
+                "Section 1 is the provision relied on, and it is not decisive here.",
+                "model",
+                True,
+                {},
+            )
+
+    events = list(
+        run_devils_advocate_stream(GroundedClient(), model="model", workflow=verified_workflow())
+    )
+    completed = [event for event in events if event.kind is EventKind.COMPLETED]
+    assert len(completed) == 3

@@ -175,6 +175,14 @@ class AnswerResponse(ApiModel):
     query: str | None = None
 
 
+class DevilsAdvocateRequest(ApiModel):
+    """Stress-test a case. The pipeline must publish a verified answer first."""
+
+    facts: ConfirmedFacts
+    approved_profiles: tuple[Annotated[str, Field(pattern=r"^[a-z0-9_]+$")], ...] = ()
+    limit: Annotated[int, Field(ge=1, le=MAX_EVIDENCE)] = 4
+
+
 # -------------------------------------------------------------------------- legal aid
 
 
