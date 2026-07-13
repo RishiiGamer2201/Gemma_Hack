@@ -28,6 +28,7 @@ from starlette.formparsers import MultiPartParser
 
 from src.actions.checklists import ChecklistError, ChecklistTemplate
 from src.agents.devils_advocate import DevilsAdvocateError, run_devils_advocate_stream
+from src.agents.extractor import ExtractionError, extract_facts
 from src.agents.ollama import OllamaError
 from src.agents.researcher import ResearchError, retrieve_evidence
 from src.applicability.delhi_rent import (
@@ -47,12 +48,13 @@ from src.documents.pdf import MAX_PDF_BYTES, PdfError, PdfErrorCode, extract_pdf
 from src.intake import process_text_intake
 from src.legal_aid.finder import LegalAidFinderError, LegalAidSearchResult
 from src.legal_time.mapping import MappingLookupResult
-from src.models.schemas import ConfirmedFacts
-from src.ocr import MAX_IMAGE_BYTES, OCRError, OCRErrorCode, OCRResult, extract_image_bytes
+from src.models.schemas import ConfirmedFacts, LegalDomain
+from src.ocr import MAX_IMAGE_BYTES, OCRError, OCRErrorCode, extract_image_bytes
 from src.pipeline import PipelineError, run_confirmed_request
 from src.retrieval import CorpusLoadError
 from src.retrieval.collections import CollectionError
 from src.safety import SafetyRouteDecision, route_confirmed_case
+from src.safety.router import inspect_untrusted_documents
 from src.tools.community import build_community_explanation
 from src.tools.rights_card import RightsCardContent, RightsCardError, render_rights_card
 from src.workflow import WorkflowError
@@ -75,6 +77,7 @@ from .models import (
     LegalAidRequest,
     MappingRequest,
     MappingResponse,
+    OcrApiResponse,
     PdfResponse,
     RetrievalTraceSummary,
     RightsCardRequest,
@@ -279,6 +282,26 @@ def _register_error_handlers(app: FastAPI) -> None:
         return _error(400, "invalid_request", str(exc))
 
 
+def _scan_uploaded_text(text: str) -> tuple[str, ...]:
+    """Scan text lifted from an upload for embedded instructions.
+
+    An uploaded notice is untrusted data. Someone can print "ignore previous
+    instructions" on a page, and that text now flows into the intake box and on to
+    the extractor. The scan reports what it found so the user sees it; it never
+    changes what the assistant does, because the text is quoted, not obeyed.
+    """
+
+    if not text.strip():
+        return ()
+    warnings = inspect_untrusted_documents([text])
+    return tuple(
+        "This document contains text that looks like an instruction to the "
+        f"assistant ({warning.pattern_name}). It has been ignored — the document is "
+        "treated as evidence, never as a command."
+        for warning in warnings
+    )
+
+
 def _card_title(facts: ConfirmedFacts) -> str:
     """A short, factual card title taken from the user's own words.
 
@@ -309,18 +332,60 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
         tags=["intake"],
     )
     async def intake(payload: IntakeRequest) -> IntakeResponse:
-        """Return an UNCONFIRMED restatement. This does not open the retrieval gate."""
+        """Return an UNCONFIRMED restatement. This does not open the retrieval gate.
+
+        When ``extract`` is set and the local model is reachable, the free-form
+        account is turned into typed fields — dates, parties, documents, dispute
+        type, and the questions still to ask. Anything the user typed themselves
+        wins over anything the model extracted, and the whole result still has to be
+        read, corrected, and explicitly confirmed before any law is retrieved.
+
+        Extraction is best-effort. If the model is down or returns something the
+        schema rejects, intake falls back to the deterministic path rather than
+        failing: a user with no local model can still get an answer.
+        """
+
+        extracted = None
+        extraction_failed = False
+        if payload.extract:
+            try:
+                extracted = extract_facts(
+                    state.model_client(),
+                    model=state.settings.ollama_model,
+                    text=payload.text,
+                )
+            except (ExtractionError, OllamaError):
+                extraction_failed = True
+
+        def prefer(typed, model_value):  # noqa: ANN001, ANN202
+            """What the user typed always beats what the model guessed."""
+            if typed not in (None, (), ""):
+                return typed
+            return model_value if extracted is not None else typed
 
         result = process_text_intake(
             payload.text,
-            incident_date=payload.incident_date,
-            jurisdiction=payload.jurisdiction,
-            location=payload.location,
-            domain=payload.domain,
-            parties=payload.parties,
-            material_facts=payload.material_facts,
-            documents=payload.documents,
-            missing_material_facts=payload.missing_material_facts,
+            incident_date=prefer(
+                payload.incident_date, extracted.incident_date if extracted else None
+            ),
+            jurisdiction=prefer(
+                payload.jurisdiction, extracted.jurisdiction if extracted else None
+            ),
+            location=prefer(payload.location, extracted.location if extracted else None),
+            domain=(
+                payload.domain
+                if payload.domain is not LegalDomain.OTHER or extracted is None
+                else extracted.domain
+            ),
+            parties=prefer(payload.parties, extracted.parties if extracted else ()),
+            material_facts=prefer(
+                payload.material_facts, extracted.material_facts if extracted else ()
+            ),
+            documents=prefer(payload.documents, extracted.documents if extracted else ()),
+            missing_material_facts=prefer(
+                payload.missing_material_facts,
+                extracted.missing_material_facts if extracted else (),
+            ),
         )
         return IntakeResponse(
             normalized_text=result.normalized_text,
@@ -329,6 +394,8 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
             restatement=result.restatement,
             facts=result.facts,
             unconfirmed_facts=result.to_unconfirmed_facts(),
+            extracted=extracted is not None,
+            extraction_failed=extraction_failed,
         )
 
     @app.post(
@@ -656,6 +723,7 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
             pages_with_text=result.pages_with_text,
             scanned_pages=result.scanned_pages,
             truncated=result.truncated,
+            injection_warnings=_scan_uploaded_text(result.text),
         )
 
     @app.post("/api/rights-card", responses=_ERROR_RESPONSES, tags=["answer"])
@@ -772,7 +840,7 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
 
     @app.post(
         "/api/ocr",
-        response_model=OCRResult,
+        response_model=OcrApiResponse,
         responses=_ERROR_RESPONSES,
         tags=["ocr"],
         openapi_extra={
@@ -792,7 +860,7 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
             }
         },
     )
-    async def ocr(request: Request) -> OCRResult:
+    async def ocr(request: Request) -> OcrApiResponse:
         """Run local OCR on an uploaded PNG/JPEG. The image never touches disk."""
 
         form = await request.form(
@@ -815,7 +883,18 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
                     "file",
                 )
             safe_name = Path(str(filename)).name
-            return extract_image_bytes(bytes(data), safe_name, state.ocr_config())
+            result = extract_image_bytes(bytes(data), safe_name, state.ocr_config())
+            return OcrApiResponse(
+                text=result.text,
+                width=result.width,
+                height=result.height,
+                image_format=result.image_format.value,
+                language=result.language.value,
+                mean_confidence_percent=result.mean_confidence_percent,
+                tesseract_version=result.tesseract_version,
+                processing_seconds=result.processing_seconds,
+                injection_warnings=_scan_uploaded_text(result.text),
+            )
         finally:
             await form.close()
 

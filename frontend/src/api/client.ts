@@ -406,6 +406,8 @@ export interface PdfResponse {
   pages_with_text: number;
   scanned_pages: number[];
   truncated: boolean;
+  /** Instruction-like text found inside the upload. Reported, never obeyed. */
+  injection_warnings?: string[];
 }
 
 export async function postPdf(file: File, signal?: AbortSignal): Promise<PdfResponse> {

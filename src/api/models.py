@@ -75,6 +75,10 @@ class IntakeRequest(ApiModel):
     material_facts: tuple[NarrativeText, ...] = ()
     documents: tuple[ShortText, ...] = ()
     missing_material_facts: tuple[ShortText, ...] = ()
+    # Turn the free-form account into typed fields with the local model. Anything the
+    # user typed themselves always wins. Best-effort: a missing model degrades to the
+    # deterministic path rather than failing.
+    extract: bool = True
 
 
 class IntakeResponse(ApiModel):
@@ -86,6 +90,8 @@ class IntakeResponse(ApiModel):
     restatement: str
     facts: IntakeFacts
     unconfirmed_facts: ConfirmedFacts
+    extracted: bool = False
+    extraction_failed: bool = False
     requires_confirmation: Literal[True] = True
     confirmed: Literal[False] = False
 
@@ -208,6 +214,27 @@ class CommunityRequest(ApiModel):
     limit: Annotated[int, Field(ge=1, le=MAX_EVIDENCE)] = 4
 
 
+class OcrApiResponse(ApiModel):
+    """OCR text plus the injection scan. Wraps the reviewed OCRResult.
+
+    OCRResult is a reviewed module contract and forbids extra fields, so the safety
+    scan is attached here rather than by mutating it.
+    """
+
+    text: str
+    width: int
+    height: int
+    image_format: str
+    language: str
+    mean_confidence_percent: float | None = None
+    engine: str = "tesseract"
+    tesseract_version: str
+    processing_seconds: float
+    # An uploaded document is untrusted data. Instruction-like text inside it is
+    # reported and ignored; it can never steer the assistant.
+    injection_warnings: tuple[str, ...] = ()
+
+
 class PdfResponse(ApiModel):
     """Text lifted from an uploaded PDF. A DRAFT for the user to correct."""
 
@@ -216,6 +243,9 @@ class PdfResponse(ApiModel):
     pages_with_text: int
     scanned_pages: tuple[int, ...]
     truncated: bool
+    # An uploaded document is untrusted data. Instruction-like text inside it is
+    # reported and ignored; it can never steer the assistant.
+    injection_warnings: tuple[str, ...] = ()
 
 
 class CommunityResponse(ApiModel):

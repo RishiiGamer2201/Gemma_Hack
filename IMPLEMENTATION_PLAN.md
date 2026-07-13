@@ -18,11 +18,11 @@ hardware, evaluation, or end-to-end demo gates from backend primitives alone.
 - [x] Accept English, Hindi, and Hinglish text input through the local intake interface.
 - [x] Accept Hindi/English voice input and display the transcript before legal processing.
 - [x] Accept a photo/PDF of an FIR, notice, summons, wage document, or rental document.
-- [ ] Extract a structured case summary: people, dates, location, dispute, documents, urgency, and missing facts.
+- [x] Extract a structured case summary: people, dates, location, dispute, documents, urgency, and missing facts.
 - [x] Restate explicit facts in plain language and require confirmation before backend retrieval.
 - [ ] Add an interactive correction path to the future UI.
 - [x] Route missing jurisdiction/date, confirmed urgency, and possible power-role patterns from confirmed fields.
-- [ ] Automatically classify domain and extract jurisdiction/date from free-form input.
+- [x] Automatically classify domain and extract jurisdiction/date from free-form input.
 - [x] Retrieve applicable official law using hybrid keyword and semantic search.
 - [x] Provide backend effective-date/status filters and IPC/BNS temporal-routing primitives.
 - [x] Integrate current/repealed-law routing into the production answer journey.
@@ -294,8 +294,8 @@ Owner: Member A + Member C
 - [ ] Use Gemma vision to cross-check OCR and identify document type.
 - [ ] Preserve page references for extracted facts.
 - [x] Define a strict Pydantic intake schema for parties, dates, location, dispute, documents, urgency signals, and missing facts.
-- [ ] Extract structured facts using a strict Pydantic schema.
-- [ ] Ask only material missing questions.
+- [x] Extract structured facts using a strict Pydantic schema.
+- [x] Ask only material missing questions.
 - [x] Generate a deterministic simple-language restatement from explicit fields only.
 - [x] Block downstream retrieval and legal answers until explicit confirmation.
 - [ ] Allow the user to edit extracted facts directly.
@@ -425,7 +425,7 @@ Owner: Member C
 - [x] Keep logs opt-in and local.
 - [x] Validate file types, size, and decompression limits.
 - [x] Detect and ignore prompt-injection patterns in caller-supplied untrusted document text.
-- [ ] Integrate prompt-injection protection with the future upload/OCR pipeline.
+- [x] Integrate prompt-injection protection with the future upload/OCR pipeline.
 - [ ] Document exactly what stays on the device.
 
 **Offline exit gate:** End-to-end demo passes after disabling Wi-Fi before application launch.

@@ -79,6 +79,9 @@ export function IntakePanel({
     }
   }
 
+  const injectionWarnings =
+    pdfResult?.injection_warnings ?? ocrResult?.injection_warnings ?? [];
+
   // mean_confidence_percent is nullable in the backend contract.
   const confidence = ocrResult?.mean_confidence_percent ?? null;
   const lowConfidence = confidence !== null && confidence < 75;
@@ -230,6 +233,17 @@ export function IntakePanel({
               <strong>Please read it and correct any mistakes</strong> before
               continuing.
             </p>
+          </div>
+        ) : null}
+
+        {injectionWarnings.length > 0 ? (
+          <div className="alert alert-warn" role="alert">
+            <h3>This document tried to give the assistant instructions</h3>
+            <ul style={{ marginBottom: 0 }}>
+              {injectionWarnings.map((warning) => (
+                <li key={warning}>{warning}</li>
+              ))}
+            </ul>
           </div>
         ) : null}
 

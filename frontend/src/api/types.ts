@@ -75,6 +75,10 @@ export interface IntakeResponse {
   urgency_signals: UrgencySignal[];
   restatement: string;
   facts: Facts;
+  /** True when the local model filled the typed fields from the free text. */
+  extracted?: boolean;
+  /** True when extraction was attempted and failed; the deterministic path was used. */
+  extraction_failed?: boolean;
   requires_confirmation?: boolean;
   confirmed?: boolean;
 }
@@ -236,6 +240,8 @@ export interface OcrResponse {
   image_format?: string;
   language?: string;
   processing_seconds?: number;
+  /** Instruction-like text found inside the upload. Reported, never obeyed. */
+  injection_warnings?: string[];
 }
 
 /** TranscriptResponse from POST /api/transcribe. The transcript is a DRAFT. */
