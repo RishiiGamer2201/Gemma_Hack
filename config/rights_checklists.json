@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "review_status": "pending_human_review",
+  "note": "Every entry quotes official text verbatim, and src/actions/rights.py refuses to load an entry whose quote is not found in the chunk it cites. That check stops an invented right; it does not make the plain-language statement legally complete. A human reviewer must confirm each statement fairly represents the provision, and that no proviso or exception changes it. Until review_status is 'reviewed', the UI labels these as unverified.",
+  "rights": [
+    {
+      "right_id": "arrest_grounds_must_be_given",
+      "domain": "criminal",
+      "statement": "If you are arrested without a warrant, the police must tell you straight away, in full, what offence you are being arrested for.",
+      "what_you_can_do": "Ask what the offence is, and write down the time and what you were told.",
+      "source_id": "bnss_2023_en:section-47",
+      "quote": "shall forthwith communicate to him full particulars of the offence for which he is arrested or other grounds for such arrest"
+    },
+    {
+      "right_id": "arrest_twenty_four_hours",
+      "domain": "criminal",
+      "statement": "A person arrested without a warrant is not to be held for more than twenty-four hours without being produced before a Magistrate.",
+      "what_you_can_do": "Note the exact time of arrest, and tell a lawyer or legal-aid worker immediately.",
+      "source_id": "bnss_2023_en:section-58",
+      "quote": "Person arrested not to be detained more than twenty-four hours"
+    },
+    {
+      "right_id": "fir_may_be_given_orally",
+      "domain": "criminal",
+      "statement": "Information about a cognizable offence can be given orally — you do not have to write it yourself, and it does not matter where the offence happened. If you give it orally, it must be written down and read back to you.",
+      "what_you_can_do": "Ask for it to be read back before you sign, and ask for a free copy.",
+      "source_id": "bnss_2023_en:section-173",
+      "quote": "may be given orally or by electronic communication to an officer in charge of a police station"
+    },
+    {
+      "right_id": "no_unauthorised_deductions",
+      "domain": "labour",
+      "statement": "Your employer cannot make deductions from your wages except the ones the Code allows.",
+      "what_you_can_do": "Keep payslips and bank records showing what was actually paid.",
+      "source_id": "code_on_wages_2019_en:section-18",
+      "quote": "there shall be no deductions from the wages of the employee, except those as are authorised under this Code"
+    },
+    {
+      "right_id": "wages_payment_mode",
+      "domain": "labour",
+      "statement": "Wages must be paid in coin, currency notes, by cheque, into your bank account, or electronically.",
+      "what_you_can_do": "If you are paid in cash with no record, ask for a payslip and keep your own written note of each payment.",
+      "source_id": "code_on_wages_2019_en:section-15",
+      "quote": "All wages shall be paid in current coin or currency notes or by cheque or by crediting the wages in the bank account of the employee or by the electronic mode"
+    },
+    {
+      "right_id": "consumer_may_file_complaint",
+      "domain": "consumer",
+      "statement": "As the consumer, you can file a complaint yourself with the District Commission about goods sold to you or a service provided to you.",
+      "what_you_can_do": "Keep the bill, the order record, and any messages with the seller.",
+      "source_id": "consumer_protection_act_2019_en:section-35",
+      "quote": "may be filed with a District Commission by"
+    },
+    {
+      "right_id": "free_legal_services_entitlement",
+      "domain": "constitutional",
+      "statement": "Free legal services are an entitlement, not a favour. They are available to people including members of a Scheduled Caste or Scheduled Tribe, women, children, and persons with disability, among others.",
+      "what_you_can_do": "Contact your District or State Legal Services Authority, or the Tele-Law helpline, and say you are seeking free legal aid.",
+      "source_id": "legal_services_authorities_act_en:section-12",
+      "quote": "shall be entitled to legal services under this Act if that person is"
+    }
+  ]
+}

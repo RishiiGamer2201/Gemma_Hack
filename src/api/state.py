@@ -16,6 +16,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from src.actions.checklists import ChecklistCatalog, ChecklistError
+from src.actions.rights import load_rights
 from src.agents.ollama import OllamaClient
 from src.audio.integrity import PINNED_MODEL_REVISION as ASR_PINNED_REVISION
 from src.config import Settings
@@ -37,6 +38,7 @@ DEFAULT_TESSDATA_DIR = ROOT / "models" / "ocr" / "tessdata"
 DEFAULT_ASR_MODEL_DIR = ROOT / "models" / "asr" / "faster-whisper-small"
 DEFAULT_DEADLINES_PATH = ROOT / "config" / "deadlines.json"
 DEFAULT_MAPPINGS_PATH = ROOT / "config" / "ipc_bns_mappings.json"
+DEFAULT_RIGHTS_PATH = ROOT / "config" / "rights_checklists.json"
 
 # The IPC/BNS catalogue is deliberately empty. data/processed/mappings holds
 # `pending_human_review` candidates only, and an unreviewed candidate must never
@@ -85,6 +87,7 @@ class ApiState:
     asr_model_dir: Path = Path("models/asr/faster-whisper-small")
     deadlines_path: Path = DEFAULT_DEADLINES_PATH
     mappings_path: Path = DEFAULT_MAPPINGS_PATH
+    rights_path: Path = DEFAULT_RIGHTS_PATH
     asr_model_revision: str = ASR_PINNED_REVISION
     # Off by default so constructing state never reaches the local runtime. The
     # real server turns it on in build_state(); tests stay hermetic and fast.
@@ -99,6 +102,7 @@ class ApiState:
     _checklists: ChecklistCatalog | None = None
     _embedder: LocalEmbedder | None = None
     _deadlines: tuple | None = None
+    _rights: tuple | None = None
     _client: OllamaClient | None = None
     _mappings: MappingCatalog | None = None
 
@@ -197,6 +201,24 @@ class ApiState:
                     )
                 self._deadlines = load_deadlines(self.deadlines_path, self.documents)
             return self._deadlines
+
+    def rights_entries(self):
+        """Load rights entries once, verifying every quote against the corpus.
+
+        Telling someone "the police must tell you why you are being arrested" IS a
+        legal claim. An entry whose quote is not in the chunk it cites is an invented
+        right and load_rights raises, rather than quietly dropping it.
+        """
+
+        with self._lock:
+            if self._rights is None:
+                if not self.corpus_loaded:
+                    raise StateError(
+                        "corpus_unavailable",
+                        self.corpus_error or "the processed corpus is not loaded",
+                    )
+                self._rights = load_rights(self.rights_path, self.documents)
+            return self._rights
 
     # ---- reviewed local resources -----------------------------------------------
 

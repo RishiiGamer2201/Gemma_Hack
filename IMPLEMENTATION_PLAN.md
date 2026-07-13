@@ -43,7 +43,7 @@ hardware, evaluation, or end-to-end demo gates from backend primitives alone.
 - [x] Legal Aid Finder using offline NALSA/DLSA snapshots and Tele-Law fallback.
 - [x] Extend the Legal Aid Finder with state-specific SLSA snapshots.
 - [x] Evidence/action preparation checklist tailored to the three demo case types.
-- [ ] Add sourced rights checklist content tailored to each case type.
+- [x] Add sourced rights checklist content tailored to each case type.
 
 ### Explicit non-goals for the hackathon
 
@@ -247,7 +247,7 @@ Owner: Member B with Member C integration
 - [x] Create evidence-checklist templates for the three demo scenarios.
 - [x] Create safe deadline records only from official legislation/rules.
 - [x] Add `source_id` and effective date to every deadline record.
-- [ ] Create Rights Card content templates in English and Hindi.
+- [x] Create Rights Card content templates in English and Hindi.
 - [ ] Create Community Elder/Panchayat output templates that avoid exposing unnecessary sensitive details.
 
 **Exit gate:** Every displayed contact, deadline, and checklist rule is traceable to a source or clearly labeled as general preparation guidance.

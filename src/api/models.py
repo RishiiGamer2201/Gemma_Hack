@@ -271,6 +271,23 @@ class ConsequenceResponse(ApiModel):
     sources_are_silent: bool
 
 
+class RightView(ApiModel):
+    right_id: str
+    statement: str
+    what_you_can_do: str | None = None
+    citation: str
+    source_id: str
+    official_url: str | None = None
+    quote: str
+    review_status: str
+
+
+class RightsResponse(ApiModel):
+    domain: LegalDomain
+    rights: tuple[RightView, ...] = ()
+    notes: tuple[str, ...] = ()
+
+
 class PdfResponse(ApiModel):
     """Text lifted from an uploaded PDF. A DRAFT for the user to correct."""
 

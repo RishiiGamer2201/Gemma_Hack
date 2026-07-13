@@ -28,6 +28,7 @@ from pydantic import ValidationError
 from starlette.formparsers import MultiPartParser
 
 from src.actions.checklists import ChecklistError, ChecklistTemplate
+from src.actions.rights import rights_for
 from src.agents.devils_advocate import DevilsAdvocateError, run_devils_advocate_stream
 from src.agents.extractor import ExtractionError, extract_facts
 from src.agents.ollama import OllamaError
@@ -87,6 +88,8 @@ from .models import (
     PdfResponse,
     RetrievalTraceSummary,
     RightsCardRequest,
+    RightsResponse,
+    RightView,
     RouteRequest,
 )
 from .state import NO_REVIEWED_MAPPING_WARNING, ApiState, StateError, build_state
@@ -789,6 +792,58 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
             notes=report.notes,
             sources_are_silent=report.sources_are_silent,
         )
+
+    @app.get(
+        "/api/rights/{domain}",
+        response_model=RightsResponse,
+        responses=_ERROR_RESPONSES,
+        tags=["answer"],
+    )
+    async def rights(domain: LegalDomain) -> RightsResponse:
+        """Rights for a kind of dispute, each quoted from official text.
+
+        Unlike the evidence checklists, which are preparation guidance carrying no
+        legal claim, a right IS a legal claim. Every entry therefore quotes the
+        official wording and is verified against the chunk it cites; an invented
+        right cannot load.
+        """
+
+        entries = state.rights_entries()
+        by_chunk = {
+            document.source_id: document.metadata for document in state.documents
+        }
+        views = []
+        for entry in rights_for(entries, domain):
+            metadata = by_chunk.get(entry.source_id, {})
+            act = metadata.get("act")
+            section = metadata.get("section")
+            views.append(
+                RightView(
+                    right_id=entry.right_id,
+                    statement=entry.statement,
+                    what_you_can_do=entry.what_you_can_do,
+                    citation=(
+                        f"{act}, Section {section}" if act and section else entry.source_id
+                    ),
+                    source_id=entry.source_id,
+                    official_url=(
+                        str(metadata["official_url"]) if metadata.get("official_url") else None
+                    ),
+                    quote=entry.quote,
+                    review_status=entry.review_status,
+                )
+            )
+        notes = [
+            "Each right below is quoted from the official text and is shown with the "
+            "provision it comes from. This is legal information, not legal advice."
+        ]
+        if any(item.review_status != "reviewed" for item in views):
+            notes.append(
+                "These statements have not yet been signed off by a human legal "
+                "reviewer. Read the quoted provision, and check with a legal-aid "
+                "lawyer before relying on one."
+            )
+        return RightsResponse(domain=domain, rights=tuple(views), notes=tuple(notes))
 
     @app.post("/api/rights-card", responses=_ERROR_RESPONSES, tags=["answer"])
     async def rights_card(payload: RightsCardRequest) -> Response:
