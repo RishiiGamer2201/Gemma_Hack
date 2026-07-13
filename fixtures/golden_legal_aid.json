@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "review_status": "pending_independent_review",
+  "note": "Scored against the offline Delhi DLSA directory + NALSA/Tele-Law fallbacks.",
+  "queries": [
+    {
+      "id": "aid-01",
+      "district": "Rouse Avenue",
+      "state": "Delhi",
+      "expect": "matched"
+    },
+    {
+      "id": "aid-02",
+      "district": "Central",
+      "state": "Delhi",
+      "expect": "matched"
+    },
+    {
+      "id": "aid-03",
+      "district": "East Delhi",
+      "state": "Delhi",
+      "expect": "matched"
+    },
+    {
+      "id": "aid-04",
+      "district": "New Delhi",
+      "state": "Delhi",
+      "expect": "matched"
+    },
+    {
+      "id": "aid-05",
+      "district": "North West Delhi",
+      "state": "Delhi",
+      "expect": "matched"
+    },
+    {
+      "id": "aid-06",
+      "district": "Shahdara",
+      "state": "Delhi",
+      "expect": "matched"
+    },
+    {
+      "id": "aid-07",
+      "district": "South East Delhi",
+      "state": "Delhi",
+      "expect": "matched"
+    },
+    {
+      "id": "aid-08",
+      "district": "Dwarka",
+      "state": "Delhi",
+      "expect": "unmatched_delhi"
+    },
+    {
+      "id": "aid-09",
+      "district": "Mumbai",
+      "state": "Maharashtra",
+      "expect": "outside_delhi"
+    },
+    {
+      "id": "aid-10",
+      "district": "Patna",
+      "state": "Bihar",
+      "expect": "outside_delhi"
+    },
+    {
+      "id": "aid-11",
+      "district": "Bengaluru",
+      "state": "Karnataka",
+      "expect": "outside_delhi"
+    },
+    {
+      "id": "aid-12",
+      "district": "Lucknow",
+      "state": "Uttar Pradesh",
+      "expect": "outside_delhi"
+    },
+    {
+      "id": "aid-13",
+      "district": "Bawana",
+      "state": "Delhi",
+      "expect": "unmatched_delhi"
+    },
+    {
+      "id": "aid-14",
+      "district": "West Delhi",
+      "state": "Delhi",
+      "expect": "matched"
+    },
+    {
+      "id": "aid-15",
+      "district": "North Delhi",
+      "state": "Delhi",
+      "expect": "matched"
+    },
+    {
+      "id": "aid-16",
+      "district": "South Delhi",
+      "state": "Delhi",
+      "expect": "matched"
+    },
+    {
+      "id": "aid-17",
+      "district": "Chennai",
+      "state": "Tamil Nadu",
+      "expect": "outside_delhi"
+    },
+    {
+      "id": "aid-18",
+      "district": "Kolkata",
+      "state": "West Bengal",
+      "expect": "outside_delhi"
+    },
+    {
+      "id": "aid-19",
+      "district": "North East Delhi",
+      "state": "Delhi",
+      "expect": "matched"
+    },
+    {
+      "id": "aid-20",
+      "district": "Nowhere City",
+      "state": null,
+      "expect": "unknown_location"
+    }
+  ]
+}

@@ -354,7 +354,7 @@ Owner: Member C + Member A
 - [x] Run advocate, opponent, and rebuttal sequentially on one model instance.
 - [x] Give the opponent only confirmed facts and verified source excerpts.
 - [x] Prevent either side from adding new uncited law.
-- [ ] Label allegations, assumptions, missing evidence, and legal rules separately.
+- [x] Label allegations, assumptions, missing evidence, and legal rules separately.
 - [x] Stream stage labels and provide a cancel button.
 - [x] Conclude with “weaknesses to investigate,” not a win probability.
 
@@ -436,14 +436,14 @@ Owner: Member D with all members reviewing failures
 
 ### Golden dataset
 
-- [ ] Write 30 BNS/IPC conversion questions.
-- [ ] Write 30 labour, consumer, and tenancy questions.
+- [x] Write 30 BNS/IPC conversion questions.
+- [x] Write 30 labour, consumer, and tenancy questions.
 - [x] Write 20 false-premise/unanswerable questions.
-- [ ] Write 20 Hindi/Hinglish/code-mixed questions.
-- [ ] Write 20 document-photo/OCR questions.
-- [ ] Write 20 legal-aid routing questions.
-- [ ] Write 20 deadline/inaction questions.
-- [ ] Record expected sources and acceptable answers.
+- [x] Write 20 Hindi/Hinglish/code-mixed questions.
+- [x] Write 20 document-photo/OCR questions.
+- [x] Write 20 legal-aid routing questions.
+- [x] Write 20 deadline/inaction questions.
+- [x] Record expected sources and acceptable answers.
 - [ ] Have every sample reviewed by someone other than its author.
 
 ### External evaluation data

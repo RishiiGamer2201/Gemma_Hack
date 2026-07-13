@@ -1,0 +1,361 @@
+{
+  "schema_version": 1,
+  "review_status": "pending_independent_review",
+  "note": "Author-written labels; require an independent reviewer before the numbers are quoted (Phase L).",
+  "queries": [
+    {
+      "id": "lab-01",
+      "domain": "labour",
+      "query": "when must my employer pay my wages",
+      "expected": "code_on_wages_2019_en:section-17",
+      "also_acceptable": []
+    },
+    {
+      "id": "lab-02",
+      "domain": "labour",
+      "query": "my employer paid me below minimum wage",
+      "expected": "code_on_wages_2019_en:section-5",
+      "also_acceptable": [
+        "code_on_wages_2019_en:section-9"
+      ]
+    },
+    {
+      "id": "lab-03",
+      "domain": "labour",
+      "query": "can my employer deduct money from my salary",
+      "expected": "code_on_wages_2019_en:section-18",
+      "also_acceptable": []
+    },
+    {
+      "id": "lab-04",
+      "domain": "labour",
+      "query": "who has to prove wages were paid in a claim",
+      "expected": "code_on_wages_2019_en:section-59",
+      "also_acceptable": []
+    },
+    {
+      "id": "lab-05",
+      "domain": "labour",
+      "query": "am I entitled to an annual bonus",
+      "expected": "code_on_wages_2019_en:section-26",
+      "also_acceptable": []
+    },
+    {
+      "id": "lab-06",
+      "domain": "labour",
+      "query": "wages must be paid in what form cash or bank",
+      "expected": "code_on_wages_2019_en:section-15",
+      "also_acceptable": []
+    },
+    {
+      "id": "lab-07",
+      "domain": "labour",
+      "query": "how is the floor wage fixed",
+      "expected": "code_on_wages_2019_en:section-9",
+      "also_acceptable": []
+    },
+    {
+      "id": "lab-08",
+      "domain": "labour",
+      "query": "time limit to file a wage claim",
+      "expected": "code_on_wages_2019_en:section-45",
+      "also_acceptable": []
+    },
+    {
+      "id": "lab-09",
+      "domain": "labour",
+      "query": "what counts as wages under the code",
+      "expected": "code_on_wages_2019_en:section-2",
+      "also_acceptable": []
+    },
+    {
+      "id": "lab-10",
+      "domain": "labour",
+      "query": "wages when my job is terminated",
+      "expected": "code_on_wages_2019_en:section-17",
+      "also_acceptable": []
+    },
+    {
+      "id": "con-01",
+      "domain": "consumer",
+      "query": "what is a consumer under the act",
+      "expected": "consumer_protection_act_2019_en:section-2",
+      "also_acceptable": []
+    },
+    {
+      "id": "con-02",
+      "domain": "consumer",
+      "query": "seller sold me a defective product remedies",
+      "expected": "consumer_protection_act_2019_en:section-83",
+      "also_acceptable": [
+        "consumer_protection_act_2019_en:section-84"
+      ]
+    },
+    {
+      "id": "con-03",
+      "domain": "consumer",
+      "query": "product liability of a manufacturer",
+      "expected": "consumer_protection_act_2019_en:section-84",
+      "also_acceptable": []
+    },
+    {
+      "id": "con-04",
+      "domain": "consumer",
+      "query": "where do I file a consumer complaint jurisdiction",
+      "expected": "consumer_protection_act_2019_en:section-34",
+      "also_acceptable": []
+    },
+    {
+      "id": "con-05",
+      "domain": "consumer",
+      "query": "penalty for misleading advertisement",
+      "expected": "consumer_protection_act_2019_en:section-89",
+      "also_acceptable": []
+    },
+    {
+      "id": "con-06",
+      "domain": "consumer",
+      "query": "time limit to file a consumer complaint",
+      "expected": "consumer_protection_act_2019_en:section-69",
+      "also_acceptable": []
+    },
+    {
+      "id": "con-07",
+      "domain": "consumer",
+      "query": "what relief can the consumer commission grant",
+      "expected": "consumer_protection_act_2019_en:section-39",
+      "also_acceptable": []
+    },
+    {
+      "id": "con-08",
+      "domain": "consumer",
+      "query": "product seller liability when not the maker",
+      "expected": "consumer_protection_act_2019_en:section-86",
+      "also_acceptable": []
+    },
+    {
+      "id": "con-09",
+      "domain": "consumer",
+      "query": "appeal against a district commission order",
+      "expected": "consumer_protection_act_2019_en:section-41",
+      "also_acceptable": []
+    },
+    {
+      "id": "con-10",
+      "domain": "consumer",
+      "query": "complaint about a deficient service",
+      "expected": "consumer_protection_act_2019_en:section-2",
+      "also_acceptable": []
+    },
+    {
+      "id": "ten-01",
+      "domain": "tenancy_property",
+      "query": "does the Delhi Rent Control Act apply to my premises",
+      "expected": "delhi_rent_control_act_1958_en:section-3",
+      "also_acceptable": []
+    },
+    {
+      "id": "ten-02",
+      "domain": "tenancy_property",
+      "query": "what premises are excluded from rent control",
+      "expected": "delhi_rent_control_act_1958_en:section-3",
+      "also_acceptable": []
+    },
+    {
+      "id": "ten-03",
+      "domain": "tenancy_property",
+      "query": "landlord grounds to evict a tenant",
+      "expected": "delhi_rent_control_act_1958_en:section-14",
+      "also_acceptable": []
+    },
+    {
+      "id": "ten-04",
+      "domain": "tenancy_property",
+      "query": "what is standard rent",
+      "expected": "delhi_rent_control_act_1958_en:section-6",
+      "also_acceptable": []
+    },
+    {
+      "id": "ten-05",
+      "domain": "tenancy_property",
+      "query": "tenant protection against eviction",
+      "expected": "delhi_rent_control_act_1958_en:section-14",
+      "also_acceptable": []
+    },
+    {
+      "id": "crim-01",
+      "domain": "criminal",
+      "query": "punishment for theft",
+      "expected": "bns_2023_en:section-303",
+      "also_acceptable": []
+    },
+    {
+      "id": "crim-02",
+      "domain": "criminal",
+      "query": "what is robbery",
+      "expected": "bns_2023_en:section-309",
+      "also_acceptable": []
+    },
+    {
+      "id": "crim-03",
+      "domain": "criminal",
+      "query": "punishment for criminal breach of trust",
+      "expected": "bns_2023_en:section-316",
+      "also_acceptable": []
+    },
+    {
+      "id": "crim-04",
+      "domain": "criminal",
+      "query": "what is snatching",
+      "expected": "bns_2023_en:section-304",
+      "also_acceptable": []
+    },
+    {
+      "id": "crim-05",
+      "domain": "criminal",
+      "query": "procedure when police receive information of an offence",
+      "expected": "bnss_2023_en:section-173",
+      "also_acceptable": []
+    },
+    {
+      "id": "hin-01",
+      "domain": "labour",
+      "query": "boss ne meri salary nahi di do mahine se",
+      "expected": "code_on_wages_2019_en:section-17",
+      "also_acceptable": []
+    },
+    {
+      "id": "hin-02",
+      "domain": "labour",
+      "query": "kya employer meri salary se paisa kaat sakta hai",
+      "expected": "code_on_wages_2019_en:section-18",
+      "also_acceptable": []
+    },
+    {
+      "id": "hin-03",
+      "domain": "labour",
+      "query": "minimum wage se kam mila mujhe",
+      "expected": "code_on_wages_2019_en:section-5",
+      "also_acceptable": []
+    },
+    {
+      "id": "hin-04",
+      "domain": "labour",
+      "query": "wage claim karne ki time limit kya hai",
+      "expected": "code_on_wages_2019_en:section-45",
+      "also_acceptable": []
+    },
+    {
+      "id": "hin-05",
+      "domain": "labour",
+      "query": "bonus milega ya nahi",
+      "expected": "code_on_wages_2019_en:section-26",
+      "also_acceptable": []
+    },
+    {
+      "id": "hin-06",
+      "domain": "consumer",
+      "query": "dukaandaar ne kharab product diya refund",
+      "expected": "consumer_protection_act_2019_en:section-83",
+      "also_acceptable": []
+    },
+    {
+      "id": "hin-07",
+      "domain": "consumer",
+      "query": "consumer complaint kahan file karu",
+      "expected": "consumer_protection_act_2019_en:section-34",
+      "also_acceptable": []
+    },
+    {
+      "id": "hin-08",
+      "domain": "consumer",
+      "query": "complaint karne ki last date kya hai",
+      "expected": "consumer_protection_act_2019_en:section-69",
+      "also_acceptable": []
+    },
+    {
+      "id": "hin-09",
+      "domain": "consumer",
+      "query": "galat advertisement ki sazaa",
+      "expected": "consumer_protection_act_2019_en:section-89",
+      "also_acceptable": []
+    },
+    {
+      "id": "hin-10",
+      "domain": "consumer",
+      "query": "consumer kaun hota hai",
+      "expected": "consumer_protection_act_2019_en:section-2",
+      "also_acceptable": []
+    },
+    {
+      "id": "hin-11",
+      "domain": "tenancy_property",
+      "query": "makan malik mujhe nikaal sakta hai kya",
+      "expected": "delhi_rent_control_act_1958_en:section-14",
+      "also_acceptable": []
+    },
+    {
+      "id": "hin-12",
+      "domain": "tenancy_property",
+      "query": "rent control act mere ghar pe lagta hai kya",
+      "expected": "delhi_rent_control_act_1958_en:section-3",
+      "also_acceptable": []
+    },
+    {
+      "id": "hin-13",
+      "domain": "tenancy_property",
+      "query": "standard rent kya hota hai",
+      "expected": "delhi_rent_control_act_1958_en:section-6",
+      "also_acceptable": []
+    },
+    {
+      "id": "hin-14",
+      "domain": "criminal",
+      "query": "chori ki sazaa kya hai",
+      "expected": "bns_2023_en:section-303",
+      "also_acceptable": []
+    },
+    {
+      "id": "hin-15",
+      "domain": "criminal",
+      "query": "robbery kya hoti hai",
+      "expected": "bns_2023_en:section-309",
+      "also_acceptable": []
+    },
+    {
+      "id": "hin-16",
+      "domain": "criminal",
+      "query": "phone cheen liya snatching",
+      "expected": "bns_2023_en:section-304",
+      "also_acceptable": []
+    },
+    {
+      "id": "hin-17",
+      "domain": "criminal",
+      "query": "FIR kaise darj hoti hai",
+      "expected": "bnss_2023_en:section-173",
+      "also_acceptable": []
+    },
+    {
+      "id": "hin-18",
+      "domain": "labour",
+      "query": "wages current coin me milni chahiye ya bank",
+      "expected": "code_on_wages_2019_en:section-15",
+      "also_acceptable": []
+    },
+    {
+      "id": "hin-19",
+      "domain": "consumer",
+      "query": "commission kya relief de sakta hai",
+      "expected": "consumer_protection_act_2019_en:section-39",
+      "also_acceptable": []
+    },
+    {
+      "id": "hin-20",
+      "domain": "labour",
+      "query": "claim me saboot kisko dena hai",
+      "expected": "code_on_wages_2019_en:section-59",
+      "also_acceptable": []
+    }
+  ]
+}

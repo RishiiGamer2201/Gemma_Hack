@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "review_status": "authored_needs_image_fixtures",
+  "note": "Scoring needs consented printed/photographed document fixtures. The OCR pipeline is verified on synthetic notices (docs/ocr_feasibility.md); these define the citizen-document targets.",
+  "queries": [
+    {
+      "id": "doc-01",
+      "document": "photo of an FIR",
+      "expect_field": "offence sections, police station, date"
+    },
+    {
+      "id": "doc-02",
+      "document": "printed legal notice",
+      "expect_field": "sender, demand, reply deadline"
+    },
+    {
+      "id": "doc-03",
+      "document": "rent agreement page",
+      "expect_field": "monthly rent, deposit amount, parties"
+    },
+    {
+      "id": "doc-04",
+      "document": "wage slip",
+      "expect_field": "gross wages, deductions, period"
+    },
+    {
+      "id": "doc-05",
+      "document": "consumer complaint acknowledgement",
+      "expect_field": "complaint number, commission, date"
+    },
+    {
+      "id": "doc-06",
+      "document": "summons",
+      "expect_field": "court, date, case number"
+    },
+    {
+      "id": "doc-07",
+      "document": "cheque bounce notice",
+      "expect_field": "amount, 15-day reply window"
+    },
+    {
+      "id": "doc-08",
+      "document": "eviction notice",
+      "expect_field": "grounds, vacate date"
+    },
+    {
+      "id": "doc-09",
+      "document": "employment termination letter",
+      "expect_field": "last working day, dues"
+    },
+    {
+      "id": "doc-10",
+      "document": "bank statement of salary credits",
+      "expect_field": "credited amounts, dates"
+    },
+    {
+      "id": "doc-11",
+      "document": "challan",
+      "expect_field": "offence, fine amount"
+    },
+    {
+      "id": "doc-12",
+      "document": "police complaint copy",
+      "expect_field": "allegation, sections"
+    },
+    {
+      "id": "doc-13",
+      "document": "arbitration notice",
+      "expect_field": "dispute, forum"
+    },
+    {
+      "id": "doc-14",
+      "document": "recovery notice",
+      "expect_field": "principal, interest, deadline"
+    },
+    {
+      "id": "doc-15",
+      "document": "appointment letter",
+      "expect_field": "salary, role, joining date"
+    },
+    {
+      "id": "doc-16",
+      "document": "experience certificate",
+      "expect_field": "tenure, designation"
+    },
+    {
+      "id": "doc-17",
+      "document": "PF withdrawal form",
+      "expect_field": "account, amount"
+    },
+    {
+      "id": "doc-18",
+      "document": "court order",
+      "expect_field": "direction, next hearing"
+    },
+    {
+      "id": "doc-19",
+      "document": "legal aid application",
+      "expect_field": "applicant, eligibility"
+    },
+    {
+      "id": "doc-20",
+      "document": "Tele-Law referral slip",
+      "expect_field": "advocate, appointment"
+    }
+  ]
+}

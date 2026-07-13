@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "review_status": "pending_independent_review",
+  "note": "Scored against src/tools/consequences deadline records; every record must cite an official source or be marked general guidance.",
+  "queries": [
+    {
+      "id": "dl-01",
+      "domain": "labour",
+      "query": "I have not applied about my unpaid wages, what is my time limit",
+      "expect_deadline": true
+    },
+    {
+      "id": "dl-02",
+      "domain": "consumer",
+      "query": "how long do I have to file a consumer complaint",
+      "expect_deadline": true
+    },
+    {
+      "id": "dl-03",
+      "domain": "consumer",
+      "query": "time limit to appeal a district commission order",
+      "expect_deadline": true
+    },
+    {
+      "id": "dl-04",
+      "domain": "labour",
+      "query": "what happens if I do nothing about my wage claim",
+      "expect_deadline": true
+    },
+    {
+      "id": "dl-05",
+      "domain": "consumer",
+      "query": "what if I miss the consumer complaint deadline",
+      "expect_deadline": true
+    },
+    {
+      "id": "dl-06",
+      "domain": "labour",
+      "query": "is there a deadline to claim my bonus",
+      "expect_deadline": "maybe"
+    },
+    {
+      "id": "dl-07",
+      "domain": "tenancy_property",
+      "query": "deadline to challenge an eviction notice",
+      "expect_deadline": "maybe"
+    },
+    {
+      "id": "dl-08",
+      "domain": "criminal",
+      "query": "time limit to respond to an FIR",
+      "expect_deadline": "maybe"
+    },
+    {
+      "id": "dl-09",
+      "domain": "consumer",
+      "query": "limitation period for product liability claim",
+      "expect_deadline": "maybe"
+    },
+    {
+      "id": "dl-10",
+      "domain": "labour",
+      "query": "consequence of not raising a minimum wage dispute",
+      "expect_deadline": "maybe"
+    },
+    {
+      "id": "dl-11",
+      "domain": "consumer",
+      "query": "how many days to appeal to the state commission",
+      "expect_deadline": true
+    },
+    {
+      "id": "dl-12",
+      "domain": "labour",
+      "query": "can the authority accept a late wage claim",
+      "expect_deadline": true
+    },
+    {
+      "id": "dl-13",
+      "domain": "consumer",
+      "query": "what if the seller ignores my complaint",
+      "expect_deadline": "maybe"
+    },
+    {
+      "id": "dl-14",
+      "domain": "tenancy_property",
+      "query": "deadline to deposit rent in a dispute",
+      "expect_deadline": "maybe"
+    },
+    {
+      "id": "dl-15",
+      "domain": "labour",
+      "query": "time bar on wage recovery",
+      "expect_deadline": true
+    },
+    {
+      "id": "dl-16",
+      "domain": "consumer",
+      "query": "limitation for filing before national commission",
+      "expect_deadline": "maybe"
+    },
+    {
+      "id": "dl-17",
+      "domain": "criminal",
+      "query": "what happens if I ignore a summons",
+      "expect_deadline": "maybe"
+    },
+    {
+      "id": "dl-18",
+      "domain": "labour",
+      "query": "consequence of delay in claiming deducted wages",
+      "expect_deadline": true
+    },
+    {
+      "id": "dl-19",
+      "domain": "consumer",
+      "query": "deadline after a defective product is delivered",
+      "expect_deadline": "maybe"
+    },
+    {
+      "id": "dl-20",
+      "domain": "consumer",
+      "query": "if I do not appeal within the period what happens",
+      "expect_deadline": true
+    }
+  ]
+}

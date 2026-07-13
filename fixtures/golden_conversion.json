@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "review_status": "authored_scoring_blocked",
+  "note": "Scoring requires the human-reviewed IPC/BNS mapping catalogue (currently empty; config/ipc_bns_mappings.json holds REVIEWER_MUST_SET stubs). Until curated, the converter correctly returns not_found. These questions define the target once mappings are approved.",
+  "queries": [
+    {
+      "id": "conv-01",
+      "ipc_query": "IPC 302"
+    },
+    {
+      "id": "conv-02",
+      "ipc_query": "IPC 420"
+    },
+    {
+      "id": "conv-03",
+      "ipc_query": "IPC 376"
+    },
+    {
+      "id": "conv-04",
+      "ipc_query": "IPC 379"
+    },
+    {
+      "id": "conv-05",
+      "ipc_query": "IPC 304B"
+    },
+    {
+      "id": "conv-06",
+      "ipc_query": "IPC 498A"
+    },
+    {
+      "id": "conv-07",
+      "ipc_query": "IPC 307"
+    },
+    {
+      "id": "conv-08",
+      "ipc_query": "IPC 323"
+    },
+    {
+      "id": "conv-09",
+      "ipc_query": "IPC 354"
+    },
+    {
+      "id": "conv-10",
+      "ipc_query": "IPC 406"
+    },
+    {
+      "id": "conv-11",
+      "ipc_query": "IPC 34"
+    },
+    {
+      "id": "conv-12",
+      "ipc_query": "IPC 120B"
+    },
+    {
+      "id": "conv-13",
+      "ipc_query": "IPC 141"
+    },
+    {
+      "id": "conv-14",
+      "ipc_query": "IPC 147"
+    },
+    {
+      "id": "conv-15",
+      "ipc_query": "IPC 300"
+    },
+    {
+      "id": "conv-16",
+      "ipc_query": "IPC 375"
+    },
+    {
+      "id": "conv-17",
+      "ipc_query": "IPC 378"
+    },
+    {
+      "id": "conv-18",
+      "ipc_query": "IPC 390"
+    },
+    {
+      "id": "conv-19",
+      "ipc_query": "IPC 405"
+    },
+    {
+      "id": "conv-20",
+      "ipc_query": "IPC 415"
+    },
+    {
+      "id": "conv-21",
+      "ipc_query": "section 302 IPC equivalent in BNS"
+    },
+    {
+      "id": "conv-22",
+      "ipc_query": "what is the new section for cheating"
+    },
+    {
+      "id": "conv-23",
+      "ipc_query": "old law for murder"
+    },
+    {
+      "id": "conv-24",
+      "ipc_query": "IPC 326"
+    },
+    {
+      "id": "conv-25",
+      "ipc_query": "IPC 363"
+    },
+    {
+      "id": "conv-26",
+      "ipc_query": "IPC 341"
+    },
+    {
+      "id": "conv-27",
+      "ipc_query": "IPC 447"
+    },
+    {
+      "id": "conv-28",
+      "ipc_query": "IPC 500"
+    },
+    {
+      "id": "conv-29",
+      "ipc_query": "IPC 506"
+    },
+    {
+      "id": "conv-30",
+      "ipc_query": "IPC 509"
+    }
+  ]
+}
