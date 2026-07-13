@@ -112,3 +112,35 @@ def test_the_model_client_refuses_any_non_loopback_host() -> None:
 
     for url in ("http://127.0.0.1:11434", "http://localhost:11434", "http://[::1]:11434"):
         assert OllamaClient(url).base_url.startswith("http://")
+
+
+def test_nothing_in_the_serving_path_logs_a_citizens_case() -> None:
+    """A log line is a copy. The case must not end up in one.
+
+    There is no application logging in the request path, and the server's access log
+    is off, so no case fact reaches a log file. Assert it rather than rely on it
+    staying true.
+    """
+
+    serving = [
+        Path("src/api/app.py"),
+        Path("src/api/state.py"),
+        Path("src/pipeline.py"),
+        Path("src/agents/drafter.py"),
+        Path("src/agents/verifier.py"),
+        Path("src/agents/researcher.py"),
+    ]
+    for path in serving:
+        if not path.is_file():
+            continue
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            stripped = line.strip()
+            if stripped.startswith("#"):
+                continue
+            for call in ("logger.", "logging.", "print("):
+                assert call not in stripped, f"{path}:{number} logs in the serving path"
+
+    launcher = Path("scripts/serve_api.py")
+    if launcher.is_file():
+        # Uvicorn's access log records every request line. Off.
+        assert "access_log=False" in launcher.read_text(encoding="utf-8")
