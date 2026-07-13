@@ -16,7 +16,7 @@ hardware, evaluation, or end-to-end demo gates from backend primitives alone.
 ### Core journey — must work end to end
 
 - [x] Accept English, Hindi, and Hinglish text input through the local intake interface.
-- [ ] Accept Hindi/English voice input and display the transcript before legal processing. (Backend `/api/transcribe` done and tested; React client has no mic control yet, so not usable end to end.)
+- [x] Accept Hindi/English voice input and display the transcript before legal processing.
 - [ ] Accept a photo/PDF of an FIR, notice, summons, wage document, or rental document.
 - [ ] Extract a structured case summary: people, dates, location, dispute, documents, urgency, and missing facts.
 - [x] Restate explicit facts in plain language and require confirmation before backend retrieval.

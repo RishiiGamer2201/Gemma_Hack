@@ -238,6 +238,15 @@ export interface OcrResponse {
   processing_seconds?: number;
 }
 
+/** TranscriptResponse from POST /api/transcribe. The transcript is a DRAFT. */
+export interface TranscriptResponse {
+  transcript: string;
+  detected_language: string | null;
+  language_probability: number | null;
+  backend?: string;
+  processing_seconds?: number;
+}
+
 /** ClaimVerdict — the independent verifier's finding for one claim. */
 export type ClaimVerdict = "supported" | "contradicted" | "insufficient";
 

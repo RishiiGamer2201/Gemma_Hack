@@ -7,6 +7,7 @@ import {
 } from "../api/client";
 import type { OcrResponse } from "../api/types";
 import { ErrorNotice, Progress } from "./Feedback";
+import { MicRecorder } from "./MicRecorder";
 
 interface Props {
   text: string;
@@ -103,6 +104,22 @@ export function IntakePanel({
           <p className="hint" id="intake-help">
             {text.trim().length} characters. At least {MIN_CHARS} characters are
             needed before the facts can be extracted.
+          </p>
+        </div>
+
+        <div className="field">
+          <span className="field-label">Or speak your situation (optional)</span>
+          <MicRecorder
+            language="auto"
+            disabled={submitting || ocrBusy}
+            onTranscript={(spoken) => {
+              const separator = text.trim() ? "\n\n" : "";
+              onTextChange(`${text}${separator}${spoken}`);
+            }}
+          />
+          <p className="hint">
+            Up to one minute. The recording is transcribed on this machine and the
+            text is added above so you can correct it. The audio is not stored.
           </p>
         </div>
 

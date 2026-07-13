@@ -14,6 +14,7 @@ import type {
   LegalAidResponse,
   OcrResponse,
   RouteResponse,
+  TranscriptResponse,
 } from "./types";
 
 export class ApiError extends Error {
@@ -254,6 +255,83 @@ export async function postOcr(file: File, signal?: AbortSignal): Promise<OcrResp
   const form = new FormData();
   form.append("file", file, file.name);
   return request<OcrResponse>("/api/ocr", {
+    method: "POST",
+    body: form,
+    signal,
+  });
+}
+
+// The backend accepts only WAV/FLAC; the browser's MediaRecorder produces
+// WebM/Opus, which it rejects. So mic audio is captured as raw PCM and encoded
+// into a 16 kHz mono 16-bit WAV here, entirely in the browser. Nothing is uploaded
+// anywhere except the loopback backend.
+export const TRANSCRIBE_SAMPLE_RATE = 16_000;
+
+/** Downsample interleaved-mono Float32 PCM to the target rate by averaging windows. */
+function downsample(input: Float32Array, inputRate: number, targetRate: number): Float32Array {
+  if (targetRate >= inputRate) {
+    return input;
+  }
+  const ratio = inputRate / targetRate;
+  const outputLength = Math.floor(input.length / ratio);
+  const output = new Float32Array(outputLength);
+  for (let i = 0; i < outputLength; i += 1) {
+    const start = Math.floor(i * ratio);
+    const end = Math.min(Math.floor((i + 1) * ratio), input.length);
+    let sum = 0;
+    for (let j = start; j < end; j += 1) {
+      sum += input[j];
+    }
+    output[i] = sum / Math.max(1, end - start);
+  }
+  return output;
+}
+
+/** Encode mono Float32 PCM as a 16-bit PCM WAV the backend's validator accepts. */
+export function encodeWav(samples: Float32Array, sampleRate: number): Blob {
+  const buffer = new ArrayBuffer(44 + samples.length * 2);
+  const view = new DataView(buffer);
+  const writeString = (offset: number, text: string) => {
+    for (let i = 0; i < text.length; i += 1) {
+      view.setUint8(offset + i, text.charCodeAt(i));
+    }
+  };
+  const dataBytes = samples.length * 2;
+  writeString(0, "RIFF");
+  view.setUint32(4, 36 + dataBytes, true);
+  writeString(8, "WAVE");
+  writeString(12, "fmt ");
+  view.setUint32(16, 16, true); // PCM fmt chunk size
+  view.setUint16(20, 1, true); // audio format = PCM
+  view.setUint16(22, 1, true); // mono
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * 2, true); // byte rate = rate * blockAlign
+  view.setUint16(32, 2, true); // block align = channels * bytesPerSample
+  view.setUint16(34, 16, true); // bits per sample
+  writeString(36, "data");
+  view.setUint32(40, dataBytes, true);
+  let offset = 44;
+  for (let i = 0; i < samples.length; i += 1) {
+    const clamped = Math.max(-1, Math.min(1, samples[i]));
+    view.setInt16(offset, clamped < 0 ? clamped * 0x8000 : clamped * 0x7fff, true);
+    offset += 2;
+  }
+  return new Blob([buffer], { type: "audio/wav" });
+}
+
+export function pcmToWav(samples: Float32Array, inputRate: number): Blob {
+  return encodeWav(downsample(samples, inputRate, TRANSCRIBE_SAMPLE_RATE), TRANSCRIBE_SAMPLE_RATE);
+}
+
+export async function postTranscribe(
+  wav: Blob,
+  language: "auto" | "hi" | "en" = "auto",
+  signal?: AbortSignal,
+): Promise<TranscriptResponse> {
+  const form = new FormData();
+  form.append("file", wav, "speech.wav");
+  form.append("language", language);
+  return request<TranscriptResponse>("/api/transcribe", {
     method: "POST",
     body: form,
     signal,
