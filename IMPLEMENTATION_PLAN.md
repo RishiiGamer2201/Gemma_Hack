@@ -16,7 +16,7 @@ hardware, evaluation, or end-to-end demo gates from backend primitives alone.
 ### Core journey — must work end to end
 
 - [x] Accept English, Hindi, and Hinglish text input through the local intake interface.
-- [x] Accept Hindi/English voice input and display the transcript before legal processing.
+- [ ] Accept Hindi/English voice input and display the transcript before legal processing. (Backend `/api/transcribe` done and tested; React client has no mic control yet, so not usable end to end.)
 - [ ] Accept a photo/PDF of an FIR, notice, summons, wage document, or rental document.
 - [ ] Extract a structured case summary: people, dates, location, dispute, documents, urgency, and missing facts.
 - [x] Restate explicit facts in plain language and require confirmation before backend retrieval.
@@ -104,7 +104,7 @@ Devil's Advocate / Rights Card / Checklist / Legal Aid / Community mode
 - [ ] Streamlit for the hackathon UI; keep backend logic framework-independent.
 - [ ] Ollama or llama.cpp for local Gemma 4 inference.
 - [ ] Gemma 4 E4B Q4 as target; E2B as latency fallback.
-- [ ] EmbeddingGemma for multilingual semantic embeddings.
+- [x] EmbeddingGemma for multilingual semantic embeddings.
 - [ ] FAISS for dense vectors.
 - [ ] `rank-bm25` or SQLite FTS5 for exact retrieval.
 - [x] Strict Pydantic schemas for legal intake, safety, mapping, answer, and verification boundaries.
@@ -121,13 +121,13 @@ Devil's Advocate / Rights Card / Checklist / Legal Aid / Community mode
 - [x] Create `src/models/` for Pydantic schemas.
 - [x] Create `src/intake/` with deterministic text intake; voice and OCR remain pending.
 - [x] Create `src/retrieval/` for BM25, optional embedding callbacks, filtering, fusion, deduplication, and debug traces.
-- [ ] Add the concrete EmbeddingGemma/FAISS vector implementation to `src/retrieval/`.
+- [x] Add the concrete EmbeddingGemma/FAISS vector implementation to `src/retrieval/`.
 - [x] Create `src/legal_time/` for effective-date logic and IPC/BNS mapping.
 - [x] Create `src/agents/` for researcher, strategist, verifier, and Devil's Advocate prompts.
 - [ ] Create `src/tools/` for legal aid, Rights Card, checklist, and document explanation.
 - [x] Create `src/workflow/` for the deterministic state machine.
 - [x] Create `scripts/` for corpus download/import and implemented local feature commands.
-- [x] Add index-building and evaluation commands to `scripts/`.
+- [ ] Add index-building and evaluation commands to `scripts/`. (`scripts/build_index.py` done; evaluation command pending the Phase L golden set.)
 - [x] Create `tests/` with unit, component-integration, and retrieval fixtures.
 - [ ] Add true end-to-end demo-scenario fixtures.
 - [x] Create ignored `data/raw/` and `data/processed/` directories.
@@ -278,7 +278,7 @@ Dependency: processed corpus
 
 - [ ] Recall@5 ≥ 0.85 on the reviewed MVP evaluation set.
 - [ ] Current-law routing accuracy ≥ 0.95 on BNS/IPC tests.
-- [x] Hybrid retrieval beats both BM25-only and vector-only baselines.
+- [ ] Hybrid retrieval beats both BM25-only and vector-only baselines. (Measured hybrid 0.80 vs BM25-only 0.50 on a 10-query set; vector-only not yet measured — see docs/RETRIEVAL_QUALITY.md.)
 - [ ] No repealed-law result is presented as current without an explicit warning.
 
 ## 10. Phase F — Intake and confirmation workflow
@@ -401,7 +401,7 @@ Owner: Member C
 - [ ] Show the confirmation card before analysis.
 - [ ] Show urgency notices above normal content.
 - [ ] Render answers as situation → law → options → checklist → sources.
-- [ ] Make citations expandable and copyable.
+- [x] Make citations expandable and copyable.
 - [ ] Add Simple/Detailed output toggle.
 - [ ] Add English/Hindi output toggle.
 - [ ] Add Devil's Advocate as an optional action after the verified answer.
@@ -417,13 +417,13 @@ Owner: Member C
 
 - [x] Bind implemented local inference services to loopback hosts and reject remote endpoints.
 - [ ] Verify the app works with Wi-Fi disabled.
-- [ ] Disable analytics, telemetry, remote fonts, and CDN assets.
-- [ ] Do not persist uploaded documents by default.
+- [x] Disable analytics, telemetry, remote fonts, and CDN assets.
+- [x] Do not persist uploaded documents by default.
 - [ ] Delete temporary OCR/audio files after the session.
 - [ ] Add a visible “clear session” control.
 - [ ] Redact sensitive case facts before application logs.
 - [ ] Keep logs opt-in and local.
-- [ ] Validate file types, size, and decompression limits.
+- [x] Validate file types, size, and decompression limits.
 - [x] Detect and ignore prompt-injection patterns in caller-supplied untrusted document text.
 - [ ] Integrate prompt-injection protection with the future upload/OCR pipeline.
 - [ ] Document exactly what stays on the device.
