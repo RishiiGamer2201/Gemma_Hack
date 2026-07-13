@@ -204,7 +204,8 @@ def test_approved_profile_debug_trace_is_json_serializable_and_stable() -> None:
     trace = retriever.search_with_debug("premises", filters=filters).trace
     payload = json.dumps(dict(trace.active_filters), sort_keys=True)
     assert payload == (
-        '{"applicability_profiles": ["delhi_rent_control_act_1958"]}'
+        '{"applicability_profiles": ["delhi_rent_control_act_1958"], '
+        '"include_undated_sources": false}'
     )
 
 

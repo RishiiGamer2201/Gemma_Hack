@@ -545,12 +545,13 @@
       "language": "en",
       "jurisdiction": "India",
       "document_type": "constitution",
-      "effective_from": null,
+      "effective_from": "1950-01-26",
       "effective_to": null,
       "status": "in_force",
       "priority": 1,
       "parser": "auto",
       "required": true,
+      "review_note": "Article 394 of the source text fixes commencement: the remaining provisions come into force on the twenty-sixth day of January, 1950. The date is taken from the Act text itself, not from external memory.",
       "allowed_hosts": ["www.legislative.gov.in"]
     },
     {
@@ -562,12 +563,13 @@
       "language": "hi-en",
       "jurisdiction": "India",
       "document_type": "constitution",
-      "effective_from": null,
+      "effective_from": "1950-01-26",
       "effective_to": null,
       "status": "in_force",
       "priority": 1,
       "parser": "auto",
       "required": true,
+      "review_note": "Article 394 of the source text fixes commencement on 26 January 1950. Diglot edition of the same instrument.",
       "allowed_hosts": ["www.legislative.gov.in"]
     }
   ]

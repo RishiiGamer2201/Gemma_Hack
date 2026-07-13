@@ -1,6 +1,7 @@
 """Deterministic, offline retrieval primitives for official-source corpora."""
 
 from .bm25 import BM25Index
+from .corpus import CorpusLoadError, load_processed_corpus, to_source_evidence
 from .debug import DebugSearchResult, RetrievalDebugTrace, corpus_sha256
 from .hybrid import HybridRetriever
 from .query import REVIEWED_LEGAL_SYNONYM_GROUPS, QueryExpander, QueryExpansion
@@ -8,6 +9,7 @@ from .types import RetrievalDocument, RetrievalResult, SearchFilters
 
 __all__ = [
     "BM25Index",
+    "CorpusLoadError",
     "DebugSearchResult",
     "HybridRetriever",
     "QueryExpander",
@@ -18,4 +20,6 @@ __all__ = [
     "RetrievalResult",
     "SearchFilters",
     "corpus_sha256",
+    "load_processed_corpus",
+    "to_source_evidence",
 ]

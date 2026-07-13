@@ -102,6 +102,9 @@ class SourceEvidence(StrictModel):
     heading: ShortText | None = None
     language: Annotated[str, Field(min_length=2, max_length=35)] = "en"
     excerpt: NonEmptyText
+    # True when the stored provision exceeded the excerpt bound and was cut. A
+    # truncated excerpt must never be presented as a complete provision.
+    excerpt_truncated: bool = False
     effective_from: date | None = None
     effective_to: date | None = None
     status: Annotated[str, Field(min_length=1, max_length=50)] = "in_force"

@@ -67,6 +67,13 @@ class SearchFilters:
     ISO dates or ``date`` objects; malformed dates are excluded, not guessed.
     A document declaring ``applicability_profile_id`` is excluded unless that
     exact profile appears in ``applicability_profiles`` after a separate facts gate.
+
+    Many Indian statutes commence "on such date as the Central Government may, by
+    notification, appoint", so the act text alone cannot prove an effective date.
+    Such a source records no ``effective_from`` and is excluded by default. Setting
+    ``include_undated_sources`` admits it, but the caller then owes the user an
+    explicit "commencement not verified" warning on every resulting citation: an
+    undated source is *unproven*, not *proven current*.
     """
 
     jurisdiction: str | None = None
@@ -76,6 +83,7 @@ class SearchFilters:
     document_type: str | None = None
     effective_on: DateLike | None = None
     applicability_profiles: frozenset[str] = frozenset()
+    include_undated_sources: bool = False
 
     def __post_init__(self) -> None:
         for field_name in ("jurisdiction", "language", "status", "act", "document_type"):
@@ -135,7 +143,9 @@ class SearchFilters:
             return False
         if effective_from is None:
             # Legal applicability cannot be inferred when the start date is absent.
-            return False
+            # It may only be admitted where the caller has undertaken to label the
+            # citation as having an unverified commencement date.
+            return self.include_undated_sources
         return effective_from <= self.effective_on and (
             effective_to is None or self.effective_on <= effective_to
         )
