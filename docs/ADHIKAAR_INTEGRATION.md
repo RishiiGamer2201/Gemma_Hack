@@ -59,8 +59,34 @@ committed, reproducible record.
 4. Move approved entries into `config/ipc_bns_mappings.json`, filling `change_notes`,
    `reviewed_by`, and `reviewed_at`. Only then does the converter serve them.
 
-## Not imported (per the integration decision)
+## Legal-aid directory (second pass)
 
-The teammate's 20-state legal-aid directory, rights-knowledge, and 11-language
-prompt set were left for a later pass. They carry no provenance and need the same
-candidate-plus-review treatment before use.
+`scripts/import_adhikaar_legal_aid.py` imports the teammate's 98 district contacts
+as `pending_human_review` candidates and cross-checks his 20 SLSA numbers against
+our 34 verified state contacts (built from a NALSA snapshot with provenance).
+
+The cross-check earned its keep here. Of the 15 states where we hold a published
+number to compare, **14 of the teammate's SLSA numbers conflict** with ours and only
+1 agrees (5 states we list as "not published", so there is nothing to compare). The
+disagreements are real, not formatting — e.g. Maharashtra: teammate `022-22617612`
+vs our verified `022-22691395 / 22691358`; Karnataka: teammate `080-22112700` vs our
+`080-22111875 / 22111714`. Plausibly formatted but different numbers is the signature
+of fabricated contact data, and a wrong helpline shown to a person in crisis is the
+worst failure this project can make.
+
+Conclusion: **do not use the teammate's legal-aid contacts.** Our verified 34-state
+SLSA directory is better, and it already covers non-Delhi routing. The 98 district
+candidates are retained for review only and must each be confirmed against the
+official DLSA site before any is shown; given the SLSA conflict rate they should be
+treated with high suspicion.
+
+## Mapping reviewer worksheet
+
+`docs/MAPPING_REVIEW_WORKSHEET.md` lists the 15 mapping conflicts side by side with
+our NCRB snapshot's BNS section and a decision checkbox, so the human review can
+start immediately on the rows that matter.
+
+## Not imported
+
+The teammate's rights-knowledge and 11-language prompt set were left for a later
+pass. They carry no provenance and need the same candidate-plus-review treatment.
