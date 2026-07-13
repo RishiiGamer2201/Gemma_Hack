@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime
 import hashlib
-from html.parser import HTMLParser
 import json
-from pathlib import Path
 import re
+from datetime import date, datetime
+from html.parser import HTMLParser
+from pathlib import Path
 from typing import Annotated
 
 from pydantic import Field, HttpUrl

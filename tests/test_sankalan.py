@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import json
-from pathlib import Path
 import tempfile
 import unittest
+from pathlib import Path
 
 from src.legal_time.sankalan import SankalanError, parse_verified_sankalan
 

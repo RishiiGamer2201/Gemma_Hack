@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
-from types import MappingProxyType
 import unittest
+from datetime import UTC, date, datetime
 
 from src.retrieval import (
     HybridRetriever,
@@ -193,14 +192,14 @@ class RetrievalQualityReviewTests(unittest.TestCase):
             text="text",
             metadata={
                 "map": {"b": 2, "a": [date(2026, 1, 1), {"z", "a"}]},
-                "timestamp": datetime(2026, 1, 1, tzinfo=timezone.utc),
+                "timestamp": datetime(2026, 1, 1, tzinfo=UTC),
             },
         )
         second = RetrievalDocument(
             source_id="nested",
             text="text",
             metadata={
-                "timestamp": datetime(2026, 1, 1, tzinfo=timezone.utc),
+                "timestamp": datetime(2026, 1, 1, tzinfo=UTC),
                 "map": {"a": [date(2026, 1, 1), {"a", "z"}], "b": 2},
             },
         )

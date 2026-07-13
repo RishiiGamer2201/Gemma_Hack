@@ -1,16 +1,15 @@
 from __future__ import annotations
 
-from contextlib import redirect_stderr, redirect_stdout
-from copy import deepcopy
 import io
 import json
-from pathlib import Path
 import tempfile
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
+from copy import deepcopy
+from pathlib import Path
 
 from scripts.get_evidence_checklist import main as checklist_cli
 from src.actions.checklists import ChecklistCatalog, ChecklistError
-
 
 ROOT = Path(__file__).resolve().parents[1]
 CATALOGUE = ROOT / "config" / "evidence_checklists.json"

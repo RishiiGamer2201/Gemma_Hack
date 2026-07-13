@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
-
+from pathlib import Path
 
 # Support ``python scripts/build_corpus.py`` from the repository root without an
 # editable installation.  Importing the pipeline performs no network calls.

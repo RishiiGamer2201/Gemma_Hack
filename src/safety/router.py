@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from typing import Iterable
+from collections.abc import Iterable
 
 from src.intake import MAX_INPUT_CHARACTERS, UrgencyCategory, normalize_intake_text
 from src.models import ConfirmedFacts, LegalDomain, WorkflowStage
@@ -19,7 +19,6 @@ from .models import (
     RoutePriority,
     SafetyRouteDecision,
 )
-
 
 MAX_UNTRUSTED_DOCUMENTS = 5
 MAX_DOCUMENT_CHARACTERS = MAX_INPUT_CHARACTERS

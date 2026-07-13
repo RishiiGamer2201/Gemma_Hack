@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
+import json
+import unicodedata
 from datetime import date
 from enum import StrEnum
-import json
 from pathlib import Path
-import unicodedata
 from typing import Any
 
 from pydantic import ValidationError

@@ -21,7 +21,6 @@ from pydantic import (
     model_validator,
 )
 
-
 NonEmptyText = Annotated[str, Field(min_length=1, max_length=20_000)]
 ShortText = Annotated[str, Field(min_length=1, max_length=500)]
 
@@ -85,7 +84,7 @@ class ConfirmedFacts(StrictModel):
     confirmed_at: AwareDatetime | None = None
 
     @model_validator(mode="after")
-    def confirmation_is_explicit_and_consistent(self) -> "ConfirmedFacts":
+    def confirmation_is_explicit_and_consistent(self) -> ConfirmedFacts:
         if self.confirmed != (self.confirmed_at is not None):
             raise ValueError(
                 "confirmed and confirmed_at must be set together after explicit user confirmation"
@@ -114,7 +113,7 @@ class SourceEvidence(StrictModel):
     ocr_used: bool = False
 
     @model_validator(mode="after")
-    def effective_range_is_ordered(self) -> "SourceEvidence":
+    def effective_range_is_ordered(self) -> SourceEvidence:
         if (
             self.effective_from is not None
             and self.effective_to is not None
@@ -140,7 +139,7 @@ class LegalClaim(StrictModel):
     cited_source_ids: Annotated[tuple[str, ...], Field(min_length=1)]
 
     @model_validator(mode="after")
-    def citation_ids_are_unique(self) -> "LegalClaim":
+    def citation_ids_are_unique(self) -> LegalClaim:
         if len(self.cited_source_ids) != len(set(self.cited_source_ids)):
             raise ValueError("cited_source_ids must be unique within a claim")
         return self
@@ -155,7 +154,7 @@ class ClaimVerification(StrictModel):
     reason: NonEmptyText
 
     @model_validator(mode="after")
-    def supported_claim_has_evidence(self) -> "ClaimVerification":
+    def supported_claim_has_evidence(self) -> ClaimVerification:
         if self.verdict is ClaimVerdict.SUPPORTED and not self.evidence_source_ids:
             raise ValueError("a supported claim must reference at least one evidence source")
         return self
@@ -176,7 +175,7 @@ class StructuredLegalAnswer(StrictModel):
     claims: Annotated[tuple[LegalClaim, ...], Field(min_length=1)]
 
     @model_validator(mode="after")
-    def claim_ids_are_unique(self) -> "StructuredLegalAnswer":
+    def claim_ids_are_unique(self) -> StructuredLegalAnswer:
         ids = [claim.claim_id for claim in self.claims]
         if len(ids) != len(set(ids)):
             raise ValueError("claim_id values must be unique within an answer")

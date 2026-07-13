@@ -1,20 +1,20 @@
 from __future__ import annotations
 
-from contextlib import redirect_stderr, redirect_stdout
-from datetime import datetime, timezone
 import io
 import json
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
+from datetime import UTC, datetime
 from unittest.mock import patch
 
 from pydantic import ValidationError
 
 from scripts.process_text_intake import emit_json, run
 from src.intake import (
+    MAX_INPUT_CHARACTERS,
     DetectedLanguage,
     IntakeFacts,
     LanguageAssessment,
-    MAX_INPUT_CHARACTERS,
     TextIntakeResult,
     UrgencyCategory,
     detect_language,
@@ -217,7 +217,7 @@ class TextIntakeReviewTests(unittest.TestCase):
             **{
                 **result.to_unconfirmed_facts().model_dump(exclude={"confirmed", "confirmed_at"}),
                 "confirmed": True,
-                "confirmed_at": datetime.now(timezone.utc),
+                "confirmed_at": datetime.now(UTC),
             }
         )
         self.assertEqual(workflow.confirm_facts(confirmed).stage, WorkflowStage.CONFIRMED)
@@ -226,7 +226,7 @@ class TextIntakeReviewTests(unittest.TestCase):
         base = {
             "incident_summary": "Test",
             "confirmed": "true",
-            "confirmed_at": datetime.now(timezone.utc),
+            "confirmed_at": datetime.now(UTC),
         }
         with self.assertRaises(ValidationError):
             ConfirmedFacts.model_validate(base)

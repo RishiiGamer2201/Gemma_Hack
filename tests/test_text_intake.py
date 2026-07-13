@@ -1,17 +1,17 @@
 from __future__ import annotations
 
-from contextlib import redirect_stdout
 import io
 import json
 import unittest
+from contextlib import redirect_stdout
 
 from pydantic import ValidationError
 
 from scripts.process_text_intake import run
 from src.intake import (
+    MAX_INPUT_CHARACTERS,
     DetectedLanguage,
     IntakeFacts,
-    MAX_INPUT_CHARACTERS,
     TextIntakeResult,
     UrgencyCategory,
     detect_language,

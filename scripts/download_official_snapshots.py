@@ -3,14 +3,18 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.corpus.snapshots import SnapshotError, download_snapshot, load_snapshot_manifest  # noqa: E402
+from src.corpus.snapshots import (  # noqa: E402
+    SnapshotError,
+    download_snapshot,
+    load_snapshot_manifest,
+)
 
 
 def main(argv: list[str] | None = None) -> int:

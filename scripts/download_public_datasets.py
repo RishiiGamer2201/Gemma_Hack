@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
 import hashlib
 import json
-from pathlib import Path, PurePath
 import sys
+from datetime import UTC, datetime
+from pathlib import Path, PurePath
 from typing import Any
 
 
@@ -68,7 +68,7 @@ def _write_receipt(root: Path, record: dict[str, str]) -> None:
     files, byte_count = _hash_files(root)
     receipt = {
         **record,
-        "retrieved_at": datetime.now(timezone.utc).isoformat(),
+        "retrieved_at": datetime.now(UTC).isoformat(),
         "file_count": len(files),
         "byte_count": byte_count,
         "files": files,

@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from datetime import date
 import unittest
+from datetime import date
 
 from src.retrieval import BM25Index, HybridRetriever, RetrievalDocument, SearchFilters
 from src.retrieval.tokenize import tokenize
-
 
 DOCUMENTS = (
     RetrievalDocument(

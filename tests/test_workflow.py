@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
 import unittest
+from datetime import UTC, date, datetime
 
 from src.models import (
     ClaimVerdict,
@@ -21,7 +21,7 @@ def facts(*, confirmed: bool) -> ConfirmedFacts:
         incident_date=date(2025, 1, 1),
         jurisdiction="India",
         confirmed=confirmed,
-        confirmed_at=datetime.now(timezone.utc) if confirmed else None,
+        confirmed_at=datetime.now(UTC) if confirmed else None,
     )
 
 
@@ -35,7 +35,7 @@ def evidence() -> SourceEvidence:
         effective_from=date(2025, 1, 1),
         status="in_force",
         official_url="https://example.invalid/source",
-        retrieved_at=datetime.now(timezone.utc),
+        retrieved_at=datetime.now(UTC),
         sha256="0" * 64,
     )
 

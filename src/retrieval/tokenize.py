@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import unicodedata
 
-
 # Characters commonly internal to citations and section identifiers. Parentheses
 # are handled separately so ``316(2)(a)`` remains one token.
 _INTERNAL = frozenset({".", "/", "-", "_", ":"})

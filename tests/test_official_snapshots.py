@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from email.message import Message
 import json
-from pathlib import Path
 import tempfile
 import unittest
+from email.message import Message
+from pathlib import Path
 from unittest.mock import patch
 
 from pydantic import ValidationError

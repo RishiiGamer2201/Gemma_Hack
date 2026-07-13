@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from contextlib import redirect_stderr, redirect_stdout
-from datetime import date, datetime, timezone
 import io
 import json
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
+from datetime import UTC, date, datetime
 
 from pydantic import ValidationError
 
@@ -33,7 +33,7 @@ def facts(**updates: object) -> ConfirmedFacts:
         "domain": LegalDomain.LABOUR,
         "parties": ("Worker", "Employer"),
         "confirmed": True,
-        "confirmed_at": datetime.now(timezone.utc),
+        "confirmed_at": datetime.now(UTC),
     }
     payload.update(updates)
     return ConfirmedFacts(**payload)
@@ -50,7 +50,7 @@ def confirmed_workflow(case_facts: ConfirmedFacts) -> LegalWorkflow:
 
 class SafetyRouterReviewTests(unittest.TestCase):
     def test_confirmation_is_a_hard_gate_for_every_route_input(self) -> None:
-        for confirmed, confirmed_at in ((False, None), (False, datetime.now(timezone.utc))):
+        for confirmed, confirmed_at in ((False, None), (False, datetime.now(UTC))):
             with self.subTest(confirmed=confirmed, confirmed_at=confirmed_at):
                 try:
                     case = facts(confirmed=confirmed, confirmed_at=confirmed_at)

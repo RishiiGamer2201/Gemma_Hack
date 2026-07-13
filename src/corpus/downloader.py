@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
 import hashlib
 import json
 import os
-from pathlib import Path
 import tempfile
-from typing import Any
+from dataclasses import asdict, dataclass
+from datetime import UTC, datetime
+from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
@@ -137,7 +136,7 @@ def download_source(
         filename=source.filename,
         url=source.url,
         official_landing_url=source.official_landing_url,
-        downloaded_at=datetime.now(timezone.utc).isoformat(),
+        downloaded_at=datetime.now(UTC).isoformat(),
         byte_count=len(body),
         sha256=digest,
         content_type=content_type,

@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from datetime import date, datetime
 import hashlib
 import json
 import math
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
+from datetime import date, datetime
 from types import MappingProxyType
-from typing import Any, Mapping, Sequence
+from typing import Any
 
 from .types import RetrievalDocument, RetrievalResult
 

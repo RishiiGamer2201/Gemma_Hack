@@ -10,7 +10,6 @@ from pydantic import BaseModel, ConfigDict, Field, StrictBool, model_validator
 
 from src.models import ConfirmedFacts, LegalDomain
 
-
 ShortText = Annotated[str, Field(min_length=1, max_length=500)]
 NarrativeText = Annotated[str, Field(min_length=1, max_length=20_000)]
 
@@ -66,7 +65,7 @@ class IntakeFacts(IntakeModel):
     missing_material_facts: tuple[ShortText, ...] = ()
 
     @model_validator(mode="after")
-    def repeated_values_are_unique(self) -> "IntakeFacts":
+    def repeated_values_are_unique(self) -> IntakeFacts:
         scalar_values = (self.incident_summary, self.jurisdiction, self.location)
         if any(value is not None and not value.strip() for value in scalar_values):
             raise ValueError("structured text fields must not be blank")
@@ -89,7 +88,7 @@ class TextIntakeResult(IntakeModel):
     confirmed: Annotated[StrictBool, Field(default=False)] = False
 
     @model_validator(mode="after")
-    def result_cannot_arrive_confirmed(self) -> "TextIntakeResult":
+    def result_cannot_arrive_confirmed(self) -> TextIntakeResult:
         if self.confirmed:
             raise ValueError("text intake must be confirmed explicitly by the user")
         return self

@@ -3,14 +3,14 @@
 from __future__ import annotations
 
 import argparse
-from datetime import date
 import json
+from collections.abc import Sequence
+from datetime import date
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any
 
 from src.config import Settings
 from src.retrieval import HybridRetriever, RetrievalDocument, SearchFilters
-
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_FIXTURE = PROJECT_ROOT / "fixtures" / "retrieval_corpus.json"

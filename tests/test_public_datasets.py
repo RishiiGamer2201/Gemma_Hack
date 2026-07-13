@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from contextlib import redirect_stderr, redirect_stdout
 import io
 import json
-from pathlib import Path
 import tempfile
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
+from pathlib import Path
 
 from scripts.download_public_datasets import main
 

@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from datetime import date
 import re
 import unicodedata
+from datetime import date
 
 from src.models import LegalDomain
 
@@ -16,7 +16,6 @@ from .models import (
     UrgencyCategory,
     UrgencySignal,
 )
-
 
 MAX_INPUT_CHARACTERS = 20_000
 

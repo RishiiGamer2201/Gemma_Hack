@@ -1,16 +1,15 @@
 from __future__ import annotations
 
-from email.message import Message
 import hashlib
 import json
-from pathlib import Path
 import tempfile
 import unittest
+from email.message import Message
+from pathlib import Path
 from unittest.mock import patch
 
 from src.corpus.downloader import DownloadError, download_source
 from src.corpus.manifest import OfficialSource
-
 from tests.test_corpus_manifest import source_payload
 
 
@@ -30,7 +29,7 @@ class FakeResponse:
         if content_length is not None:
             self.headers["Content-Length"] = content_length
 
-    def __enter__(self) -> "FakeResponse":
+    def __enter__(self) -> FakeResponse:
         return self
 
     def __exit__(self, *args: object) -> None:

@@ -11,7 +11,6 @@ from pydantic import BaseModel, ConfigDict, Field, StrictBool, model_validator
 from src.intake import UrgencyCategory
 from src.models import LegalDomain
 
-
 ShortText = Annotated[str, Field(min_length=1, max_length=500)]
 
 
@@ -67,7 +66,7 @@ class SafetyRouteDecision(SafetyModel):
     terminal_reason: ShortText | None = None
 
     @model_validator(mode="after")
-    def priority_flags_are_consistent(self) -> "SafetyRouteDecision":
+    def priority_flags_are_consistent(self) -> SafetyRouteDecision:
         if len(self.confirmed_urgencies) != len(set(self.confirmed_urgencies)):
             raise ValueError("confirmed_urgencies must be unique")
         if self.priority is RoutePriority.IMMEDIATE_HUMAN_HELP:

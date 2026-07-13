@@ -3,7 +3,7 @@
 from .bm25 import BM25Index
 from .debug import DebugSearchResult, RetrievalDebugTrace, corpus_sha256
 from .hybrid import HybridRetriever
-from .query import QueryExpander, QueryExpansion, REVIEWED_LEGAL_SYNONYM_GROUPS
+from .query import REVIEWED_LEGAL_SYNONYM_GROUPS, QueryExpander, QueryExpansion
 from .types import RetrievalDocument, RetrievalResult, SearchFilters
 
 __all__ = [

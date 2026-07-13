@@ -30,7 +30,7 @@ class ChecklistTemplate(StrictModel):
     items: Annotated[tuple[ChecklistItem, ...], Field(min_length=1, max_length=20)]
 
     @model_validator(mode="after")
-    def unique_items(self) -> "ChecklistTemplate":
+    def unique_items(self) -> ChecklistTemplate:
         ids = [item.item_id for item in self.items]
         if len(ids) != len(set(ids)):
             raise ValueError("checklist item_id values must be unique within a template")

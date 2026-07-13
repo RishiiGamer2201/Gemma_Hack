@@ -9,14 +9,14 @@ merged, partial, omitted, or have no direct equivalent.
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable
 from datetime import date
 from enum import StrEnum
-from typing import Annotated, Iterable
+from typing import Annotated
 
 from pydantic import Field, HttpUrl, model_validator
 
 from src.models.schemas import NonEmptyText, ShortText, StrictModel
-
 
 BNS_EFFECTIVE_DATE = date(2024, 7, 1)
 
@@ -66,7 +66,7 @@ class LegalMapping(StrictModel):
     incident_date_required: bool = True
 
     @model_validator(mode="after")
-    def validate_relationship_shape(self) -> "LegalMapping":
+    def validate_relationship_shape(self) -> LegalMapping:
         if any(item.code is not LegalCode.IPC for item in self.source_provisions):
             raise ValueError("source_provisions must contain reviewed IPC provisions")
         if any(item.code is not LegalCode.BNS for item in self.target_provisions):

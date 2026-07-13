@@ -16,8 +16,8 @@ from pydantic import ValidationError
 from .image import inspect_image_bytes, load_and_inspect_image
 from .integrity import resolve_tesseract, verify_tessdata
 from .models import (
-    ImageFormat,
     MAX_TEXT_CHARACTERS,
+    ImageFormat,
     OCRConfig,
     OCRError,
     OCRErrorCode,

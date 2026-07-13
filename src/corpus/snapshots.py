@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
 import hashlib
 import json
 import os
-from pathlib import Path, PurePath
 import tempfile
-from typing import Annotated, Any
+from dataclasses import asdict, dataclass
+from datetime import UTC, datetime
+from pathlib import Path, PurePath
+from typing import Annotated
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
@@ -64,7 +64,7 @@ class SnapshotSource(BaseModel):
         return normalized
 
     @model_validator(mode="after")
-    def validate_hosts(self) -> "SnapshotSource":
+    def validate_hosts(self) -> SnapshotSource:
         if _host(self.url) not in self.allowed_hosts or _host(self.official_landing_url) not in self.allowed_hosts:
             raise ValueError("snapshot and landing hosts must be explicitly allowed")
         return self
@@ -76,7 +76,7 @@ class SnapshotManifest(BaseModel):
     sources: Annotated[tuple[SnapshotSource, ...], Field(min_length=1)]
 
     @model_validator(mode="after")
-    def validate_unique(self) -> "SnapshotManifest":
+    def validate_unique(self) -> SnapshotManifest:
         ids = [source.source_id for source in self.sources]
         names = [source.filename.casefold() for source in self.sources]
         if len(ids) != len(set(ids)) or len(names) != len(set(names)):
@@ -148,7 +148,7 @@ def download_snapshot(
         title=source.title,
         url=source.url,
         official_landing_url=source.official_landing_url,
-        retrieved_at=datetime.now(timezone.utc).isoformat(),
+        retrieved_at=datetime.now(UTC).isoformat(),
         content_type=content_type,
         byte_count=len(body),
         sha256=digest,

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from contextlib import redirect_stdout
-from datetime import date, datetime, timezone
 import io
 import json
 import unittest
+from contextlib import redirect_stdout
+from datetime import UTC, date, datetime
 
 from pydantic import ValidationError
 
@@ -30,7 +30,7 @@ def confirmed_facts(**updates: object) -> ConfirmedFacts:
         "domain": LegalDomain.LABOUR,
         "parties": ("Worker", "Employer"),
         "confirmed": True,
-        "confirmed_at": datetime.now(timezone.utc),
+        "confirmed_at": datetime.now(UTC),
     }
     values.update(updates)
     return ConfirmedFacts(**values)

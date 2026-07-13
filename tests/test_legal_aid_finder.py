@@ -1,17 +1,16 @@
 from __future__ import annotations
 
+import io
+import json
+import tempfile
+import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from copy import deepcopy
 from datetime import date
-import io
-import json
 from pathlib import Path
-import tempfile
-import unittest
 
 from scripts.find_legal_aid import main as finder_cli
 from src.legal_aid import LegalAidFinder, LegalAidFinderError, MatchStatus
-
 
 ROOT = Path(__file__).resolve().parents[1]
 DIRECTORY = ROOT / "data" / "processed" / "contacts" / "delhi_dlsa.json"

@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-from collections import Counter, defaultdict
 import math
-from typing import Callable, Iterable, Sequence
+from collections import Counter, defaultdict
+from collections.abc import Callable, Iterable, Sequence
 
 from .tokenize import tokenize
 from .types import RetrievalDocument, RetrievalResult, SearchFilters
-
 
 Tokenizer = Callable[[str], list[str]]
 

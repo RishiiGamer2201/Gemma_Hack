@@ -7,13 +7,12 @@ caller after human review.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import re
+from collections.abc import Iterable, Mapping, Sequence
+from dataclasses import dataclass
 from types import MappingProxyType
-from typing import Iterable, Mapping, Sequence
 
 from .tokenize import tokenize
-
 
 # Small product vocabulary reviewed for retrieval recall. These are ordinary-language
 # translations/synonyms, not legal definitions or statute mappings.
