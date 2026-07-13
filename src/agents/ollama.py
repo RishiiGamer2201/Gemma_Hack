@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import ipaddress
 import json
-from collections.abc import Iterator, Mapping
+import math
+from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import dataclass
 from http.client import HTTPException
 from typing import Any
@@ -277,6 +278,51 @@ class OllamaClient:
         if not isinstance(models, list) or not all(isinstance(item, dict) for item in models):
             raise OllamaError("invalid_response", "Ollama response did not contain a model list")
         return tuple(models)
+
+    def embed(
+        self,
+        *,
+        model: str,
+        inputs: Sequence[str],
+        keep_alive: str | int | None = "10m",
+    ) -> tuple[tuple[float, ...], ...]:
+        """Return one embedding vector per input from the loopback-only runtime."""
+
+        if not model.strip():
+            raise ValueError("model must not be empty")
+        texts = list(inputs)
+        if not texts or any(not isinstance(text, str) for text in texts):
+            raise ValueError("inputs must be a non-empty sequence of strings")
+
+        payload: dict[str, Any] = {"model": model, "input": texts}
+        if keep_alive is not None:
+            payload["keep_alive"] = keep_alive
+        response = self._post_json("/api/embed", payload)
+
+        raw = response.get("embeddings")
+        if not isinstance(raw, list) or len(raw) != len(texts):
+            raise OllamaError(
+                "invalid_response", "Ollama did not return one embedding per input"
+            )
+        vectors: list[tuple[float, ...]] = []
+        for item in raw:
+            if not isinstance(item, list) or not item:
+                raise OllamaError("invalid_response", "Ollama returned an empty embedding")
+            try:
+                vector = tuple(float(value) for value in item)
+            except (TypeError, ValueError) as exc:
+                raise OllamaError(
+                    "invalid_response", "Ollama returned a non-numeric embedding"
+                ) from exc
+            if any(not math.isfinite(value) for value in vector):
+                raise OllamaError(
+                    "invalid_response", "Ollama returned a non-finite embedding"
+                )
+            vectors.append(vector)
+        dimensions = len(vectors[0])
+        if any(len(vector) != dimensions for vector in vectors):
+            raise OllamaError("invalid_response", "Ollama returned ragged embeddings")
+        return tuple(vectors)
 
     def _get_json(self, path: str) -> dict[str, Any]:
         request = Request(

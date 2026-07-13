@@ -170,11 +170,33 @@ def test_domain_scoping_excludes_other_domains_but_keeps_universal_sources() -> 
     )
     labour = {item.source_id for item in collection_for_domain(documents, LegalDomain.LABOUR)}
 
-    assert labour == {"w:1", "k:1"}
+    # The Constitution is priority 1 but is not universal: measured on a labelled
+    # set, adding its ~4,900 chunks to every domain halved Recall@5.
+    assert labour == {"w:1"}
+    assert {
+        item.source_id
+        for item in collection_for_domain(documents, LegalDomain.CONSTITUTIONAL)
+    } == {"k:1"}
     # An unclassified dispute must not be silently guessed into a collection.
     assert len(collection_for_domain(documents, LegalDomain.OTHER)) == 3
     with pytest.raises(CollectionError):
         collection_for_domain(documents[:1], LegalDomain.CRIMINAL)
+
+
+def test_universal_legal_aid_sources_stay_in_every_domain() -> None:
+    documents = (
+        RetrievalDocument(
+            source_id="w:1", text="wages", metadata={"corpus_source_id": "code_on_wages_2019_en"}
+        ),
+        RetrievalDocument(
+            source_id="aid:1",
+            text="free legal services",
+            metadata={"corpus_source_id": "legal_services_authorities_act_en"},
+        ),
+    )
+    for domain in (LegalDomain.LABOUR, LegalDomain.CRIMINAL, LegalDomain.CONSUMER):
+        selected = {item.source_id for item in collection_for_domain(documents, domain)}
+        assert "aid:1" in selected
 
 
 def test_undated_source_is_excluded_by_default_and_warned_about_when_admitted() -> None:

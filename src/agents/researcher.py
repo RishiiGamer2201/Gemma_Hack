@@ -18,7 +18,8 @@ from src.retrieval import (
     SearchFilters,
     to_source_evidence,
 )
-from src.retrieval.collections import collection_for_domain
+from src.retrieval.collections import CollectionError, collection_for_domain
+from src.retrieval.hybrid import EmbeddingCallback
 from src.retrieval.types import RetrievalDocument
 
 MAX_EVIDENCE = 8
@@ -62,6 +63,7 @@ def retrieve_evidence(
     limit: int = 6,
     query_expander: QueryExpander | None = None,
     include_undated_sources: bool = True,
+    embedding_callback: EmbeddingCallback | None = None,
 ) -> EvidenceBundle:
     """Retrieve official evidence for explicitly confirmed facts.
 
@@ -80,8 +82,20 @@ def retrieve_evidence(
     if not 1 <= limit <= MAX_EVIDENCE:
         raise ResearchError(f"limit must be between 1 and {MAX_EVIDENCE}")
 
-    scoped = collection_for_domain(documents, facts.domain)
-    retriever = HybridRetriever(scoped, query_expander=query_expander)
+    try:
+        scoped = collection_for_domain(documents, facts.domain)
+    except CollectionError as exc:
+        # No reviewed source is routed for this domain. The caller must abstain
+        # rather than fall back to an unscoped search over unrelated law.
+        raise ResearchError(str(exc)) from exc
+    retriever = HybridRetriever(
+        scoped,
+        query_expander=query_expander,
+        embedding_callback=embedding_callback,
+        embedding_version_key=(
+            "embeddinggemma" if embedding_callback is not None else "bm25-only"
+        ),
+    )
 
     # Jurisdiction is deliberately not used as a hard filter: central acts are
     # recorded with jurisdiction "India" while a user states a state or city, so
