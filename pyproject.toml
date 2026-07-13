@@ -11,16 +11,21 @@ requires-python = ">=3.11"
 license = { text = "Proprietary - hackathon prototype" }
 dependencies = [
   "pydantic>=2.7,<3",
+  # numpy backs the hybrid retriever's semantic (EmbeddingGemma) channel. It is a
+  # hard runtime requirement, not optional, so it lives in the base dependencies.
+  "numpy>=1.26,<3",
 ]
 
 [project.optional-dependencies]
 ui = ["streamlit>=1.40,<2"]
 api = ["fastapi>=0.115,<1", "uvicorn>=0.32,<1", "python-multipart>=0.0.9"]
 corpus = ["pymupdf>=1.24,<2", "pypdf>=5,<6"]
-retrieval = [
-  "faiss-cpu>=1.9,<2; python_version < '3.13'",
-  "sentence-transformers>=3.3,<4",
-]
+# NOTE: there is intentionally no `retrieval` extra. The production semantic channel
+# is EmbeddingGemma served by the local Ollama runtime (no Python library needed) fused
+# with the in-repo BM25, and numpy in the base dependencies covers the vector maths.
+# sentence-transformers/faiss were removed: nothing in src/ imports them, and
+# sentence-transformers pinned an old `transformers` that made the environment
+# unresolvable alongside the `speech` extra.
 speech = [
   "faster-whisper==1.2.1",
   "ctranslate2==4.8.1",

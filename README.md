@@ -41,49 +41,128 @@ carry an unverified-commencement warning that is displayed on every citation, an
 the IPC/BNS mapping catalogue is intentionally empty until a human reviewer approves
 entries. See `IMPLEMENTATION_PLAN.md` for the audited status of every item.
 
-## Quick start — the app
+## Setup — fresh clone, step by step
 
-Python 3.11+, Node 20+, and a local [Ollama](https://ollama.com/download) with
-`gemma4:e4b-it-q4_K_M` and `embeddinggemma` pulled. The corpus, models, and indexes
-are Git-ignored; build them with the pipeline commands below or copy them from a
-prepared drive.
+Everything runs on your own machine. Follow the steps in order; each says what it is
+for so you can stop at the level you need.
+
+### 0. Prerequisites
+
+Install these first:
+
+| Tool | Version | Notes |
+|---|---|---|
+| Python | 3.11 or 3.12 | 3.13 also works. Avoid 3.14 for now. |
+| [uv](https://docs.astral.sh/uv/getting-started/installation/) | latest | Python package manager used here. `pip` works too — see the note in step 2. |
+| Node.js | 20+ | Only for the web UI. |
+| [Ollama](https://ollama.com/download) | latest | Runs the local model. |
+
+### 1. Clone
 
 ```powershell
-# 1. Python environment and dependencies
-uv sync --extra api --extra retrieval --extra ocr --extra speech --extra card --extra dev
+git clone https://github.com/RishiiGamer2201/Gemma_Hack.git
+cd Gemma_Hack
+```
 
-# 2. Start the loopback-only API (127.0.0.1:8000)
-python scripts/serve_api.py --port 8000
+### 2. Install Python dependencies
 
-# 3. In a second terminal, the local React client (127.0.0.1:5173)
+```powershell
+uv sync --extra api --extra ocr --extra speech --extra card --extra dev
+```
+
+This creates a `.venv` and installs everything for the API, OCR, voice, Rights Card,
+and tests. `uv run <command>` then runs inside that environment.
+
+> **Do not add `--extra retrieval`** — there is no such extra. The semantic search
+> uses EmbeddingGemma through Ollama and needs no extra Python library. (An older
+> command that included `--extra retrieval` fails with an "unsatisfiable
+> requirements" resolver error; that extra was removed.)
+
+Lighter installs, if you do not need everything:
+
+```powershell
+uv sync --extra api --extra card --extra dev   # text-only app + tests (no voice/OCR)
+```
+
+Prefer plain `pip`? `python -m venv .venv`, activate it, then
+`pip install -e ".[api,ocr,speech,card,dev]"`.
+
+### 3. Pull the local model
+
+```powershell
+ollama pull gemma4:e4b-it-q4_K_M   # the answering model
+ollama pull embeddinggemma         # semantic retrieval (skip only if using NYAYA_USE_EMBEDDINGS=0)
+```
+
+Keep `ollama serve` running (the Ollama app starts it for you on Windows/macOS).
+
+### 4. Get the legal corpus
+
+The app answers from ~6,845 reviewed official-law chunks. That data is **Git-ignored**
+(it is large and rebuilt from official PDFs), so a fresh clone has none yet. Choose one:
+
+- **Copy from a teammate** — the fastest path. Copy the whole `data/` (and `models/`
+  if you want voice/OCR) folder from someone who has already built it.
+- **Build it yourself** — download the official PDFs, then chunk them:
+
+  ```powershell
+  uv sync --extra corpus                                   # adds the PDF reader
+  uv run python scripts/download_official_sources.py --manifest config/official_sources.json
+  uv run python scripts/build_corpus.py --manifest config/official_sources.json --raw-dir data/raw/official_law --output-dir data/processed/sections
+  uv run python scripts/build_index.py                     # precompute EmbeddingGemma vectors
+  ```
+
+Without a corpus the server still starts, but `/api/health` reports
+`corpus_loaded: false` and answers cannot be produced.
+
+### 5. Run the app
+
+```powershell
+# Terminal 1 — loopback-only API on 127.0.0.1:8000
+uv run python scripts/serve_api.py --port 8000
+
+# Terminal 2 — local React client on 127.0.0.1:5173
 cd frontend
 npm install
 npm run dev
 ```
 
-Open http://127.0.0.1:5173. The whole flow runs on device; disable Wi-Fi and it
-still works. Set `NYAYA_USE_EMBEDDINGS=0` to fall back to lexical-only retrieval if
-the embedding model is unavailable.
+Open **http://127.0.0.1:5173**. The whole flow runs on device — disable Wi-Fi and it
+still works. Set `NYAYA_USE_EMBEDDINGS=0` before starting the API to fall back to
+lexical-only retrieval if you skipped `embeddinggemma`.
 
-## Quick start — offline pipelines and CLIs
+### 6. Verify it works
 
 ```powershell
-python -m unittest discover -s tests -v
-python scripts/build_corpus.py --manifest config/official_sources.json --raw-dir data/raw/official_law --output-dir data/processed/sections
-python scripts/build_index.py            # precompute EmbeddingGemma vectors per domain
-python scripts/build_legal_aid_directory.py
-python scripts/find_legal_aid.py --district "Rouse Avenue" --state Delhi
-python scripts/get_evidence_checklist.py --template unpaid_wages
-python scripts/transcribe_audio.py --audio request.wav --model-path models/asr/faster-whisper-small --model-revision 536b0662742c02347bc0e980a01041f333bce120 --language hi --device cpu --compute-type int8
-python scripts/extract_image_text.py --image notice.jpg --tessdata-dir models/ocr/tessdata --language eng+hin
+uv run python -m pytest            # the full test suite should pass
+curl http://127.0.0.1:8000/api/health
 ```
 
-Ollama is optional. When enabled, the adapter accepts only loopback hosts such as
-`127.0.0.1` and `localhost`.
+A healthy server returns `corpus_loaded: true` with a chunk count once step 4 is done.
 
-Speech and OCR model/runtime acquisition is documented in
-`docs/asr_feasibility.md` and `docs/ocr_feasibility.md`. Runtime inference verifies
-pinned local assets and does not download missing models.
+## Offline pipelines and CLIs
+
+```powershell
+uv run python scripts/find_legal_aid.py --district "Rouse Avenue" --state Delhi
+uv run python scripts/get_evidence_checklist.py --template unpaid_wages
+uv run python scripts/transcribe_audio.py --audio request.wav --model-path models/asr/faster-whisper-small --model-revision 536b0662742c02347bc0e980a01041f333bce120 --language hi --device cpu --compute-type int8
+uv run python scripts/extract_image_text.py --image notice.jpg --tessdata-dir models/ocr/tessdata --language eng+hin
+```
+
+Voice (`speech` extra) and OCR (`ocr` extra) also need pinned local model/binary
+assets; acquisition is documented in `docs/asr_feasibility.md` and
+`docs/ocr_feasibility.md`. Runtime inference verifies those pinned assets and does not
+download missing models.
+
+## Troubleshooting
+
+- **`uv sync` fails with "requirements are unsatisfiable" / sentence-transformers vs
+  tokenizers** — you used `--extra retrieval`. Remove it; use the step 2 command.
+- **`/api/health` shows `corpus_loaded: false`** — do step 4 (copy or build `data/`).
+- **`VIRTUAL_ENV ... does not match` warning from uv** — harmless; uv uses the
+  project's `.venv`. Prefix commands with `uv run` and ignore it.
+- **The model call errors or times out** — confirm `ollama serve` is running and both
+  models from step 3 are pulled (`ollama list`).
 
 ## Safety boundaries
 
