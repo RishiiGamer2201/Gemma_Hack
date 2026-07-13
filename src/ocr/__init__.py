@@ -1,6 +1,6 @@
 """Local OCR fallback with pinned model integrity and no request persistence."""
 
-from .engine import extract_image_text
+from .engine import extract_image_bytes, extract_image_text
 from .integrity import TESSDATA_FILES, resolve_tesseract, verify_tessdata
 from .models import (
     DEFAULT_TESSERACT_PATH,
@@ -32,6 +32,7 @@ __all__ = [
     "OCRLanguage",
     "OCRResult",
     "extract_image_text",
+    "extract_image_bytes",
     "resolve_tesseract",
     "verify_tessdata",
 ]

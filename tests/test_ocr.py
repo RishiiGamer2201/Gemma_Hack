@@ -21,12 +21,13 @@ from src.ocr import (
     OCRError,
     OCRErrorCode,
     OCRLanguage,
+    extract_image_bytes,
     extract_image_text,
     resolve_tesseract,
     verify_tessdata,
 )
 from src.ocr.engine import _run_bounded_process
-from src.ocr.image import load_and_inspect_image
+from src.ocr.image import inspect_image_bytes, load_and_inspect_image
 
 TSV = (
     "level\tpage_num\tblock_num\tpar_num\tline_num\tword_num\tleft\ttop\twidth\theight\tconf\ttext\n"
@@ -131,6 +132,33 @@ class OCRTests(unittest.TestCase):
         self.assertNotIn(str(self.image), ocr_call.args[0])
         after = {item.relative_to(self.root) for item in self.root.rglob("*")}
         self.assertEqual(after, before)
+
+    def test_immutable_upload_bytes_use_the_same_non_persistent_engine(self) -> None:
+        version = subprocess.CompletedProcess([], 0, b"tesseract v5.4.0.20240606\n", b"")
+        recognized = subprocess.CompletedProcess([], 0, TSV, b"")
+        before = {item.relative_to(self.root) for item in self.root.rglob("*")}
+        patches = self.engine_patches([version, recognized])
+        with patches[0], patches[1], patches[2] as run_mock, patches[3]:
+            result = extract_image_bytes(
+                b"uploaded-image-bytes",
+                "notice.png",
+                self.config(),
+                clock=lambda: 1.0,
+            )
+        self.assertEqual(result.text, "न्याय rights")
+        self.assertEqual(run_mock.call_args_list[1].kwargs["input_bytes"], b"uploaded-image-bytes")
+        self.assertEqual({item.relative_to(self.root) for item in self.root.rglob("*")}, before)
+
+    def test_upload_byte_contract_rejects_mutability_traversal_and_wrong_suffix(self) -> None:
+        cases = (
+            (bytearray(b"image"), "notice.png", OCRErrorCode.INVALID_REQUEST),
+            (b"image", "../notice.png", OCRErrorCode.INVALID_REQUEST),
+            (b"image", "notice.pdf", OCRErrorCode.UNSUPPORTED_FORMAT),
+        )
+        for data, filename, expected in cases:
+            with self.subTest(filename=filename), self.assertRaises(OCRError) as context:
+                inspect_image_bytes(data, filename, self.config())  # type: ignore[arg-type]
+            self.assertEqual(context.exception.detail.code, expected)
 
     def test_malformed_bomb_oversized_and_pixel_heavy_images_are_rejected(self) -> None:
         cases = (

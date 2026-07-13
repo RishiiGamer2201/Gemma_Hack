@@ -13,9 +13,10 @@ from time import perf_counter
 
 from pydantic import ValidationError
 
-from .image import load_and_inspect_image
+from .image import inspect_image_bytes, load_and_inspect_image
 from .integrity import resolve_tesseract, verify_tessdata
 from .models import (
+    ImageFormat,
     MAX_TEXT_CHARACTERS,
     OCRConfig,
     OCRError,
@@ -43,8 +44,35 @@ def extract_image_text(
 ) -> OCRResult:
     """Extract text without writing the supplied image or recognized text to disk."""
 
-    started = clock()
     image_bytes, width, height, image_format = load_and_inspect_image(image_path, config)
+    return _extract_inspected_image(
+        image_bytes, width, height, image_format, config, clock=clock
+    )
+
+
+def extract_image_bytes(
+    image_bytes: bytes,
+    filename: str,
+    config: OCRConfig,
+    *,
+    clock=perf_counter,
+) -> OCRResult:
+    """Extract immutable upload bytes in memory without request persistence."""
+
+    inspected = inspect_image_bytes(image_bytes, filename, config)
+    return _extract_inspected_image(*inspected, config, clock=clock)
+
+
+def _extract_inspected_image(
+    image_bytes: bytes,
+    width: int,
+    height: int,
+    image_format: ImageFormat,
+    config: OCRConfig,
+    *,
+    clock=perf_counter,
+) -> OCRResult:
+    started = clock()
     executable = resolve_tesseract(config.tesseract_path)
     tessdata_dir = verify_tessdata(config.tessdata_dir)
     version = _verify_tesseract_version(executable, config)
