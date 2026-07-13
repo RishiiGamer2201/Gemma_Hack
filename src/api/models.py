@@ -1,0 +1,185 @@
+"""Request and response contracts for the loopback API.
+
+The DTOs wrap the existing reviewed models rather than restating them. No DTO
+introduces a legal field, a deadline, or a citation that a reviewed module did not
+already produce.
+"""
+
+from __future__ import annotations
+
+from datetime import date
+from typing import Annotated, Any, Literal
+
+from pydantic import BaseModel, ConfigDict, Field
+
+from src.actions.checklists import ChecklistTemplate
+from src.agents.researcher import MAX_EVIDENCE
+from src.applicability.delhi_rent import DelhiRentApplicabilityFacts
+from src.intake import LanguageAssessment, UrgencyCategory, UrgencySignal
+from src.intake.models import IntakeFacts
+from src.legal_time.mapping import MappingLookupResult
+from src.models.schemas import ConfirmedFacts, LegalDomain, SourceEvidence
+
+ShortText = Annotated[str, Field(min_length=1, max_length=500)]
+NarrativeText = Annotated[str, Field(min_length=1, max_length=20_000)]
+
+
+class ApiModel(BaseModel):
+    """Reject unknown request fields; a typo must not be silently ignored."""
+
+    model_config = ConfigDict(extra="forbid", use_enum_values=False)
+
+
+# --------------------------------------------------------------------------- errors
+
+
+class ErrorResponse(ApiModel):
+    """The single error envelope returned for every 4xx/5xx response."""
+
+    code: str
+    message: str
+    field: str | None = None
+
+
+# --------------------------------------------------------------------------- health
+
+
+class HealthResponse(ApiModel):
+    corpus_loaded: bool
+    chunk_count: int
+    corpus_sha256: str | None = None
+    corpus_error: str | None = None
+    ollama_reachable: bool
+    model: str
+
+
+# --------------------------------------------------------------------------- intake
+
+
+class IntakeRequest(ApiModel):
+    """Free text plus any structured fields the user typed themselves."""
+
+    text: NarrativeText
+    incident_date: date | None = None
+    jurisdiction: ShortText | None = None
+    location: ShortText | None = None
+    domain: LegalDomain = LegalDomain.OTHER
+    parties: tuple[ShortText, ...] = ()
+    material_facts: tuple[NarrativeText, ...] = ()
+    documents: tuple[ShortText, ...] = ()
+    missing_material_facts: tuple[ShortText, ...] = ()
+
+
+class IntakeResponse(ApiModel):
+    """An unconfirmed restatement. It never authorizes retrieval by itself."""
+
+    normalized_text: str
+    language: LanguageAssessment
+    urgency_signals: tuple[UrgencySignal, ...]
+    restatement: str
+    facts: IntakeFacts
+    unconfirmed_facts: ConfirmedFacts
+    requires_confirmation: Literal[True] = True
+    confirmed: Literal[False] = False
+
+
+# --------------------------------------------------------------------------- routing
+
+
+class RouteRequest(ApiModel):
+    facts: ConfirmedFacts
+    confirmed_urgencies: tuple[UrgencyCategory, ...] = ()
+    requested_output: NarrativeText | None = None
+    untrusted_document_texts: tuple[NarrativeText, ...] = ()
+
+
+# --------------------------------------------------------------------------- evidence
+
+
+class EvidenceRequest(ApiModel):
+    facts: ConfirmedFacts
+    approved_profiles: tuple[Annotated[str, Field(pattern=r"^[a-z0-9_]+$")], ...] = ()
+    limit: Annotated[int, Field(ge=1, le=MAX_EVIDENCE)] = 6
+    include_undated_sources: bool = True
+
+
+class RetrievalTraceSummary(ApiModel):
+    """Enough of the retrieval trace to explain a result without leaking internals."""
+
+    original_terms: tuple[str, ...]
+    expanded_terms: tuple[str, ...]
+    active_filters: dict[str, Any]
+    corpus_sha256: str
+    candidate_count: int
+    excluded_count: int
+    deduplicated_count: int
+    retriever_config: dict[str, Any]
+
+
+class EvidenceResponse(ApiModel):
+    query: str
+    evidence: tuple[SourceEvidence, ...]
+    # Verbatim module warnings, including "commencement not verified" notices.
+    # The client must display every entry.
+    warnings: tuple[str, ...]
+    undated_source_ids: tuple[str, ...]
+    trace: RetrievalTraceSummary
+
+
+# -------------------------------------------------------------------------- legal aid
+
+
+class LegalAidRequest(ApiModel):
+    district_or_city: ShortText
+    state: ShortText | None = None
+
+
+# ------------------------------------------------------------------------- checklists
+
+
+class ChecklistSummary(ApiModel):
+    template_id: str
+    title: str
+    scenario: str
+    domain: str
+
+
+class ChecklistListResponse(ApiModel):
+    templates: tuple[ChecklistSummary, ...]
+
+    @classmethod
+    def from_templates(cls, templates: tuple[ChecklistTemplate, ...]) -> ChecklistListResponse:
+        return cls(
+            templates=tuple(
+                ChecklistSummary(
+                    template_id=template.template_id,
+                    title=template.title,
+                    scenario=template.scenario,
+                    domain=template.domain,
+                )
+                for template in templates
+            )
+        )
+
+
+# ---------------------------------------------------------------------------- mapping
+
+
+class MappingRequest(ApiModel):
+    query: ShortText
+    incident_date: date | None = None
+
+
+class MappingResponse(ApiModel):
+    """A lookup over the curated catalogue only, which is currently empty."""
+
+    result: MappingLookupResult
+    warnings: tuple[str, ...]
+    curated_mapping_count: int
+
+
+# ---------------------------------------------------------------------- applicability
+
+
+class DelhiRentRequest(ApiModel):
+    facts: DelhiRentApplicabilityFacts
