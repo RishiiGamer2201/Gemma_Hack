@@ -33,6 +33,7 @@ from src.models.schemas import (
     StructuredLegalAnswer,
     WorkflowStage,
 )
+from src.retrieval.hybrid import EmbeddingCallback
 from src.retrieval.types import RetrievalDocument
 from src.safety import SafetyRouteDecision, apply_route_decision, route_confirmed_case
 from src.safety.models import RoutePriority
@@ -79,6 +80,7 @@ def run_confirmed_request(
     evidence_limit: int = 6,
     output_language: str = "en",
     detail_level: str = "simple",
+    embedding_callback: EmbeddingCallback | None = None,
 ) -> PipelineResult:
     """Run confirmed facts through safety routing, retrieval, drafting, verification."""
 
@@ -109,6 +111,7 @@ def run_confirmed_request(
             documents,
             approved_profiles=approved_profiles,
             limit=evidence_limit,
+            embedding_callback=embedding_callback,
         )
     except ResearchError as exc:
         return _abstain(workflow, route, f"Official evidence could not be retrieved: {exc}")
@@ -143,6 +146,7 @@ def run_confirmed_request(
             repair_notes=repair_notes,
             output_language=output_language,
             detail_level=detail_level,
+            embedding_callback=embedding_callback,
         )
     except DraftError as exc:
         return _abstain(workflow, route, f"A grounded answer could not be drafted: {exc}", bundle)
@@ -197,6 +201,7 @@ def _draft_verify_repair(
     repair_notes: list[str],
     output_language: str = "en",
     detail_level: str = "simple",
+    embedding_callback: EmbeddingCallback | None = None,
 ) -> tuple[EvidenceBundle, StructuredLegalAnswer, tuple[ClaimVerification, ...]]:
     """Draft and verify, with exactly one repair attempt. Never more than one."""
 
@@ -226,6 +231,7 @@ def _draft_verify_repair(
                 documents,
                 approved_profiles=approved_profiles,
                 limit=min(MAX_EVIDENCE, evidence_limit + 2),
+                embedding_callback=embedding_callback,
             )
             if candidate.evidence:
                 wider = candidate

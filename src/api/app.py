@@ -16,6 +16,7 @@ import os
 import tempfile
 from collections.abc import AsyncIterator, Iterator
 from contextlib import asynccontextmanager
+from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
@@ -56,6 +57,7 @@ from src.retrieval.collections import CollectionError
 from src.safety import SafetyRouteDecision, route_confirmed_case
 from src.safety.router import inspect_untrusted_documents
 from src.tools.community import build_community_explanation
+from src.tools.consequences import build_consequences
 from src.tools.rights_card import RightsCardContent, RightsCardError, render_rights_card
 from src.workflow import WorkflowError
 
@@ -66,6 +68,9 @@ from .models import (
     ClaimView,
     CommunityRequest,
     CommunityResponse,
+    ConsequenceRequest,
+    ConsequenceResponse,
+    ConsequenceView,
     DelhiRentRequest,
     DevilsAdvocateRequest,
     ErrorResponse,
@@ -479,6 +484,7 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
                 evidence_limit=payload.limit,
                 output_language=payload.output_language,
                 detail_level=payload.detail_level,
+                embedding_callback=state.embedding_callback(),
             )
         except PipelineError as exc:
             raise ApiError(422, "pipeline_error", str(exc)) from exc
@@ -550,6 +556,7 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
                     model=state.settings.ollama_model,
                     approved_profiles=frozenset(payload.approved_profiles),
                     evidence_limit=payload.limit,
+                    embedding_callback=state.embedding_callback(),
                 )
             except (PipelineError, OllamaError) as exc:
                 yield send({"kind": "error", "message": str(exc)})
@@ -670,6 +677,7 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
             model=state.settings.ollama_model,
             approved_profiles=frozenset(payload.approved_profiles),
             evidence_limit=payload.limit,
+            embedding_callback=state.embedding_callback(),
         )
         if not result.published or result.answer is None or result.evidence_bundle is None:
             raise ApiError(
@@ -726,6 +734,53 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
             injection_warnings=_scan_uploaded_text(result.text),
         )
 
+    @app.post(
+        "/api/consequences",
+        response_model=ConsequenceResponse,
+        responses=_ERROR_RESPONSES,
+        tags=["answer"],
+    )
+    async def consequences(payload: ConsequenceRequest) -> ConsequenceResponse:
+        """What happens if you do nothing.
+
+        Built deterministically from deadline records whose every period is quoted
+        out of official text and verified against the chunk it cites. No model call:
+        the whole risk of this feature is a made-up number, and generation is exactly
+        where one would come from. When no record applies, it says the sources are
+        silent rather than inventing a deadline to look useful.
+        """
+
+        _require_confirmed(payload.facts)
+        records = state.deadline_records()
+        documents = state.documents_for_domain(payload.facts.domain)
+        try:
+            bundle = retrieve_evidence(
+                payload.facts,
+                documents,
+                approved_profiles=frozenset(payload.approved_profiles),
+                limit=payload.limit,
+                embedding_callback=state.embedding_callback(),
+            )
+            evidence = bundle.evidence
+        except ResearchError:
+            evidence = ()
+
+        report = build_consequences(
+            records,
+            payload.facts.domain,
+            evidence,
+            start_date=payload.facts.incident_date,
+            documents=documents,
+        )
+        return ConsequenceResponse(
+            consequences=tuple(
+                ConsequenceView(**asdict(item)) for item in report.consequences
+            ),
+            questions=report.questions,
+            notes=report.notes,
+            sources_are_silent=report.sources_are_silent,
+        )
+
     @app.post("/api/rights-card", responses=_ERROR_RESPONSES, tags=["answer"])
     async def rights_card(payload: RightsCardRequest) -> Response:
         """Render a phone-sized PNG from a published answer.
@@ -745,6 +800,7 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
             model=state.settings.ollama_model,
             approved_profiles=frozenset(payload.approved_profiles),
             evidence_limit=payload.limit,
+            embedding_callback=state.embedding_callback(),
         )
         if not result.published or result.answer is None or result.evidence_bundle is None:
             raise ApiError(

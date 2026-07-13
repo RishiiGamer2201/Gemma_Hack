@@ -37,7 +37,7 @@ hardware, evaluation, or end-to-end demo gates from backend primitives alone.
 - [ ] BNS ↔ IPC converter with incident-date awareness.
 - [x] Devil's Advocate mode using sequential roles on one loaded Gemma model.
 - [x] Rights Card image generator with section citations, helplines, disclaimer, and QR link.
-- [ ] “What happens if I do nothing?” citation-grounded consequence explanation.
+- [x] “What happens if I do nothing?” citation-grounded consequence explanation.
 - [x] Power-role protection prompts for tenant/landlord, worker/employer, and citizen/police situations.
 - [x] Community Elder / Panchayat Bridge explanation for a trusted intermediary.
 - [x] Legal Aid Finder using offline NALSA/DLSA snapshots and Tele-Law fallback.
@@ -245,8 +245,8 @@ Owner: Member B with Member C integration
 - [x] Add Tele-Law 14454 as the universal fallback.
 - [x] Record that contacts are time-sensitive and display “last verified.”
 - [x] Create evidence-checklist templates for the three demo scenarios.
-- [ ] Create safe deadline records only from official legislation/rules.
-- [ ] Add `source_id` and effective date to every deadline record.
+- [x] Create safe deadline records only from official legislation/rules.
+- [x] Add `source_id` and effective date to every deadline record.
 - [ ] Create Rights Card content templates in English and Hindi.
 - [ ] Create Community Elder/Panchayat output templates that avoid exposing unnecessary sensitive details.
 
@@ -343,7 +343,7 @@ Owner: Member C + Member A
 
 - [ ] Zero fabricated act/section citations across the golden test set.
 - [ ] Unsupported-claim rate ≤ 5% after verification.
-- [ ] 100% of deadline claims have an attached official citation.
+- [x] 100% of deadline claims have an attached official citation.
 - [ ] False-premise questions are corrected or refused rather than accepted.
 
 ## 13. Phase I — Differentiating features
@@ -360,10 +360,10 @@ Owner: Member C + Member A
 
 ### “What happens if I do nothing?”
 
-- [ ] Generate consequences only from verified deadline/procedure records.
-- [ ] Distinguish statutory consequence from practical risk.
-- [ ] State when the result depends on facts or forum rules.
-- [ ] Never invent a deadline to make the feature appear useful.
+- [x] Generate consequences only from verified deadline/procedure records.
+- [x] Distinguish statutory consequence from practical risk.
+- [x] State when the result depends on facts or forum rules.
+- [x] Never invent a deadline to make the feature appear useful.
 
 ### Rights Card
 
@@ -570,7 +570,7 @@ The project is ready to submit only when all boxes below are checked:
 - [ ] User confirms extracted facts before receiving legal information.
 - [ ] Current/repealed law is routed using incident date.
 - [ ] Every legal claim is cited or removed.
-- [ ] Every deadline has an official source.
+- [x] Every deadline has an official source.
 - [ ] False-premise questions are corrected or refused.
 - [ ] High-risk matters route to immediate help before general explanation.
 - [ ] No sensitive documents remain after clearing the session.

@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "review_status": "pending_human_review",
+  "note": "Every record quotes official text verbatim, and src/legal_time/deadlines.py refuses to load a record whose quote is not found in the chunk it cites. That check stops a fabricated deadline, it does not make these records legally correct: a human reviewer must still confirm that each period applies to the situation the app will show it for, and that no amendment or proviso changes it. Until review_status is 'reviewed', the UI labels these as unverified.",
+  "deadlines": [
+    {
+      "deadline_id": "consumer_complaint_two_years",
+      "domain": "consumer",
+      "title": "Time limit to file a consumer complaint",
+      "runs_from": "the date on which the cause of action has arisen",
+      "period": { "count": 2, "unit": "year" },
+      "consequence": "A consumer commission shall not admit the complaint. The Act allows a complaint to be entertained later only if the complainant satisfies the commission that there was sufficient cause for the delay.",
+      "consequence_kind": "statutory",
+      "source_id": "consumer_protection_act_2019_en:section-69",
+      "quote": "shall not admit a complaint unless it is filed within two years from the date on which the cause of action has arisen"
+    },
+    {
+      "deadline_id": "wages_claim_three_years",
+      "domain": "labour",
+      "title": "Time limit to apply to the authority about unpaid wages",
+      "runs_from": "the date on which the claim arises",
+      "period": { "count": 3, "unit": "year" },
+      "consequence": "The application is out of time. The Code allows the authority to entertain it after three years only if the applicant shows sufficient cause for the delay.",
+      "consequence_kind": "statutory",
+      "source_id": "code_on_wages_2019_en:section-45",
+      "quote": "may be filed within a period of three years from the date on which claims referred to in sub"
+    },
+    {
+      "deadline_id": "monthly_wages_seventh_day",
+      "domain": "labour",
+      "title": "When monthly wages must be paid",
+      "runs_from": "the end of the wage month",
+      "period": { "count": 7, "unit": "day" },
+      "consequence": "Wages for a monthly wage period must be paid before the expiry of the seventh day of the succeeding month. Payment after that is late under the Code.",
+      "consequence_kind": "statutory",
+      "source_id": "code_on_wages_2019_en:section-17",
+      "quote": "before the expiry of the seventh day of the succeeding month"
+    }
+  ]
+}

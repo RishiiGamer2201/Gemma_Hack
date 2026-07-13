@@ -235,6 +235,42 @@ class OcrApiResponse(ApiModel):
     injection_warnings: tuple[str, ...] = ()
 
 
+class ConsequenceRequest(ApiModel):
+    """What happens if I do nothing. Confirmed facts only."""
+
+    facts: ConfirmedFacts
+    approved_profiles: tuple[Annotated[str, Field(pattern=r"^[a-z0-9_]+$")], ...] = ()
+    limit: Annotated[int, Field(ge=1, le=MAX_EVIDENCE)] = 4
+
+
+class ConsequenceView(ApiModel):
+    deadline_id: str
+    title: str
+    runs_from: str
+    period: str
+    due_on: date | None = None
+    days_remaining: int | None = None
+    expired: bool
+    consequence: str
+    # "statutory" is what the law says. "practical" is a risk that depends on facts.
+    # They must never be blended into one confident sentence.
+    consequence_kind: str
+    depends_on: tuple[str, ...] = ()
+    citation: str
+    source_id: str
+    official_url: str | None = None
+    quote: str
+    unverified_commencement: bool
+    review_status: str
+
+
+class ConsequenceResponse(ApiModel):
+    consequences: tuple[ConsequenceView, ...] = ()
+    questions: tuple[str, ...] = ()
+    notes: tuple[str, ...] = ()
+    sources_are_silent: bool
+
+
 class PdfResponse(ApiModel):
     """Text lifted from an uploaded PDF. A DRAFT for the user to correct."""
 

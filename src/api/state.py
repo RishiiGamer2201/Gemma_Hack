@@ -20,6 +20,7 @@ from src.agents.ollama import OllamaClient
 from src.audio.integrity import PINNED_MODEL_REVISION as ASR_PINNED_REVISION
 from src.config import Settings
 from src.legal_aid.finder import LegalAidFinder, LegalAidFinderError
+from src.legal_time.deadlines import load_deadlines
 from src.legal_time.mapping import MappingCatalog
 from src.models.schemas import LegalDomain
 from src.ocr import DEFAULT_TESSERACT_PATH, OCRConfig, OCRLanguage
@@ -34,6 +35,7 @@ DEFAULT_CONTACTS_PATH = ROOT / "data" / "processed" / "contacts" / "delhi_dlsa.j
 DEFAULT_CHECKLISTS_PATH = ROOT / "config" / "evidence_checklists.json"
 DEFAULT_TESSDATA_DIR = ROOT / "models" / "ocr" / "tessdata"
 DEFAULT_ASR_MODEL_DIR = ROOT / "models" / "asr" / "faster-whisper-small"
+DEFAULT_DEADLINES_PATH = ROOT / "config" / "deadlines.json"
 
 # The IPC/BNS catalogue is deliberately empty. data/processed/mappings holds
 # `pending_human_review` candidates only, and an unreviewed candidate must never
@@ -80,16 +82,21 @@ class ApiState:
     embedding_model: str = DEFAULT_EMBEDDING_MODEL
     index_dir: Path = Path("data/indexes")
     asr_model_dir: Path = Path("models/asr/faster-whisper-small")
+    deadlines_path: Path = DEFAULT_DEADLINES_PATH
     asr_model_revision: str = ASR_PINNED_REVISION
     # Off by default so constructing state never reaches the local runtime. The
     # real server turns it on in build_state(); tests stay hermetic and fast.
     use_embeddings: bool = False
 
     _scoped: dict[LegalDomain, tuple[RetrievalDocument, ...]] = field(default_factory=dict)
-    _lock: threading.Lock = field(default_factory=threading.Lock)
+    # RLock, not Lock: embedding_callback() holds this and then calls model_client(),
+    # which takes it again. With a plain Lock that deadlocks the first time the
+    # semantic channel is used, and the request hangs forever.
+    _lock: threading.RLock = field(default_factory=threading.RLock)
     _finder: LegalAidFinder | None = None
     _checklists: ChecklistCatalog | None = None
     _embedder: LocalEmbedder | None = None
+    _deadlines: tuple | None = None
     _client: OllamaClient | None = None
     _mappings: MappingCatalog = field(default_factory=lambda: MappingCatalog(CURATED_MAPPINGS))
 
@@ -170,6 +177,24 @@ class ApiState:
                     self.use_embeddings = False
                     return None
             return self._embedder
+
+    def deadline_records(self):
+        """Load deadline records once, verifying every quote against the corpus.
+
+        A record whose quote is not in the chunk it cites is a fabricated deadline
+        and load_deadlines raises. That failure must surface, not be swallowed: a
+        silently dropped deadline is a feature that quietly stops warning people.
+        """
+
+        with self._lock:
+            if self._deadlines is None:
+                if not self.corpus_loaded:
+                    raise StateError(
+                        "corpus_unavailable",
+                        self.corpus_error or "the processed corpus is not loaded",
+                    )
+                self._deadlines = load_deadlines(self.deadlines_path, self.documents)
+            return self._deadlines
 
     # ---- reviewed local resources -----------------------------------------------
 
