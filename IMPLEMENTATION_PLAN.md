@@ -416,13 +416,13 @@ Owner: Member C
 Owner: Member C
 
 - [x] Bind implemented local inference services to loopback hosts and reject remote endpoints.
-- [ ] Verify the app works with Wi-Fi disabled.
+- [ ] Verify the app works with Wi-Fi disabled. (Automated guards in tests/test_offline.py assert no remote fetch, no CDN/analytics, CSP `connect-src 'self'`, no browser storage, and loopback-only inference. The physical Wi-Fi-off run on the demo laptop is still the team's to perform.)
 - [x] Disable analytics, telemetry, remote fonts, and CDN assets.
 - [x] Do not persist uploaded documents by default.
-- [ ] Delete temporary OCR/audio files after the session.
-- [ ] Add a visible “clear session” control.
-- [ ] Redact sensitive case facts before application logs.
-- [ ] Keep logs opt-in and local.
+- [x] Delete temporary OCR/audio files after the session.
+- [x] Add a visible “clear session” control.
+- [x] Redact sensitive case facts before application logs.
+- [x] Keep logs opt-in and local.
 - [x] Validate file types, size, and decompression limits.
 - [x] Detect and ignore prompt-injection patterns in caller-supplied untrusted document text.
 - [ ] Integrate prompt-injection protection with the future upload/OCR pipeline.

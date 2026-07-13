@@ -275,6 +275,9 @@ export function App() {
     setConfirmedUrgencies([]);
     setConfirmedAt(null);
     setResult(null);
+    // The confirmed facts the post-answer actions run on. Missing this left the
+    // user's case in memory after they asked for it to be erased.
+    setAnswerFacts(null);
     setAnswerError(null);
     setIntakeError(null);
     setAnswers({});
