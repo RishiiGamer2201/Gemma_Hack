@@ -111,7 +111,7 @@ Devil's Advocate / Rights Card / Checklist / Legal Aid / Community mode
 - [x] PyMuPDF extraction for digitally readable PDFs.
 - [x] Add OCR fallback for scanned PDFs.
 - [ ] Pillow + `qrcode` for Rights Cards.
-- [ ] Pytest for deterministic components and scenario tests.
+- [x] Pytest for deterministic components and scenario tests.
 
 ## 4. Repository scaffold
 
@@ -129,7 +129,7 @@ Devil's Advocate / Rights Card / Checklist / Legal Aid / Community mode
 - [x] Create `scripts/` for corpus download/import and implemented local feature commands.
 - [x] Add index-building and evaluation commands to `scripts/`.
 - [x] Create `tests/` with unit, component-integration, and retrieval fixtures.
-- [ ] Add true end-to-end demo-scenario fixtures.
+- [x] Add true end-to-end demo-scenario fixtures.
 - [x] Create ignored `data/raw/` and `data/processed/` directories.
 - [x] Create and populate the ignored `data/indexes/` directory.
 - [x] Add `.env.example` containing only non-secret configuration keys.
@@ -341,10 +341,10 @@ Owner: Member C + Member A
 
 **Verifier exit gate:**
 
-- [ ] Zero fabricated act/section citations across the golden test set.
-- [ ] Unsupported-claim rate ≤ 5% after verification.
+- [x] Zero fabricated act/section citations across the golden test set.
+- [x] Unsupported-claim rate ≤ 5% after verification.
 - [x] 100% of deadline claims have an attached official citation.
-- [ ] False-premise questions are corrected or refused rather than accepted.
+- [x] False-premise questions are corrected or refused rather than accepted.
 
 ## 13. Phase I — Differentiating features
 
@@ -438,7 +438,7 @@ Owner: Member D with all members reviewing failures
 
 - [ ] Write 30 BNS/IPC conversion questions.
 - [ ] Write 30 labour, consumer, and tenancy questions.
-- [ ] Write 20 false-premise/unanswerable questions.
+- [x] Write 20 false-premise/unanswerable questions.
 - [ ] Write 20 Hindi/Hinglish/code-mixed questions.
 - [ ] Write 20 document-photo/OCR questions.
 - [ ] Write 20 legal-aid routing questions.
@@ -460,14 +460,14 @@ Owner: Member D with all members reviewing failures
 - [x] Vector Recall@5 and Recall@10.
 - [x] Hybrid Recall@5 and Recall@10.
 - [x] Mean reciprocal rank.
-- [ ] Correct act/section rate.
-- [ ] Citation precision.
-- [ ] Unsupported-claim rate.
-- [ ] Abstention accuracy.
+- [x] Correct act/section rate.
+- [x] Citation precision.
+- [x] Unsupported-claim rate.
+- [x] Abstention accuracy.
 - [ ] BNS/IPC temporal-routing accuracy.
 - [ ] Hindi/Hinglish task-success rate.
 - [ ] ASR/OCR critical-field error rate.
-- [ ] End-to-end latency on the demo laptop.
+- [x] End-to-end latency on the demo laptop.
 
 **Evaluation exit gate:** Results and failure cases are frozen into `docs/evaluation_report.md`; pitch claims use only measured numbers.
 
@@ -574,7 +574,7 @@ The project is ready to submit only when all boxes below are checked:
 - [ ] False-premise questions are corrected or refused.
 - [ ] High-risk matters route to immediate help before general explanation.
 - [ ] No sensitive documents remain after clearing the session.
-- [ ] Evaluation metrics are reproducible.
+- [x] Evaluation metrics are reproducible.
 - [ ] Demo claims match measured results.
 - [ ] Backup video, model, environment, corpus, and indexes exist on a second machine/drive.
 - [ ] One team member who did not build the feature has completed the final smoke test.

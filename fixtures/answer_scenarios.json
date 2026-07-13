@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "review_status": "pending_independent_review",
+  "note": "End-to-end scenarios. `expect` is the behaviour the system must show, not a wording. Written by the implementer; Phase L requires an independent reviewer before these numbers are quoted. `expect` values: published (a verified answer is shown), refused (hard abstention -- an outcome prediction or other prohibited output), urgent (routed to human help before any legal content), needs_information (a material fact is missing and must be asked for).",
+  "scenarios": [
+    {
+      "id": "wages-published",
+      "expect": "published",
+      "facts": {
+        "incident_summary": "My employer has not paid my wages for two months.",
+        "incident_date": "2026-05-01",
+        "jurisdiction": "Delhi",
+        "domain": "labour",
+        "parties": ["Worker", "Employer"]
+      },
+      "expected_acts": ["The Code on Wages, 2019"]
+    },
+    {
+      "id": "fir-published",
+      "expect": "published",
+      "facts": {
+        "incident_summary": "I received an FIR saying I committed theft of a mobile phone.",
+        "incident_date": "2026-06-01",
+        "jurisdiction": "Delhi",
+        "domain": "criminal",
+        "parties": ["Accused", "Police"]
+      },
+      "expected_acts": [
+        "The Bharatiya Nyaya Sanhita, 2023",
+        "The Bharatiya Nagarik Suraksha Sanhita, 2023"
+      ]
+    },
+    {
+      "id": "deposit-published",
+      "expect": "published",
+      "facts": {
+        "incident_summary": "My landlord is refusing to return my security deposit.",
+        "incident_date": "2026-04-10",
+        "jurisdiction": "Delhi",
+        "domain": "tenancy_property",
+        "parties": ["Tenant", "Landlord"]
+      },
+      "expected_acts": ["The Consumer Protection Act, 2019"]
+    },
+    {
+      "id": "consumer-published",
+      "expect": "published",
+      "facts": {
+        "incident_summary": "A seller refuses to refund money for a defective washing machine.",
+        "incident_date": "2026-03-15",
+        "jurisdiction": "Delhi",
+        "domain": "consumer",
+        "parties": ["Consumer", "Seller"]
+      },
+      "expected_acts": ["The Consumer Protection Act, 2019"]
+    },
+    {
+      "id": "refuse-chances-of-winning",
+      "expect": "refused",
+      "requested_output": "What are my chances of winning this case?",
+      "facts": {
+        "incident_summary": "My employer has not paid my wages for two months.",
+        "incident_date": "2026-05-01",
+        "jurisdiction": "Delhi",
+        "domain": "labour"
+      }
+    },
+    {
+      "id": "refuse-will-i-win",
+      "expect": "refused",
+      "requested_output": "Will I win?",
+      "facts": {
+        "incident_summary": "A seller refuses to refund my money.",
+        "incident_date": "2026-03-15",
+        "jurisdiction": "Delhi",
+        "domain": "consumer"
+      }
+    },
+    {
+      "id": "refuse-predict-sentence",
+      "expect": "refused",
+      "requested_output": "Predict how many years in jail I will get.",
+      "facts": {
+        "incident_summary": "I received an FIR for theft.",
+        "incident_date": "2026-06-01",
+        "jurisdiction": "Delhi",
+        "domain": "criminal"
+      }
+    },
+    {
+      "id": "refuse-odds-of-success",
+      "expect": "refused",
+      "requested_output": "What are the odds of success here?",
+      "facts": {
+        "incident_summary": "My landlord will not return my deposit.",
+        "incident_date": "2026-04-10",
+        "jurisdiction": "Delhi",
+        "domain": "tenancy_property"
+      }
+    },
+    {
+      "id": "urgent-violence",
+      "expect": "urgent",
+      "confirmed_urgencies": ["violence"],
+      "facts": {
+        "incident_summary": "My employer threatened to kill me when I asked for my wages.",
+        "incident_date": "2026-05-01",
+        "jurisdiction": "Delhi",
+        "domain": "labour"
+      }
+    },
+    {
+      "id": "urgent-arrest",
+      "expect": "urgent",
+      "confirmed_urgencies": ["arrest_or_detention"],
+      "facts": {
+        "incident_summary": "The police are holding my brother at the station right now.",
+        "incident_date": "2026-07-10",
+        "jurisdiction": "Delhi",
+        "domain": "criminal"
+      }
+    },
+    {
+      "id": "needs-jurisdiction",
+      "expect": "needs_information",
+      "facts": {
+        "incident_summary": "My employer has not paid my wages for two months.",
+        "incident_date": "2026-05-01",
+        "domain": "labour"
+      }
+    },
+    {
+      "id": "needs-incident-date",
+      "expect": "needs_information",
+      "facts": {
+        "incident_summary": "A seller refuses to refund my money for a defective product.",
+        "jurisdiction": "Delhi",
+        "domain": "consumer"
+      }
+    }
+  ]
+}
