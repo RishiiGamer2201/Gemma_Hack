@@ -127,7 +127,7 @@ Devil's Advocate / Rights Card / Checklist / Legal Aid / Community mode
 - [x] Create `src/tools/` for legal aid, Rights Card, checklist, and document explanation.
 - [x] Create `src/workflow/` for the deterministic state machine.
 - [x] Create `scripts/` for corpus download/import and implemented local feature commands.
-- [ ] Add index-building and evaluation commands to `scripts/`. (`scripts/build_index.py` done; evaluation command pending the Phase L golden set.)
+- [x] Add index-building and evaluation commands to `scripts/`.
 - [x] Create `tests/` with unit, component-integration, and retrieval fixtures.
 - [ ] Add true end-to-end demo-scenario fixtures.
 - [x] Create ignored `data/raw/` and `data/processed/` directories.
@@ -456,10 +456,10 @@ Owner: Member D with all members reviewing failures
 
 ### Metrics
 
-- [ ] BM25 Recall@5 and Recall@10.
-- [ ] Vector Recall@5 and Recall@10.
-- [ ] Hybrid Recall@5 and Recall@10.
-- [ ] Mean reciprocal rank.
+- [x] BM25 Recall@5 and Recall@10.
+- [x] Vector Recall@5 and Recall@10.
+- [x] Hybrid Recall@5 and Recall@10.
+- [x] Mean reciprocal rank.
 - [ ] Correct act/section rate.
 - [ ] Citation precision.
 - [ ] Unsupported-claim rate.

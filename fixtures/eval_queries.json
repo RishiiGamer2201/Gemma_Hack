@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "review_status": "pending_independent_review",
+  "note": "Written by the implementer. IMPLEMENTATION_PLAN.md Phase L requires every item to be reviewed by someone other than its author before these numbers may be quoted in the writeup. Expected chunk ids are the chunk that should be retrieved; a query may legitimately be answerable from more than one, so `also_acceptable` lists other chunks that would be a correct hit.",
+  "queries": [
+    {
+      "id": "wage-01",
+      "domain": "labour",
+      "query": "my employer has not paid my wages for two months",
+      "expected": "code_on_wages_2019_en:section-17",
+      "also_acceptable": ["code_on_wages_2019_en:section-18"]
+    },
+    {
+      "id": "wage-02",
+      "domain": "labour",
+      "query": "boss ne meri salary nahi di",
+      "expected": "code_on_wages_2019_en:section-17",
+      "also_acceptable": []
+    },
+    {
+      "id": "wage-03",
+      "domain": "labour",
+      "query": "when must wages be paid after I am dismissed from service",
+      "expected": "code_on_wages_2019_en:section-17",
+      "also_acceptable": []
+    },
+    {
+      "id": "wage-04",
+      "domain": "labour",
+      "query": "my employer pays me less than the minimum wage",
+      "expected": "code_on_wages_2019_en:section-5",
+      "also_acceptable": ["code_on_wages_2019_en:section-9"]
+    },
+    {
+      "id": "wage-05",
+      "domain": "labour",
+      "query": "can my employer deduct money from my salary",
+      "expected": "code_on_wages_2019_en:section-18",
+      "also_acceptable": []
+    },
+    {
+      "id": "wage-06",
+      "domain": "labour",
+      "query": "am I entitled to a bonus from my employer",
+      "expected": "code_on_wages_2019_en:section-26",
+      "also_acceptable": ["code_on_wages_2019_en:section-37"]
+    },
+    {
+      "id": "wage-07",
+      "domain": "labour",
+      "query": "who has to prove that wages were paid if I file a claim",
+      "expected": "code_on_wages_2019_en:section-59",
+      "also_acceptable": []
+    },
+    {
+      "id": "consumer-01",
+      "domain": "consumer",
+      "query": "the seller refuses to refund my money for a defective product",
+      "expected": "consumer_protection_act_2019_en:section-83",
+      "also_acceptable": [
+        "consumer_protection_act_2019_en:section-84",
+        "consumer_protection_act_2019_en:section-86"
+      ]
+    },
+    {
+      "id": "consumer-02",
+      "domain": "consumer",
+      "query": "where do I file a consumer complaint and what is the value limit",
+      "expected": "consumer_protection_act_2019_en:section-34",
+      "also_acceptable": ["consumer_protection_act_2019_en:section-47"]
+    },
+    {
+      "id": "consumer-03",
+      "domain": "consumer",
+      "query": "what counts as an unfair trade practice",
+      "expected": "consumer_protection_act_2019_en:section-2",
+      "also_acceptable": []
+    },
+    {
+      "id": "criminal-01",
+      "domain": "criminal",
+      "query": "someone took my phone without my permission",
+      "expected": "bns_2023_en:section-303",
+      "also_acceptable": ["bns_2023_en:section-304"]
+    },
+    {
+      "id": "criminal-02",
+      "domain": "criminal",
+      "query": "a person threatened me with harm if I did not pay",
+      "expected": "bns_2023_en:section-308",
+      "also_acceptable": ["bns_2023_en:section-351"]
+    },
+    {
+      "id": "criminal-03",
+      "domain": "criminal",
+      "query": "someone cheated me and took my money dishonestly",
+      "expected": "bns_2023_en:section-318",
+      "also_acceptable": []
+    },
+    {
+      "id": "criminal-04",
+      "domain": "criminal",
+      "query": "police want to search my house what is the procedure",
+      "expected": "bnss_2023_en:section-185",
+      "also_acceptable": ["bnss_2023_en:section-103"]
+    },
+    {
+      "id": "criminal-05",
+      "domain": "criminal",
+      "query": "how is an FIR registered for a cognizable offence",
+      "expected": "bnss_2023_en:section-173",
+      "also_acceptable": ["bnss_2023_en:section-176"]
+    },
+    {
+      "id": "constitution-01",
+      "domain": "constitutional",
+      "query": "right to equality before the law",
+      "expected": "constitution_2026_en:section-14",
+      "also_acceptable": []
+    },
+    {
+      "id": "constitution-02",
+      "domain": "constitutional",
+      "query": "can the state deprive me of my property without authority of law",
+      "expected": "constitution_2026_en:section-300a",
+      "also_acceptable": []
+    },
+    {
+      "id": "constitution-03",
+      "domain": "constitutional",
+      "query": "protection against arrest and detention rights of an arrested person",
+      "expected": "constitution_2026_en:section-22",
+      "also_acceptable": []
+    },
+    {
+      "id": "tenancy-01",
+      "domain": "tenancy_property",
+      "query": "landlord is refusing to return my security deposit",
+      "expected": "consumer_protection_act_2019_en:section-2",
+      "also_acceptable": ["consumer_protection_act_2019_en:section-35"]
+    },
+    {
+      "id": "tenancy-02",
+      "domain": "tenancy_property",
+      "query": "deficiency in service by a housing provider",
+      "expected": "consumer_protection_act_2019_en:section-2",
+      "also_acceptable": []
+    }
+  ]
+}

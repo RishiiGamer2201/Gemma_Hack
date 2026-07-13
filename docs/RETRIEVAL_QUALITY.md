@@ -30,23 +30,37 @@ dependency that will not install on this Python build.
 
 ## Measured retrieval quality
 
-Provisional, on a 10-query labelled set (`Recall@5`, MRR), domain-scoped:
+Reproduce with:
+
+```powershell
+python scripts/evaluate_retrieval.py --k 5
+```
+
+On the 20-query set in `fixtures/eval_queries.json`, domain-scoped:
 
 | System | Recall@5 | MRR |
 |---|---:|---:|
-| BM25 only | 0.50 | 0.383 |
-| Hybrid (BM25 + EmbeddingGemma) | 0.80 | 0.570 |
+| BM25 only | 0.700 | 0.496 |
+| Vector only (EmbeddingGemma) | 0.800 | 0.717 |
+| Hybrid (BM25 + EmbeddingGemma) | **0.850** | 0.652 |
 
-Hybrid beats the lexical baseline, which is the comparison the plan requires.
+Read this honestly. Hybrid beats **both** baselines on Recall@5, which is the
+metric that decides whether the right provision reaches the answer at all. It does
+**not** beat vector-only on MRR: the semantic channel alone ranks its hits higher,
+and reciprocal-rank fusion with a noisier lexical channel pushes the correct chunk
+down a place or two. The plan's claim that hybrid beats both baselines is therefore
+true on recall and false on MRR, and that item stays unchecked.
 
-These numbers are **not** the Phase E exit gate. The set is 10 queries written by
-the implementer, and at least one gold label was wrong: for "seller refuses to
-refund my money for a defective product" the retriever returned the product
-liability sections (83, 84, 86), which are a better answer than the definitions
-section that was labelled correct. Real quality is therefore somewhat higher than
-0.80, and the honest conclusion is that the number is unreliable in both
-directions. Certifying `Recall@5 >= 0.85` requires the reviewed 150–200 query
-golden set in Phase L, with each item reviewed by someone other than its author.
+Why keep hybrid anyway: BM25 is the channel that catches exact section numbers and
+act names ("BNS 303", "Section 17"), which is precisely the query a user types when
+they are holding a notice. Vector-only missed the two tenancy queries and the
+consumer-forum jurisdiction query; BM25-only missed the Hinglish and paraphrase
+queries. They fail on different things, and recall is what the verifier needs.
+
+Both figures are **provisional**. The query set was written by the implementer and
+is marked `pending_independent_review`. Phase L requires a reviewer other than the
+author, so `Recall@5 >= 0.85` is not certified even though the measured value meets
+it, and the exit-gate items stay unchecked.
 
 ## Query expansion
 
