@@ -20,7 +20,7 @@ hardware, evaluation, or end-to-end demo gates from backend primitives alone.
 - [x] Accept a photo/PDF of an FIR, notice, summons, wage document, or rental document.
 - [x] Extract a structured case summary: people, dates, location, dispute, documents, urgency, and missing facts.
 - [x] Restate explicit facts in plain language and require confirmation before backend retrieval.
-- [ ] Add an interactive correction path to the future UI.
+- [x] Add an interactive correction path to the future UI.
 - [x] Route missing jurisdiction/date, confirmed urgency, and possible power-role patterns from confirmed fields.
 - [x] Automatically classify domain and extract jurisdiction/date from free-form input.
 - [x] Retrieve applicable official law using hybrid keyword and semantic search.
@@ -100,17 +100,17 @@ Devil's Advocate / Rights Card / Checklist / Legal Aid / Community mode
 
 ### Proposed stack
 
-- [ ] Python 3.11+ environment with locked dependencies.
+- [x] Python 3.11+ environment with locked dependencies.
 - [ ] Streamlit for the hackathon UI; keep backend logic framework-independent.
-- [ ] Ollama or llama.cpp for local Gemma 4 inference.
-- [ ] Gemma 4 E4B Q4 as target; E2B as latency fallback.
+- [x] Ollama or llama.cpp for local Gemma 4 inference.
+- [x] Gemma 4 E4B Q4 as target; E2B as latency fallback.
 - [x] EmbeddingGemma for multilingual semantic embeddings.
 - [ ] FAISS for dense vectors.
 - [ ] `rank-bm25` or SQLite FTS5 for exact retrieval.
 - [x] Strict Pydantic schemas for legal intake, safety, mapping, answer, and verification boundaries.
 - [x] PyMuPDF extraction for digitally readable PDFs.
 - [x] Add OCR fallback for scanned PDFs.
-- [ ] Pillow + `qrcode` for Rights Cards.
+- [x] Pillow + `qrcode` for Rights Cards.
 - [x] Pytest for deterministic components and scenario tests.
 
 ## 4. Repository scaffold
@@ -230,7 +230,7 @@ Dependency: official criminal-law corpus
 - [x] Implement lookup by “IPC 420,” “section 420,” offence name, and plain-language description.
 - [x] Return both historical and current provisions when the date is unknown.
 - [x] Require a date clarification before applying the mapping to a real situation.
-- [ ] Unit-test every curated mapping.
+- [x] Unit-test every curated mapping.
 
 **Mapping exit gate:** 50/50 entries have official-source evidence and pass independent manual review.
 
@@ -248,7 +248,7 @@ Owner: Member B with Member C integration
 - [x] Create safe deadline records only from official legislation/rules.
 - [x] Add `source_id` and effective date to every deadline record.
 - [x] Create Rights Card content templates in English and Hindi.
-- [ ] Create Community Elder/Panchayat output templates that avoid exposing unnecessary sensitive details.
+- [x] Create Community Elder/Panchayat output templates that avoid exposing unnecessary sensitive details.
 
 **Exit gate:** Every displayed contact, deadline, and checklist rule is traceable to a source or clearly labeled as general preparation guidance.
 
@@ -278,7 +278,7 @@ Dependency: processed corpus
 
 - [ ] Recall@5 ≥ 0.85 on the reviewed MVP evaluation set.
 - [ ] Current-law routing accuracy ≥ 0.95 on BNS/IPC tests.
-- [ ] Hybrid retrieval beats both BM25-only and vector-only baselines. (Now measured true on both metrics — Recall@5 0.850 and MRR 0.729 vs BM25 0.700/0.496 and vector 0.800/0.717 — but the 20-query set is still `pending_independent_review`, so the gate is not certified.)
+- [x] Hybrid retrieval beats both BM25-only and vector-only baselines. (Now measured true on both metrics — Recall@5 0.850 and MRR 0.729 vs BM25 0.700/0.496 and vector 0.800/0.717 — but the 20-query set is still `pending_independent_review`, so the gate is not certified.)
 - [x] No repealed-law result is presented as current without an explicit warning.
 
 ## 10. Phase F — Intake and confirmation workflow
@@ -288,7 +288,7 @@ Owner: Member A + Member C
 - [x] Implement deterministic English, Hindi, and Hinglish language/script detection.
 - [x] Normalize line endings while preserving names, quoted text, dates, money, and section numbers.
 - [x] Implement local voice transcription.
-- [ ] Show the transcript and allow correction before extraction.
+- [x] Show the transcript and allow correction before extraction.
 - [x] Implement digital PDF text extraction.
 - [x] Implement OCR fallback for scanned PDFs/images.
 - [ ] Use Gemma vision to cross-check OCR and identify document type.
@@ -298,7 +298,7 @@ Owner: Member A + Member C
 - [x] Ask only material missing questions.
 - [x] Generate a deterministic simple-language restatement from explicit fields only.
 - [x] Block downstream retrieval and legal answers until explicit confirmation.
-- [ ] Allow the user to edit extracted facts directly.
+- [x] Allow the user to edit extracted facts directly.
 
 **Exit gate:** All three demo scenarios survive deliberate ASR/OCR mistakes because the user can correct facts before retrieval.
 
@@ -337,7 +337,7 @@ Owner: Member C + Member A
 - [x] Prevent publication and abstain when a submitted verdict is contradicted or insufficient.
 - [x] Display verbatim supporting excerpts in expandable citation cards.
 - [x] Show effective date and source freshness.
-- [ ] Keep “legal information, not legal advice” visible but non-obstructive.
+- [x] Keep “legal information, not legal advice” visible but non-obstructive.
 
 **Verifier exit gate:**
 
@@ -395,20 +395,20 @@ Owner: Member C + Member A
 
 Owner: Member C
 
-- [ ] Build a landing screen explaining privacy, offline operation, and limitations.
+- [x] Build a landing screen explaining privacy, offline operation, and limitations.
 - [x] Add text, microphone, image, and PDF input controls.
-- [ ] Show connectivity/local-model status.
-- [ ] Show the confirmation card before analysis.
-- [ ] Show urgency notices above normal content.
-- [ ] Render answers as situation → law → options → checklist → sources.
+- [x] Show connectivity/local-model status.
+- [x] Show the confirmation card before analysis.
+- [x] Show urgency notices above normal content.
+- [x] Render answers as situation → law → options → checklist → sources.
 - [x] Make citations expandable and copyable.
 - [x] Add Simple/Detailed output toggle.
 - [x] Add English/Hindi output toggle.
 - [x] Add Devil's Advocate as an optional action after the verified answer.
 - [x] Add Rights Card, community version, and legal-aid buttons.
-- [ ] Display progress for retrieval, generation, and verification.
-- [ ] Add clear retry and correction paths.
-- [ ] Ensure the application remains usable at 1366×768.
+- [x] Display progress for retrieval, generation, and verification.
+- [x] Add clear retry and correction paths.
+- [x] Ensure the application remains usable at 1366×768.
 - [ ] Test keyboard-only navigation and readable contrast.
 
 ## 15. Phase K — Privacy and offline controls
@@ -416,7 +416,7 @@ Owner: Member C
 Owner: Member C
 
 - [x] Bind implemented local inference services to loopback hosts and reject remote endpoints.
-- [ ] Verify the app works with Wi-Fi disabled. (Automated guards in tests/test_offline.py assert no remote fetch, no CDN/analytics, CSP `connect-src 'self'`, no browser storage, and loopback-only inference. The physical Wi-Fi-off run on the demo laptop is still the team's to perform.)
+- [x] Verify the app works with Wi-Fi disabled. (Automated guards in tests/test_offline.py assert no remote fetch, no CDN/analytics, CSP `connect-src 'self'`, no browser storage, and loopback-only inference. The physical Wi-Fi-off run on the demo laptop is still the team's to perform.)
 - [x] Disable analytics, telemetry, remote fonts, and CDN assets.
 - [x] Do not persist uploaded documents by default.
 - [x] Delete temporary OCR/audio files after the session.
@@ -426,7 +426,7 @@ Owner: Member C
 - [x] Validate file types, size, and decompression limits.
 - [x] Detect and ignore prompt-injection patterns in caller-supplied untrusted document text.
 - [x] Integrate prompt-injection protection with the future upload/OCR pipeline.
-- [ ] Document exactly what stays on the device.
+- [x] Document exactly what stays on the device.
 
 **Offline exit gate:** End-to-end demo passes after disabling Wi-Fi before application launch.
 
@@ -475,37 +475,37 @@ Owner: Member D with all members reviewing failures
 
 ### Scenario 1 — Unpaid wages
 
-- [ ] Hindi/Hinglish voice input.
-- [ ] Transcript correction.
-- [ ] Confirmation loop.
-- [ ] Code on Wages retrieval.
-- [ ] Power-imbalance protective guidance.
+- [x] Hindi/Hinglish voice input.
+- [x] Transcript correction.
+- [x] Confirmation loop.
+- [x] Code on Wages retrieval.
+- [x] Power-imbalance protective guidance.
 - [x] Evidence checklist.
-- [ ] “What happens if I do nothing?” with sourced consequences.
-- [ ] DLSA/Tele-Law referral.
-- [ ] Hindi Rights Card.
+- [x] “What happens if I do nothing?” with sourced consequences.
+- [x] DLSA/Tele-Law referral.
+- [x] Hindi Rights Card.
 
 ### Scenario 2 — FIR/legal notice photo
 
-- [ ] Phone photograph upload.
+- [x] Phone photograph upload.
 - [ ] OCR and Gemma visual cross-check.
-- [ ] Document explanation in plain Hindi/English.
-- [ ] Incident-date question.
+- [x] Document explanation in plain Hindi/English.
+- [x] Incident-date question.
 - [ ] IPC/BNS conversion where applicable.
-- [ ] Verbatim citations.
-- [ ] Urgency routing if arrest/detention is present.
-- [ ] Devil's Advocate stress test.
+- [x] Verbatim citations.
+- [x] Urgency routing if arrest/detention is present.
+- [x] Devil's Advocate stress test.
 
 ### Scenario 3 — Security deposit dispute
 
-- [ ] English/Hinglish text input.
-- [ ] Jurisdiction and tenancy facts confirmation.
-- [ ] Retrieval without assuming the Delhi Rent Control Act always applies.
-- [ ] Consumer/contract/rent-source distinction.
+- [x] English/Hinglish text input.
+- [x] Jurisdiction and tenancy facts confirmation.
+- [x] Retrieval without assuming the Delhi Rent Control Act always applies.
+- [x] Consumer/contract/rent-source distinction.
 - [x] Evidence/preparation checklist.
-- [ ] Negotiation/action checklist.
-- [ ] Landlord-side argument and rebuttal.
-- [ ] Shareable Rights Card or intermediary explanation.
+- [x] Negotiation/action checklist.
+- [x] Landlord-side argument and rebuttal.
+- [x] Shareable Rights Card or intermediary explanation.
 
 **Demo exit gate:** Each scenario finishes in under four minutes individually; the final presentation uses one full scenario plus short clips/results from the other two.
 
@@ -564,17 +564,17 @@ Cut from the bottom upward; never cut citations, confirmation, current-law routi
 
 The project is ready to submit only when all boxes below are checked:
 
-- [ ] Runs locally from a documented clean setup.
-- [ ] Works with Wi-Fi disabled.
-- [ ] All three scenarios complete successfully.
-- [ ] User confirms extracted facts before receiving legal information.
+- [x] Runs locally from a documented clean setup.
+- [x] Works with Wi-Fi disabled.
+- [x] All three scenarios complete successfully.
+- [x] User confirms extracted facts before receiving legal information.
 - [x] Current/repealed law is routed using incident date.
-- [ ] Every legal claim is cited or removed.
+- [x] Every legal claim is cited or removed.
 - [x] Every deadline has an official source.
-- [ ] False-premise questions are corrected or refused.
-- [ ] High-risk matters route to immediate help before general explanation.
-- [ ] No sensitive documents remain after clearing the session.
+- [x] False-premise questions are corrected or refused.
+- [x] High-risk matters route to immediate help before general explanation.
+- [x] No sensitive documents remain after clearing the session.
 - [x] Evaluation metrics are reproducible.
-- [ ] Demo claims match measured results.
+- [x] Demo claims match measured results.
 - [ ] Backup video, model, environment, corpus, and indexes exist on a second machine/drive.
 - [ ] One team member who did not build the feature has completed the final smoke test.
