@@ -266,7 +266,7 @@ Dependency: processed corpus
 - [x] Filter by jurisdiction, incident date, language, act, status, and document type.
 - [x] Merge BM25 and dense results using reciprocal-rank fusion.
 - [x] Deduplicate only provenance-compatible, genuinely overlapping subsections.
-- [ ] Add a separate post-fusion reranker.
+- [x] Add a separate post-fusion reranker.
 - [x] Preserve all provenance metadata supplied by corpus records in retrieval results.
 - [x] Validate that every returned evidence bundle contains all required citation fields.
 - [x] Add an immutable retrieval-debug trace/API for development.
@@ -278,7 +278,7 @@ Dependency: processed corpus
 
 - [ ] Recall@5 ≥ 0.85 on the reviewed MVP evaluation set.
 - [ ] Current-law routing accuracy ≥ 0.95 on BNS/IPC tests.
-- [ ] Hybrid retrieval beats both BM25-only and vector-only baselines. (Measured hybrid 0.80 vs BM25-only 0.50 on a 10-query set; vector-only not yet measured — see docs/RETRIEVAL_QUALITY.md.)
+- [ ] Hybrid retrieval beats both BM25-only and vector-only baselines. (Now measured true on both metrics — Recall@5 0.850 and MRR 0.729 vs BM25 0.700/0.496 and vector 0.800/0.717 — but the 20-query set is still `pending_independent_review`, so the gate is not certified.)
 - [ ] No repealed-law result is presented as current without an explicit warning.
 
 ## 10. Phase F — Intake and confirmation workflow

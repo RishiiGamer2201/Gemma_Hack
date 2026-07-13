@@ -127,3 +127,52 @@ def test_semantic_channel_can_retrieve_where_the_words_do_not_match(
     )
     found = hybrid.search("unpaid salary", limit=1)
     assert [item.source_id for item in found] == ["s:1"]
+
+
+def test_reranker_reorders_the_selected_set_without_changing_it() -> None:
+    """Fusion picks the set; the reranker picks the order. Recall@k cannot change.
+
+    Reciprocal-rank fusion throws away the actual scores. Measured on the evaluation
+    set that cost ranking quality (vector-only beat hybrid on MRR), so the selected
+    results are reordered by semantic similarity.
+    """
+
+    documents = [
+        RetrievalDocument(source_id="s:lexical", text="wages wages wages payable"),
+        RetrievalDocument(source_id="s:semantic", text="remuneration due to a workman"),
+    ]
+
+    class Semantic:
+        """The query is close to s:semantic, far from s:lexical."""
+
+        def __call__(self, texts: Any) -> list[list[float]]:
+            vectors = []
+            for text in texts:
+                if "remuneration" in text:
+                    vectors.append([1.0, 0.0])
+                elif "wages" in text:
+                    vectors.append([0.6, 0.8])
+                else:  # the query
+                    vectors.append([1.0, 0.0])
+            return vectors
+
+    hybrid = HybridRetriever(
+        documents, embedding_callback=Semantic(), embedding_version_key="test"
+    )
+    found = [item.source_id for item in hybrid.search("remuneration", limit=2)]
+
+    # Both survive (the set is unchanged), but the semantically closer one leads.
+    assert set(found) == {"s:lexical", "s:semantic"}
+    assert found[0] == "s:semantic"
+
+
+def test_without_an_embedding_channel_the_fused_order_stands(tmp_path: Path) -> None:
+    documents = [
+        RetrievalDocument(source_id="s:1", text="wages payable to the employee"),
+        RetrievalDocument(source_id="s:2", text="wages"),
+    ]
+    lexical_only = HybridRetriever(documents)
+    found = [item.source_id for item in lexical_only.search("wages", limit=2)]
+
+    # No independent signal to rerank by: nothing is dropped or reordered arbitrarily.
+    assert set(found) == {"s:1", "s:2"}

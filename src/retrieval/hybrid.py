@@ -187,6 +187,8 @@ class HybridRetriever:
                 lexical, semantic
             )
             kept, deduplications = self._deduplicate(ordered, by_id)
+
+        selected = self._rerank(kept[:limit], expanded_query)
         results = tuple(
             RetrievalResult(
                 document=by_id[source_id],
@@ -195,7 +197,7 @@ class HybridRetriever:
                 channel_scores=channel_scores[source_id],
                 channel_ranks=channel_ranks[source_id],
             )
-            for rank, source_id in enumerate(kept[:limit], start=1)
+            for rank, source_id in enumerate(selected, start=1)
         )
         candidates = tuple(
             ChannelCandidate(channel, result.source_id, result.rank, result.score)
@@ -319,6 +321,50 @@ class HybridRetriever:
             else:
                 events.append((source_id, duplicate_of, "overlapping_chunk"))
         return kept, tuple(events)
+
+    def _rerank(self, source_ids: list[str], query: str) -> list[str]:
+        """Reorder the selected results by semantic similarity to the query.
+
+        Reciprocal-rank fusion decides which chunks are worth showing, but it throws
+        away the actual scores: a chunk ranked 1st lexically and 5th semantically is
+        fused on positions alone. Measured on the evaluation set, that cost ranking
+        quality -- vector-only beat hybrid on MRR (0.717 vs 0.652) even though hybrid
+        had the better Recall@5.
+
+        So fusion chooses the set and this chooses the order. Only the already
+        selected results are reordered, so Recall@k cannot change; only the rank of a
+        correct hit within them can improve.
+
+        Without an embedding channel there is no independent signal to rerank by, and
+        the fused order stands.
+        """
+
+        if (
+            self.embedding_callback is None
+            or self._document_embeddings is None
+            or self.embedding_weight == 0
+            or len(source_ids) < 2
+        ):
+            return source_ids
+
+        position = {document.source_id: index for index, document in enumerate(self.documents)}
+        try:
+            query_vector = self._validate_vectors(
+                self.embedding_callback([query]), expected_count=1
+            )[0]
+        except (ValueError, TypeError):
+            # A reranker that cannot score must not drop results. Keep fused order.
+            return source_ids
+
+        scored: list[tuple[float, str]] = []
+        for source_id in source_ids:
+            index = position.get(source_id)
+            if index is None:
+                return source_ids
+            scored.append((_cosine(query_vector, self._document_embeddings[index]), source_id))
+        # Ties keep the fused order: sort is stable and the input is already fused.
+        scored.sort(key=lambda item: -item[0])
+        return [source_id for _, source_id in scored]
 
     def _semantic_search(
         self, query: str, *, filters: SearchFilters | None, limit: int

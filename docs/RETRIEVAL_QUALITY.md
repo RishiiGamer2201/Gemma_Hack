@@ -42,20 +42,28 @@ On the 20-query set in `fixtures/eval_queries.json`, domain-scoped:
 |---|---:|---:|
 | BM25 only | 0.700 | 0.496 |
 | Vector only (EmbeddingGemma) | 0.800 | 0.717 |
-| Hybrid (BM25 + EmbeddingGemma) | **0.850** | 0.652 |
+| Hybrid (BM25 + EmbeddingGemma + reranker) | **0.850** | **0.729** |
 
-Read this honestly. Hybrid beats **both** baselines on Recall@5, which is the
-metric that decides whether the right provision reaches the answer at all. It does
-**not** beat vector-only on MRR: the semantic channel alone ranks its hits higher,
-and reciprocal-rank fusion with a noisier lexical channel pushes the correct chunk
-down a place or two. The plan's claim that hybrid beats both baselines is therefore
-true on recall and false on MRR, and that item stays unchecked.
+Hybrid beats both baselines on both metrics.
 
-Why keep hybrid anyway: BM25 is the channel that catches exact section numbers and
-act names ("BNS 303", "Section 17"), which is precisely the query a user types when
-they are holding a notice. Vector-only missed the two tenancy queries and the
-consumer-forum jurisdiction query; BM25-only missed the Hinglish and paraphrase
-queries. They fail on different things, and recall is what the verifier needs.
+It did not, at first. Reciprocal-rank fusion throws away the actual scores — a
+chunk ranked 1st lexically and 5th semantically is fused on positions alone — and
+that cost ranking quality: hybrid scored MRR 0.652 against vector-only's 0.717,
+while still having the better Recall@5. Fusion was choosing a good set and then
+ordering it badly.
+
+## Post-fusion reranker
+
+Fusion chooses the set; the reranker chooses the order. Only the already selected
+results are reordered, by cosine similarity to the query, so `Recall@k` cannot
+change — only the rank of a correct hit within the results can improve. That moved
+MRR from 0.652 to 0.729 with Recall@5 unchanged at 0.850.
+
+Why keep the lexical channel at all: BM25 is what catches an exact section number
+or act name ("BNS 303", "Section 17") — precisely the query a user types when they
+are holding a notice. The channels fail on different things. Vector-only missed
+the two tenancy queries and the consumer-forum jurisdiction query; BM25-only missed
+the Hinglish and paraphrase queries.
 
 Both figures are **provisional**. The query set was written by the implementer and
 is marked `pending_independent_review`. Phase L requires a reviewer other than the
