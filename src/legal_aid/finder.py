@@ -276,6 +276,15 @@ class LegalAidFinder:
             source_sha256=hashes,
         )
 
+    def universal_fallbacks(self) -> tuple[LegalAidFallback, ...]:
+        """Nationwide fallbacks (NALSA 15100, Tele-Law 14454) that apply anywhere.
+
+        These do not depend on a district match, so a caller that has no location can
+        still show a citizen where to get free legal help.
+        """
+
+        return self._universal_fallbacks()
+
     def _universal_fallbacks(self) -> tuple[LegalAidFallback, ...]:
         universal_scopes = {"india", "all india", "national", "universal"}
         return tuple(

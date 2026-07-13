@@ -70,6 +70,22 @@ def _official_url(evidence: Sequence[SourceEvidence]) -> str:
     )
 
 
+def _truncate_words(text: str, limit: int) -> str:
+    """Truncate at a word boundary with an ellipsis, never mid-word.
+
+    A shareable card that cuts a right at "the dues have bee" reads as broken and can
+    mislead. If shortening is needed, stop at the last whole word and mark it.
+    """
+
+    text = text.strip()
+    if len(text) <= limit:
+        return text
+    window = text[: limit - 1]
+    boundary = window.rfind(" ")
+    cut = window[:boundary] if boundary > limit // 2 else window
+    return cut.rstrip(" ,.;:") + "…"
+
+
 def _citation(source: SourceEvidence) -> str:
     section = f" s.{source.section}" if source.section else ""
     return f"{source.act}{section}"
@@ -135,7 +151,7 @@ def render_rights_card(content: RightsCardContent) -> bytes:
     cursor = _text_block(draw, "Your rights", heading_font, cursor, _ACCENT, leading=10)
     cursor += 8
     for right in rights:
-        text = right[:MAX_RIGHT_CHARACTERS]
+        text = _truncate_words(right, MAX_RIGHT_CHARACTERS)
         cursor = _text_block(
             draw, f"• {text}", body_font, cursor, _INK, leading=8, indent=8
         )

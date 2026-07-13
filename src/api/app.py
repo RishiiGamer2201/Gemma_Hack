@@ -874,16 +874,26 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
                 f"one (stage: {result.stage.value}), so there is nothing to put on a card.",
             )
 
+        # A pocket card must always show where to get free legal help. NALSA 15100
+        # and Tele-Law 14454 are nationwide and do not need a district, so they are
+        # fetched unconditionally; a matched district only adds to them.
         fallbacks: tuple = ()
-        district = payload.legal_aid_district or payload.facts.location
-        if district:
-            try:
-                found = state.legal_aid_finder().find(
+        try:
+            finder = state.legal_aid_finder()
+            fallbacks = finder.universal_fallbacks()
+            district = payload.legal_aid_district or payload.facts.location
+            if district:
+                found = finder.find(
                     district, state=payload.legal_aid_state or payload.facts.jurisdiction
                 )
-                fallbacks = found.fallbacks
-            except (LegalAidFinderError, StateError):
-                fallbacks = ()
+                # District match first, then any universal ones not already present.
+                seen = {item.fallback_id for item in found.fallbacks}
+                fallbacks = (
+                    *found.fallbacks,
+                    *(item for item in fallbacks if item.fallback_id not in seen),
+                )
+        except (LegalAidFinderError, StateError):
+            fallbacks = fallbacks or ()
 
         try:
             png = render_rights_card(
