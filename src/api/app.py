@@ -20,7 +20,7 @@ from typing import Any
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.responses import JSONResponse, Response, StreamingResponse
 from pydantic import ValidationError
 from starlette.formparsers import MultiPartParser
 
@@ -41,6 +41,7 @@ from src.pipeline import PipelineError, run_confirmed_request
 from src.retrieval import CorpusLoadError
 from src.retrieval.collections import CollectionError
 from src.safety import SafetyRouteDecision, route_confirmed_case
+from src.tools.rights_card import RightsCardContent, RightsCardError, render_rights_card
 from src.workflow import WorkflowError
 
 from .models import (
@@ -60,6 +61,7 @@ from .models import (
     MappingRequest,
     MappingResponse,
     RetrievalTraceSummary,
+    RightsCardRequest,
     RouteRequest,
 )
 from .state import NO_REVIEWED_MAPPING_WARNING, ApiState, StateError, build_state
@@ -235,6 +237,17 @@ def _register_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(ValueError)
     async def _handle_value_error(_: Request, exc: ValueError) -> JSONResponse:
         return _error(400, "invalid_request", str(exc))
+
+
+def _card_title(facts: ConfirmedFacts) -> str:
+    """A short, factual card title taken from the user's own words.
+
+    The title is drawn from the confirmed incident summary, never from generated
+    text, so the card header cannot assert something the answer did not.
+    """
+
+    summary = facts.incident_summary.strip().splitlines()[0]
+    return summary[:80] + ("…" if len(summary) > 80 else "")
 
 
 def _register_routes(app: FastAPI, state: ApiState) -> None:
@@ -453,6 +466,65 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
             events(),
             media_type="text/event-stream",
             headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
+        )
+
+    @app.post("/api/rights-card", responses=_ERROR_RESPONSES, tags=["answer"])
+    async def rights_card(payload: RightsCardRequest) -> Response:
+        """Render a phone-sized PNG from a published answer.
+
+        The card is a summary of an answer that already passed verification. Its
+        rights are the answer's rights, its citations are the retrieved evidence, its
+        helplines come from the reviewed directory, and its QR points only at an
+        official government URL. Nothing on it is produced without verification.
+        """
+
+        _require_confirmed(payload.facts)
+        documents = state.documents_for_domain(payload.facts.domain)
+        result = run_confirmed_request(
+            payload.facts,
+            documents,
+            client=state.model_client(),
+            model=state.settings.ollama_model,
+            approved_profiles=frozenset(payload.approved_profiles),
+            evidence_limit=payload.limit,
+        )
+        if not result.published or result.answer is None or result.evidence_bundle is None:
+            raise ApiError(
+                409,
+                "not_verified",
+                "A Rights Card summarises a verified answer. This case did not produce "
+                f"one (stage: {result.stage.value}), so there is nothing to put on a card.",
+            )
+
+        fallbacks: tuple = ()
+        district = payload.legal_aid_district or payload.facts.location
+        if district:
+            try:
+                found = state.legal_aid_finder().find(
+                    district, state=payload.legal_aid_state or payload.facts.jurisdiction
+                )
+                fallbacks = found.fallbacks
+            except (LegalAidFinderError, StateError):
+                fallbacks = ()
+
+        try:
+            png = render_rights_card(
+                RightsCardContent(
+                    title=_card_title(payload.facts),
+                    rights=result.answer.rights,
+                    evidence=result.evidence_bundle.evidence,
+                    fallbacks=fallbacks,
+                    language=payload.facts.input_language,
+                    warnings=result.warnings,
+                )
+            )
+        except RightsCardError as exc:
+            raise ApiError(422, "rights_card_error", str(exc)) from exc
+
+        return Response(
+            content=png,
+            media_type="image/png",
+            headers={"Cache-Control": "no-store"},
         )
 
     @app.post(

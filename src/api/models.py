@@ -183,6 +183,16 @@ class DevilsAdvocateRequest(ApiModel):
     limit: Annotated[int, Field(ge=1, le=MAX_EVIDENCE)] = 4
 
 
+class RightsCardRequest(ApiModel):
+    """Render a shareable card from a case that produced a verified answer."""
+
+    facts: ConfirmedFacts
+    approved_profiles: tuple[Annotated[str, Field(pattern=r"^[a-z0-9_]+$")], ...] = ()
+    legal_aid_district: str | None = None
+    legal_aid_state: str | None = None
+    limit: Annotated[int, Field(ge=1, le=MAX_EVIDENCE)] = 4
+
+
 # -------------------------------------------------------------------------- legal aid
 
 

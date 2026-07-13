@@ -25,18 +25,18 @@ hardware, evaluation, or end-to-end demo gates from backend primitives alone.
 - [ ] Automatically classify domain and extract jurisdiction/date from free-form input.
 - [x] Retrieve applicable official law using hybrid keyword and semantic search.
 - [x] Provide backend effective-date/status filters and IPC/BNS temporal-routing primitives.
-- [ ] Integrate current/repealed-law routing into the production answer journey.
+- [x] Integrate current/repealed-law routing into the production answer journey.
 - [x] Generate a plain-language answer containing rights, options, evidence, deadlines, and next steps.
 - [x] Verify each legal claim against retrieved official sources.
-- [ ] Display act name, section number, effective date, source excerpt, and official URL.
+- [x] Display act name, section number, effective date, source excerpt, and official URL.
 - [x] Abstain on unsupported submitted verdicts and route confirmed high-risk matters before retrieval.
-- [ ] Connect abstention/high-risk results to the Legal Aid Finder in the end-to-end journey.
+- [x] Connect abstention/high-risk results to the Legal Aid Finder in the end-to-end journey.
 
 ### Locked differentiators
 
 - [ ] BNS ↔ IPC converter with incident-date awareness.
-- [ ] Devil's Advocate mode using sequential roles on one loaded Gemma model.
-- [ ] Rights Card image generator with section citations, helplines, disclaimer, and QR link.
+- [x] Devil's Advocate mode using sequential roles on one loaded Gemma model.
+- [x] Rights Card image generator with section citations, helplines, disclaimer, and QR link.
 - [ ] “What happens if I do nothing?” citation-grounded consequence explanation.
 - [x] Power-role protection prompts for tenant/landlord, worker/employer, and citizen/police situations.
 - [ ] Community Elder / Panchayat Bridge explanation for a trusted intermediary.
@@ -127,7 +127,7 @@ Devil's Advocate / Rights Card / Checklist / Legal Aid / Community mode
 - [ ] Create `src/tools/` for legal aid, Rights Card, checklist, and document explanation.
 - [x] Create `src/workflow/` for the deterministic state machine.
 - [x] Create `scripts/` for corpus download/import and implemented local feature commands.
-- [ ] Add index-building and evaluation commands to `scripts/`.
+- [x] Add index-building and evaluation commands to `scripts/`.
 - [x] Create `tests/` with unit, component-integration, and retrieval fixtures.
 - [ ] Add true end-to-end demo-scenario fixtures.
 - [x] Create ignored `data/raw/` and `data/processed/` directories.
@@ -259,7 +259,7 @@ Dependency: processed corpus
 
 - [x] Build an exact-search index over act names, headings, sections, and text.
 - [x] Generate multilingual embeddings with EmbeddingGemma.
-- [ ] Build a FAISS index.
+- [ ] Build a FAISS index. (Superseded: an exact numpy cosine index is used instead; see docs/RETRIEVAL_QUALITY.md for why FAISS was not adopted.)
 - [x] Normalize section-number queries before search.
 - [x] Support IPC-term expansion only through caller-supplied, human-reviewed BNS aliases.
 - [x] Add opt-in reviewed Hindi/English legal-term synonym expansion.
@@ -335,8 +335,8 @@ Owner: Member C + Member A
 - [ ] Trigger one constrained re-retrieval attempt when evidence is missing.
 - [ ] Abstain after the retry fails.
 - [x] Prevent publication and abstain when a submitted verdict is contradicted or insufficient.
-- [ ] Display verbatim supporting excerpts in expandable citation cards.
-- [ ] Show effective date and source freshness.
+- [x] Display verbatim supporting excerpts in expandable citation cards.
+- [x] Show effective date and source freshness.
 - [ ] Keep “legal information, not legal advice” visible but non-obstructive.
 
 **Verifier exit gate:**
@@ -350,13 +350,13 @@ Owner: Member C + Member A
 
 ### Devil's Advocate
 
-- [ ] Build a redacted, structured case summary from confirmed facts.
+- [x] Build a redacted, structured case summary from confirmed facts.
 - [x] Run advocate, opponent, and rebuttal sequentially on one model instance.
 - [x] Give the opponent only confirmed facts and verified source excerpts.
 - [x] Prevent either side from adding new uncited law.
 - [ ] Label allegations, assumptions, missing evidence, and legal rules separately.
 - [ ] Stream stage labels and provide a cancel button.
-- [ ] Conclude with “weaknesses to investigate,” not a win probability.
+- [x] Conclude with “weaknesses to investigate,” not a win probability.
 
 ### “What happens if I do nothing?”
 
@@ -367,11 +367,11 @@ Owner: Member C + Member A
 
 ### Rights Card
 
-- [ ] Render a phone-friendly image.
-- [ ] Include situation title, 3–5 rights/actions, act and section, helpline, and disclaimer.
-- [ ] Add QR codes only to official source URLs.
-- [ ] Include language and “law/source last checked” date.
-- [ ] Avoid names, addresses, case numbers, and sensitive facts by default.
+- [x] Render a phone-friendly image.
+- [x] Include situation title, 3–5 rights/actions, act and section, helpline, and disclaimer.
+- [x] Add QR codes only to official source URLs.
+- [x] Include language and “law/source last checked” date.
+- [x] Avoid names, addresses, case numbers, and sensitive facts by default.
 - [ ] Test English and Hindi typography on a phone.
 
 ### Community Elder / Panchayat Bridge
