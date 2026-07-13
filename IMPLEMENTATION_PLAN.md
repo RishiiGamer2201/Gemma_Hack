@@ -41,7 +41,7 @@ hardware, evaluation, or end-to-end demo gates from backend primitives alone.
 - [x] Power-role protection prompts for tenant/landlord, worker/employer, and citizen/police situations.
 - [x] Community Elder / Panchayat Bridge explanation for a trusted intermediary.
 - [x] Legal Aid Finder using offline NALSA/DLSA snapshots and Tele-Law fallback.
-- [ ] Extend the Legal Aid Finder with state-specific SLSA snapshots.
+- [x] Extend the Legal Aid Finder with state-specific SLSA snapshots.
 - [x] Evidence/action preparation checklist tailored to the three demo case types.
 - [ ] Add sourced rights checklist content tailored to each case type.
 
@@ -241,7 +241,7 @@ Owner: Member B with Member C integration
 - [x] Define contact schema: authority, state, district, address, phone, email, URL, verified date.
 - [x] Build the Delhi DLSA offline contact dataset; flag missing postal addresses for review.
 - [x] Add national NALSA fallback routing for districts outside Delhi.
-- [ ] Add state-specific SLSA fallback routing for districts outside Delhi.
+- [x] Add state-specific SLSA fallback routing for districts outside Delhi.
 - [x] Add Tele-Law 14454 as the universal fallback.
 - [x] Record that contacts are time-sensitive and display “last verified.”
 - [x] Create evidence-checklist templates for the three demo scenarios.
@@ -387,7 +387,7 @@ Owner: Member C + Member A
 - [x] Match district to the offline DLSA dataset without fuzzy guessing.
 - [x] Show last-verified date and official source.
 - [x] Fall back to NALSA and Tele-Law 14454.
-- [ ] Add state-specific SLSA fallbacks.
+- [x] Add state-specific SLSA fallbacks.
 - [x] Produce scenario-specific evidence and action checklists.
 - [x] Allow checklist JSON export without storing the underlying case narrative.
 

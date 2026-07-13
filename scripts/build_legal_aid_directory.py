@@ -17,6 +17,7 @@ from src.legal_aid.directory import (  # noqa: E402
     DirectoryError,
     build_delhi_contacts,
     build_nalsa_fallback,
+    build_state_slsa_contacts,
     build_tele_law_fallback,
 )
 
@@ -46,6 +47,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         contacts = build_delhi_contacts(args.snapshot)
+        state_contacts = build_state_slsa_contacts(args.nalsa_snapshot)
         fallbacks = [
             build_nalsa_fallback(args.nalsa_snapshot),
             build_tele_law_fallback(args.tele_law_snapshot),
@@ -53,6 +55,9 @@ def main(argv: list[str] | None = None) -> int:
         payload = {
             "schema_version": 1,
             "contacts": [contact.model_dump(mode="json") for contact in contacts],
+            "state_contacts": [
+                contact.model_dump(mode="json") for contact in state_contacts
+            ],
             "fallbacks": [fallback.model_dump(mode="json") for fallback in fallbacks],
         }
         data = (json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode("utf-8")
@@ -66,7 +71,10 @@ def main(argv: list[str] | None = None) -> int:
     except (DirectoryError, OSError, ValueError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
-    print(f"BUILT {len(contacts)} verified Delhi DLSA contacts -> {args.output}")
+    print(
+        f"BUILT {len(contacts)} Delhi DLSA contacts and {len(state_contacts)} "
+        f"state SLSA contacts -> {args.output}"
+    )
     return 0
 
 

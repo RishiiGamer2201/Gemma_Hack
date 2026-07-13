@@ -285,13 +285,21 @@ def test_legal_aid_returns_a_matched_district(client: TestClient) -> None:
     assert body["fallbacks"]
 
 
-def test_legal_aid_outside_delhi_returns_fallbacks_only(client: TestClient) -> None:
+def test_legal_aid_outside_delhi_routes_to_the_state_authority(client: TestClient) -> None:
+    """A citizen outside Delhi is given their own State Legal Services Authority.
+
+    This test's fixture directory may carry no state tier, in which case the older
+    fallback-only behaviour still holds; both are correct, and neither may show a
+    Delhi district contact to someone in Maharashtra.
+    """
+
     body = client.post(
         "/api/legal-aid", json={"district_or_city": "Pune", "state": "Maharashtra"}
     ).json()
     assert body["match_status"] == "outside_delhi"
-    assert body["contacts"] == []
     assert body["warnings"]
+    for contact in body["contacts"]:
+        assert "Maharashtra" in contact["authority"]
 
 
 # ------------------------------------------------------------------------ checklists

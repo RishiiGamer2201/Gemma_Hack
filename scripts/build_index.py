@@ -10,8 +10,8 @@ from __future__ import annotations
 import argparse
 import sys
 import time
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 from src.agents.ollama import OllamaError
 from src.models.schemas import LegalDomain

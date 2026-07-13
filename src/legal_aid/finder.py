@@ -53,7 +53,9 @@ class LegalAidSearchResult(StrictModel):
 
 
 _MAX_DIRECTORY_BYTES = 2 * 1024 * 1024
-_TOP_LEVEL_KEYS = frozenset({"schema_version", "contacts", "fallbacks"})
+_TOP_LEVEL_KEYS = frozenset(
+    {"schema_version", "contacts", "fallbacks", "state_contacts"}
+)
 _REQUIRED_FALLBACKS = {
     "nalsa-15100": "15100",
     "tele-law-14454": "14454",
@@ -140,7 +142,13 @@ class LegalAidFinder:
         payload = self._load_payload(self.directory)
         self.contacts = self._validate_contacts(payload["contacts"])
         self.fallbacks = self._validate_fallbacks(payload["fallbacks"])
+        # State authorities are a separate tier. A citizen outside Delhi used to get
+        # only the national helpline; now they get the authority for their own state.
+        self.state_contacts = self._validate_contacts(payload.get("state_contacts", []))
         self._contacts_by_district = self._index_contacts(self.contacts)
+        self._contacts_by_state = {
+            normalize_location(contact.state): contact for contact in self.state_contacts
+        }
         self.source_freshness = self._freshness()
 
     @staticmethod
@@ -185,6 +193,10 @@ class LegalAidFinder:
         ):
             raise LegalAidFinderError(
                 "invalid_shape", "contacts and fallbacks must both be JSON arrays"
+            )
+        if not isinstance(payload.get("state_contacts", []), list):
+            raise LegalAidFinderError(
+                "invalid_shape", "state_contacts must be a JSON array"
             )
         return payload
 
@@ -253,7 +265,7 @@ class LegalAidFinder:
         return index
 
     def _freshness(self) -> SourceFreshness:
-        records = (*self.contacts, *self.fallbacks)
+        records = (*self.contacts, *self.state_contacts, *self.fallbacks)
         dates = [record.verified_date for record in records]
         hashes = tuple(sorted({record.source_sha256 for record in records}))
         return SourceFreshness(
@@ -291,6 +303,20 @@ class LegalAidFinder:
         )
         universal = self._universal_fallbacks()
         if normalized_state is not None and normalized_state not in _DELHI_STATE_ALIASES:
+            state_contact = self._contacts_by_state.get(normalized_state)
+            if state_contact is not None:
+                return LegalAidSearchResult(
+                    match_status=MatchStatus.OUTSIDE_DELHI,
+                    normalized_query=normalized_query,
+                    contacts=(state_contact,),
+                    fallbacks=universal,
+                    warnings=(
+                        "Only Delhi has district-level contacts in this build. This is "
+                        "the State Legal Services Authority for your state, which can "
+                        "direct you to your district authority.",
+                    ),
+                    source_freshness=self.source_freshness,
+                )
             return LegalAidSearchResult(
                 match_status=MatchStatus.OUTSIDE_DELHI,
                 normalized_query=normalized_query,

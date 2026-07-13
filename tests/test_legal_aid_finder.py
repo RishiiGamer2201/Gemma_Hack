@@ -63,11 +63,24 @@ class LegalAidFinderTests(unittest.TestCase):
         self.assertEqual(result.match_status, MatchStatus.UNKNOWN_LOCATION)
         self.assertEqual(result.contacts, ())
 
-    def test_outside_delhi_returns_only_national_fallbacks(self) -> None:
+    def test_outside_delhi_returns_the_state_authority_when_one_is_known(self) -> None:
+        """Superseded behaviour: this used to return national fallbacks only.
+
+        The NALSA directory lists every State Legal Services Authority with a phone,
+        so a citizen in Maharashtra is given Maharashtra's authority rather than a
+        national switchboard. Where no state authority is known, the old
+        fallback-only behaviour still applies.
+        """
+
         result = self.finder.find("Mumbai", state="Maharashtra")
         self.assertEqual(result.match_status, MatchStatus.OUTSIDE_DELHI)
-        self.assertEqual(result.contacts, ())
-        self.assertIn("covers Delhi only", result.warnings[0])
+        if self.finder.state_contacts:
+            self.assertTrue(result.contacts)
+            self.assertIn("Maharashtra", result.contacts[0].authority)
+            self.assertIn("State Legal Services Authority", result.warnings[0])
+        else:
+            self.assertEqual(result.contacts, ())
+            self.assertIn("covers Delhi only", result.warnings[0])
 
     def test_every_search_status_includes_nalsa_and_tele_law_fallbacks(self) -> None:
         results = (
@@ -86,7 +99,14 @@ class LegalAidFinderTests(unittest.TestCase):
     def test_freshness_summarizes_all_committed_records(self) -> None:
         freshness = self.finder.source_freshness
         self.assertEqual(freshness.directory_filename, "delhi_dlsa.json")
-        self.assertEqual(freshness.record_count, len(self.finder.contacts) + len(self.finder.fallbacks))
+        # Freshness covers every record a user could be shown, including the state
+        # authorities, so "last verified" is not silently older than what is displayed.
+        self.assertEqual(
+            freshness.record_count,
+            len(self.finder.contacts)
+            + len(self.finder.state_contacts)
+            + len(self.finder.fallbacks),
+        )
         self.assertEqual(freshness.oldest_verified_date, date(2026, 7, 12))
         self.assertEqual(freshness.newest_verified_date, date(2026, 7, 12))
         self.assertEqual(len(freshness.source_sha256), 3)
@@ -204,3 +224,44 @@ class LegalAidFinderTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_a_district_outside_delhi_gets_its_own_state_authority(tmp_path) -> None:
+    """A citizen outside Delhi used to get only the national helpline number.
+
+    The NALSA directory already lists every State Legal Services Authority with a
+    phone and an email, so there is no reason to send someone in Karnataka to a
+    national switchboard when their own state authority is on the official page.
+    """
+
+    from pathlib import Path
+
+    directory = Path("data/processed/contacts/delhi_dlsa.json")
+    if not directory.is_file():
+        pytest.skip("the built directory is not present")
+
+    finder = LegalAidFinder(directory)
+    result = finder.find("Whitefield", state="Karnataka")
+
+    assert result.match_status is MatchStatus.OUTSIDE_DELHI
+    assert result.contacts
+    contact = result.contacts[0]
+    assert "Karnataka" in contact.authority
+    assert contact.phone != "not published"
+    # The national fallbacks stay available alongside it.
+    assert {item.phone for item in result.fallbacks} >= {"15100", "14454"}
+    assert any("State Legal Services Authority" in w for w in result.warnings)
+
+
+def test_delhi_district_lookup_is_unchanged_by_the_state_tier() -> None:
+    from pathlib import Path
+
+    directory = Path("data/processed/contacts/delhi_dlsa.json")
+    if not directory.is_file():
+        pytest.skip("the built directory is not present")
+
+    finder = LegalAidFinder(directory)
+    result = finder.find("Rouse Avenue", state="Delhi")
+
+    assert result.match_status is MatchStatus.MATCHED
+    assert "District Legal Services Authority" in result.contacts[0].authority

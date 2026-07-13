@@ -170,3 +170,82 @@ def build_nalsa_fallback(snapshot_path: str | Path) -> LegalAidFallback:
             "district contact is unavailable."
         ),
     )
+
+
+# Every Indian state and union territory named in the NALSA directory table. A row
+# whose first cell is not one of these is a NALSA headquarters row, not a state.
+_STATES_AND_UTS = frozenset(
+    {
+        "andhra pradesh", "arunachal pradesh", "assam", "bihar", "chhattisgarh",
+        "goa", "gujarat", "haryana", "himachal pradesh", "jharkhand", "karnataka",
+        "kerala", "madhya pradesh", "maharashtra", "manipur", "meghalaya", "mizoram",
+        "nagaland", "odisha", "punjab", "rajasthan", "sikkim", "tamil nadu",
+        "telangana", "tripura", "uttar pradesh", "uttarakhand", "west bengal",
+        "andaman and nicobar islands", "chandigarh",
+        "dadra and nagar haveli and daman and diu", "delhi", "jammu and kashmir",
+        "ladakh", "lakshadweep", "puducherry", "nct of delhi",
+    }
+)
+
+_PHONE = re.compile(r"(?:O|Ph|Tel|Toll-?Free(?:\s*No\.?)?)\s*[:.]?\s*([0-9][0-9\-,/\s()]{6,40})", re.I)
+_EMAIL_IN_TEXT = re.compile(r"[A-Za-z0-9._%+\-]+\[at\][A-Za-z0-9._%+\-\[\]]+", re.I)
+
+
+def build_state_slsa_contacts(snapshot_path: str | Path) -> list[LegalAidContact]:
+    """Build one State Legal Services Authority contact per state, from NALSA.
+
+    A citizen outside Delhi previously got only the national helpline. The NALSA
+    directory already lists every SLSA with its Member Secretary, office phone, and
+    email, so it is used rather than a hand-typed list -- there is no reason to
+    retype a contact when the official page has it.
+
+    A row that yields no phone AND no email is dropped: a contact you cannot reach
+    is not a contact, and showing it would waste a call from someone who needs help.
+    """
+
+    text, receipt = _verified_snapshot(Path(snapshot_path), "nalsa_directory")
+    parser = _Rows()
+    parser.feed(text)
+    retrieved = datetime.fromisoformat(str(receipt["retrieved_at"]).replace("Z", "+00:00")).date()
+
+    contacts: list[LegalAidContact] = []
+    seen: set[str] = set()
+    for row in parser.rows:
+        if len(row) < 3:
+            continue
+        state_cell, officer_cell, contact_cell = row[0], row[1], row[2]
+        state = " ".join(state_cell.split())
+        key = state.casefold().replace("&", "and")
+        if key not in _STATES_AND_UTS or key in seen:
+            continue
+
+        phone_match = _PHONE.search(contact_cell)
+        email_match = _EMAIL_IN_TEXT.search(contact_cell)
+        if not phone_match and not email_match:
+            continue
+        phone = " ".join(phone_match.group(1).split())[:40] if phone_match else "not published"
+        email = _email(email_match.group()) if email_match else "not published"
+
+        officer = " ".join(officer_cell.split())
+        secretary = re.search(r"([A-Z][^,]{2,60}?)\s+Member Secretary", officer)
+        seen.add(key)
+        contacts.append(
+            LegalAidContact(
+                contact_id=f"slsa-{_slug(state)}",
+                authority=f"{state.title()} State Legal Services Authority",
+                state=state.title(),
+                district=None,
+                officer_name=(secretary.group(1).strip()[:200] if secretary else None),
+                designation="Member Secretary, State Legal Services Authority",
+                phone=phone,
+                email=email,
+                official_url=str(receipt["url"]),
+                verified_date=retrieved,
+                source_sha256=str(receipt["sha256"]),
+            )
+        )
+    if len(contacts) < 20:
+        raise DirectoryError(
+            f"unexpectedly small SLSA directory: {len(contacts)} states"
+        )
+    return contacts
