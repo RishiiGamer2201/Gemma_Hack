@@ -720,8 +720,15 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
         """
 
         data = await file.read(MAX_PDF_BYTES + 1)
+        # A scanned page has no text layer. Hand the OCR config in so its embedded
+        # image can be read by the same pinned Tesseract used for photo uploads; if
+        # Tesseract is unavailable the page is simply still reported as a scan.
         try:
-            result = extract_pdf_text(data, file.filename or "")
+            ocr_config = state.ocr_config()
+        except Exception:
+            ocr_config = None
+        try:
+            result = extract_pdf_text(data, file.filename or "", ocr_config)
         except PdfError as exc:
             raise ApiError(
                 _PDF_STATUS.get(exc.code, 400), exc.code.value, exc.message, field=exc.field
@@ -732,6 +739,7 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
             pages_with_text=result.pages_with_text,
             scanned_pages=result.scanned_pages,
             truncated=result.truncated,
+            ocr_pages=result.ocr_pages,
             injection_warnings=_scan_uploaded_text(result.text),
         )
 

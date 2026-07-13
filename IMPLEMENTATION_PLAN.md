@@ -109,7 +109,7 @@ Devil's Advocate / Rights Card / Checklist / Legal Aid / Community mode
 - [ ] `rank-bm25` or SQLite FTS5 for exact retrieval.
 - [x] Strict Pydantic schemas for legal intake, safety, mapping, answer, and verification boundaries.
 - [x] PyMuPDF extraction for digitally readable PDFs.
-- [ ] Add OCR fallback for scanned PDFs.
+- [x] Add OCR fallback for scanned PDFs.
 - [ ] Pillow + `qrcode` for Rights Cards.
 - [ ] Pytest for deterministic components and scenario tests.
 
@@ -290,7 +290,7 @@ Owner: Member A + Member C
 - [x] Implement local voice transcription.
 - [ ] Show the transcript and allow correction before extraction.
 - [x] Implement digital PDF text extraction.
-- [ ] Implement OCR fallback for scanned PDFs/images.
+- [x] Implement OCR fallback for scanned PDFs/images.
 - [ ] Use Gemma vision to cross-check OCR and identify document type.
 - [ ] Preserve page references for extracted facts.
 - [x] Define a strict Pydantic intake schema for parties, dates, location, dispute, documents, urgency signals, and missing facts.

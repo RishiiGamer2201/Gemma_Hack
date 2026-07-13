@@ -211,7 +211,11 @@ export function IntakePanel({
 
         {pdfResult ? (
           <div
-            className={`alert ${pdfResult.scanned_pages.length ? "alert-warn" : "alert-info"}`}
+            className={`alert ${
+              pdfResult.scanned_pages.length || pdfResult.ocr_pages?.length
+                ? "alert-warn"
+                : "alert-info"
+            }`}
             role="status"
           >
             <h3>Text read from the PDF</h3>
@@ -225,6 +229,16 @@ export function IntakePanel({
                   {pdfResult.scanned_pages.join(", ")} had no readable text — those
                   are probably scans. Photograph them and upload as images to read
                   them.
+                </>
+              ) : null}
+              {pdfResult.ocr_pages?.length ? (
+                <>
+                  {" "}
+                  Page{pdfResult.ocr_pages.length === 1 ? "" : "s"}{" "}
+                  {pdfResult.ocr_pages.join(", ")} had no text layer and{" "}
+                  {pdfResult.ocr_pages.length === 1 ? "was" : "were"} read from the
+                  scanned image. Check dates, names, and section numbers especially
+                  carefully — those change the legal answer.
                 </>
               ) : null}
               {pdfResult.truncated ? " The document was long and was cut short." : null}

@@ -406,6 +406,8 @@ export interface PdfResponse {
   pages_with_text: number;
   scanned_pages: number[];
   truncated: boolean;
+  /** Pages read by OCR from a scan. Their text is a guess and must be checked. */
+  ocr_pages?: number[];
   /** Instruction-like text found inside the upload. Reported, never obeyed. */
   injection_warnings?: string[];
 }

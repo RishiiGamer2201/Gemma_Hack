@@ -88,3 +88,53 @@ def test_an_encrypted_pdf_is_not_silently_unlocked() -> None:
 
     # A protected document is the owner's decision; do not try an empty password.
     assert caught.value.code is PdfErrorCode.ENCRYPTED_PDF
+
+
+def scanned_pdf() -> bytes:
+    """A real scan: an image of a page, with no text layer at all."""
+
+    Image = pytest.importorskip("PIL.Image")
+    ImageDraw = pytest.importorskip("PIL.ImageDraw")
+
+    image = Image.new("RGB", (1240, 1754), "white")
+    draw = ImageDraw.Draw(image)
+    draw.text((110, 120), "LEGAL NOTICE", fill="black")
+    draw.text((110, 200), "Date: 10 April 2026", fill="black")
+    buffer = io.BytesIO()
+    image.save(buffer, "PDF", resolution=150)
+    return buffer.getvalue()
+
+
+def test_a_scan_is_refused_when_no_ocr_is_available() -> None:
+    with pytest.raises(PdfError) as caught:
+        extract_pdf_text(scanned_pdf(), "notice.pdf")
+
+    # Without OCR there is genuinely nothing to read. Say so; do not return "".
+    assert caught.value.code is PdfErrorCode.NO_EXTRACTABLE_TEXT
+
+
+def test_a_scanned_page_is_read_by_ocr_and_reported_as_ocr() -> None:
+    """The text is a guess from a picture. The user must be told which pages."""
+
+    tessdata = Path("models/ocr/tessdata")
+    if not tessdata.is_dir():
+        pytest.skip("the pinned tessdata is not present")
+    from src.ocr import OCRConfig, OCRError, OCRLanguage
+
+    config = OCRConfig(tessdata_dir=tessdata, language=OCRLanguage.ENGLISH)
+    try:
+        result = extract_pdf_text(scanned_pdf(), "notice.pdf", config)
+    except OCRError:
+        pytest.skip("the pinned Tesseract is not installed on this machine")
+
+    assert result.ocr_pages == (1,)
+    assert result.scanned_pages == ()
+    assert "LEGAL NOTICE" in result.text
+
+    # Deliberately NOT asserting the date round-trips. On this very fixture Tesseract
+    # read "10 April 2026" as "10 Aprit 2028" -- a two-year error on the one field
+    # that decides whether the IPC or the BNS applies. That is not a bug to be fixed
+    # by a better assertion; it is the reason OCR output is a draft and the user must
+    # confirm it. What the contract must guarantee is that the page is FLAGGED as
+    # OCR-derived, so the UI can tell them to check it.
+    assert 1 in result.ocr_pages

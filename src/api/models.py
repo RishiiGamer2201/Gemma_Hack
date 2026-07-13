@@ -279,6 +279,10 @@ class PdfResponse(ApiModel):
     pages_with_text: int
     scanned_pages: tuple[int, ...]
     truncated: bool
+    # Pages read by OCR from an embedded scan rather than a text layer. OCR misreads
+    # dates and section numbers, and those change the legal answer, so the user must
+    # be told which pages were guessed at.
+    ocr_pages: tuple[int, ...] = ()
     # An uploaded document is untrusted data. Instruction-like text inside it is
     # reported and ignored; it can never steer the assistant.
     injection_warnings: tuple[str, ...] = ()
