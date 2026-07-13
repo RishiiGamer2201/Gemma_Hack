@@ -355,7 +355,7 @@ Owner: Member C + Member A
 - [x] Give the opponent only confirmed facts and verified source excerpts.
 - [x] Prevent either side from adding new uncited law.
 - [ ] Label allegations, assumptions, missing evidence, and legal rules separately.
-- [ ] Stream stage labels and provide a cancel button.
+- [x] Stream stage labels and provide a cancel button.
 - [x] Conclude with “weaknesses to investigate,” not a win probability.
 
 ### “What happens if I do nothing?”
@@ -396,7 +396,7 @@ Owner: Member C + Member A
 Owner: Member C
 
 - [ ] Build a landing screen explaining privacy, offline operation, and limitations.
-- [ ] Add text, microphone, image, and PDF input controls.
+- [ ] Add text, microphone, image, and PDF input controls. (Text, microphone, and image done; PDF upload control not built.)
 - [ ] Show connectivity/local-model status.
 - [ ] Show the confirmation card before analysis.
 - [ ] Show urgency notices above normal content.
@@ -404,8 +404,8 @@ Owner: Member C
 - [x] Make citations expandable and copyable.
 - [ ] Add Simple/Detailed output toggle.
 - [ ] Add English/Hindi output toggle.
-- [ ] Add Devil's Advocate as an optional action after the verified answer.
-- [ ] Add Rights Card, community version, and legal-aid buttons.
+- [x] Add Devil's Advocate as an optional action after the verified answer.
+- [x] Add Rights Card, community version, and legal-aid buttons.
 - [ ] Display progress for retrieval, generation, and verification.
 - [ ] Add clear retry and correction paths.
 - [ ] Ensure the application remains usable at 1366×768.

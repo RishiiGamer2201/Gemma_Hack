@@ -4,11 +4,14 @@ import type {
   AnswerResponse,
   ClaimVerdict,
   ClaimView,
+  ConfirmedFacts,
   EvidenceItem,
   Facts,
 } from "../api/types";
+import { DevilsAdvocate } from "./DevilsAdvocate";
 import { Empty } from "./Feedback";
 import { EvidenceCard, evidenceDomId } from "./EvidenceCard";
+import { RightsCard } from "./RightsCard";
 
 const VERDICT_META: Record<
   ClaimVerdict,
@@ -69,11 +72,18 @@ function AnswerSection({
 interface Props {
   result: AnswerResponse;
   facts: Facts;
+  confirmedFacts: ConfirmedFacts | null;
   onEditFacts: () => void;
   onRestart: () => void;
 }
 
-export function AnswerView({ result, facts, onEditFacts, onRestart }: Props) {
+export function AnswerView({
+  result,
+  facts,
+  confirmedFacts,
+  onEditFacts,
+  onRestart,
+}: Props) {
   const [openSources, setOpenSources] = useState<Set<string>>(new Set());
   const [highlighted, setHighlighted] = useState<string | null>(null);
 
@@ -276,6 +286,18 @@ export function AnswerView({ result, facts, onEditFacts, onRestart }: Props) {
           </button>
         </div>
       </section>
+
+      {/*
+        Optional actions on a verified answer. Both run only because the answer
+        published, and both re-ground on the same confirmed facts, so neither can
+        assert anything the verified answer did not.
+      */}
+      {confirmedFacts ? (
+        <>
+          <DevilsAdvocate facts={confirmedFacts} approvedProfiles={[]} />
+          <RightsCard facts={confirmedFacts} approvedProfiles={[]} />
+        </>
+      ) : null}
     </div>
   );
 }

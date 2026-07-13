@@ -199,6 +199,113 @@ export function postLegalAid(
   );
 }
 
+/** One server-sent event from the Devil's Advocate stream. */
+export interface AdvocateEvent {
+  stage?: "advocate" | "opponent" | "rebuttal";
+  kind?: "preparing" | "started" | "token" | "completed" | "error";
+  text?: string;
+  message?: string;
+}
+
+/**
+ * Stream the Devil's Advocate stages. EventSource cannot POST a body, so the SSE
+ * frames are read from a fetch ReadableStream and parsed by hand. Each `data:`
+ * line is one JSON event. The whole exchange stays on the loopback backend.
+ */
+export async function streamDevilsAdvocate(
+  payload: { facts: ConfirmedFacts; approved_profiles?: string[]; limit?: number },
+  onEvent: (event: AdvocateEvent) => void,
+  signal?: AbortSignal,
+): Promise<void> {
+  let response: Response;
+  try {
+    response = await fetch("/api/devils-advocate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
+      body: JSON.stringify(payload),
+      credentials: "omit",
+      cache: "no-store",
+      referrerPolicy: "no-referrer",
+      signal,
+    });
+  } catch (caught) {
+    if (caught instanceof DOMException && caught.name === "AbortError") {
+      throw caught;
+    }
+    throw new OfflineBackendError(BACKEND_DOWN_MESSAGE);
+  }
+  if (!response.ok) {
+    throw await parseError(response);
+  }
+  if (!response.body) {
+    throw new OfflineBackendError(BACKEND_DOWN_MESSAGE);
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) {
+      break;
+    }
+    buffer += decoder.decode(value, { stream: true });
+    // SSE frames are separated by a blank line.
+    let boundary = buffer.indexOf("\n\n");
+    while (boundary !== -1) {
+      const frame = buffer.slice(0, boundary);
+      buffer = buffer.slice(boundary + 2);
+      for (const line of frame.split("\n")) {
+        if (line.startsWith("data:")) {
+          const json = line.slice(5).trim();
+          if (json) {
+            try {
+              onEvent(JSON.parse(json) as AdvocateEvent);
+            } catch {
+              // A malformed frame is skipped rather than aborting the stream.
+            }
+          }
+        }
+      }
+      boundary = buffer.indexOf("\n\n");
+    }
+  }
+}
+
+/** Fetch a Rights Card PNG for a published case. Returns an object URL to revoke. */
+export async function postRightsCard(
+  payload: {
+    facts: ConfirmedFacts;
+    approved_profiles?: string[];
+    legal_aid_district?: string | null;
+    legal_aid_state?: string | null;
+    limit?: number;
+  },
+  signal?: AbortSignal,
+): Promise<Blob> {
+  let response: Response;
+  try {
+    response = await fetch("/api/rights-card", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "image/png" },
+      body: JSON.stringify(payload),
+      credentials: "omit",
+      cache: "no-store",
+      referrerPolicy: "no-referrer",
+      signal,
+    });
+  } catch (caught) {
+    if (caught instanceof DOMException && caught.name === "AbortError") {
+      throw caught;
+    }
+    throw new OfflineBackendError(BACKEND_DOWN_MESSAGE);
+  }
+  if (!response.ok) {
+    throw await parseError(response);
+  }
+  return response.blob();
+}
+
 function normalizeChecklistIndex(raw: ChecklistIndexResponse): ChecklistSummary[] {
   const list: Array<ChecklistSummary | string> = Array.isArray(raw)
     ? raw

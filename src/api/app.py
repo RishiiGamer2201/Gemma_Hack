@@ -449,25 +449,38 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
 
         _require_confirmed(payload.facts)
         documents = state.documents_for_domain(payload.facts.domain)
-        result = run_confirmed_request(
-            payload.facts,
-            documents,
-            client=state.model_client(),
-            model=state.settings.ollama_model,
-            approved_profiles=frozenset(payload.approved_profiles),
-            evidence_limit=payload.limit,
-        )
-        if not result.published:
-            raise ApiError(
-                409,
-                "not_verified",
-                "A stress test needs a verified answer. This case did not produce one, "
-                f"so there is nothing to argue about (stage: {result.stage.value}).",
-            )
+
+        def send(payload_dict: dict[str, Any]) -> bytes:
+            return f"data: {json.dumps(payload_dict, ensure_ascii=False)}\n\n".encode()
 
         def events() -> Iterator[bytes]:
-            def send(payload_dict: dict[str, Any]) -> bytes:
-                return f"data: {json.dumps(payload_dict, ensure_ascii=False)}\n\n".encode()
+            # Re-running the answer to obtain a verified snapshot takes ~20s. Open the
+            # stream and announce that first, so the client shows progress instead of a
+            # silent connection that looks frozen.
+            yield send({"kind": "preparing"})
+            try:
+                result = run_confirmed_request(
+                    payload.facts,
+                    documents,
+                    client=state.model_client(),
+                    model=state.settings.ollama_model,
+                    approved_profiles=frozenset(payload.approved_profiles),
+                    evidence_limit=payload.limit,
+                )
+            except (PipelineError, OllamaError) as exc:
+                yield send({"kind": "error", "message": str(exc)})
+                return
+            if not result.published:
+                yield send(
+                    {
+                        "kind": "error",
+                        "message": (
+                            "A stress test needs a verified answer. This case did not "
+                            f"produce one (stage: {result.stage.value})."
+                        ),
+                    }
+                )
+                return
 
             try:
                 for event in run_devils_advocate_stream(

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { getHealth, postAnswer, postIntake } from "./api/client";
 import type {
   AnswerResponse,
+  ConfirmedFacts,
   Facts,
   HealthResponse,
   IntakeResponse,
@@ -104,6 +105,7 @@ export function App() {
 
   /** The single /api/answer result: safety route, answer, claims, evidence, warnings. */
   const [result, setResult] = useState<AnswerResponse | null>(null);
+  const [answerFacts, setAnswerFacts] = useState<ConfirmedFacts | null>(null);
   const [answerBusy, setAnswerBusy] = useState(false);
   const [answerError, setAnswerError] = useState<unknown>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -146,6 +148,9 @@ export function App() {
         intake?.language.language ?? "en",
         stamp,
       );
+      // Keep the exact confirmed payload so the post-answer actions (Devil's
+      // Advocate, Rights Card) run on the same facts the answer was built from.
+      setAnswerFacts(payload);
       abortRef.current?.abort();
       const controller = new AbortController();
       abortRef.current = controller;
@@ -443,6 +448,7 @@ export function App() {
                   <AnswerView
                     result={result}
                     facts={facts}
+                    confirmedFacts={answerFacts}
                     onEditFacts={() => setStep("confirm")}
                     onRestart={clearSession}
                   />
