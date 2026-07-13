@@ -1,0 +1,1411 @@
+{
+  "schema_version": 1,
+  "review_status": "pending_human_review",
+  "note": "Nothing here is served until review_status on a record is 'reviewed' and the REVIEWER_MUST_SET fields are filled.",
+  "mappings": [
+    {
+      "mapping_id": "ipc-397-bns-311",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "397"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "311"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-455-bns-331",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "455"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "331"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-458-bns-331",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "458"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "331"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-452-bns-333",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "452"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "333"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-356-bns-134",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "356"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "134"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-387-bns-308",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "387"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "308"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-386-bns-308",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "386"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "308"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-459-bns-331",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "459"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "331"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-460-bns-331",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "460"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "331"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-320-bns-116",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "320"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "116"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-322-bns-117",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "322"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "117"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-325-bns-117",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "325"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "117"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-324-bns-118",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "324"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "118"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-326-bns-118",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "326"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "118"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-327-bns-119",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "327"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "119"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-329-bns-119",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "329"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "119"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-330-bns-120",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "330"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "120"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-331-bns-120",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "331"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "120"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-332-bns-121",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "332"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "121"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-333-bns-121",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "333"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "121"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-334-bns-122",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "334"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "122"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-335-bns-122",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "335"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "122"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-326A-bns-124",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "326A"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "124"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-338-bns-125",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "338"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "125"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-352-bns-131",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "352"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "131"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-353-bns-132",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "353"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "132"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-355-bns-133",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "355"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "133"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-357-bns-135",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "357"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "135"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-358-bns-136",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "358"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "136"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-367-bns-140",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "367"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "140"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-87-bns-25",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "87"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "25"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-382-bns-307",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "382"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "307"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-394-bns-309",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "394"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "309"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-398-bns-312",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "398"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "312"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-440-bns-324",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "440"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "324"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-468-bns-336",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "468"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "336"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-472-467-bns-341",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "472"
+        },
+        {
+          "code": "IPC",
+          "section": "467"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "341"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "possible_merge",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-473-bns-341",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "473"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "341"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-354-bns-74",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "354"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "74"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-354B-bns-76",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "354B"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "76"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-319-bns-114",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "319"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "114"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-321-bns-115",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "321"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "115"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-323-bns-115",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "323"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "115"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-328-bns-123",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "328"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "123"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-337-bns-125",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "337"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "125"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-339-bns-126",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "339"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "126"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-341-bns-126",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "341"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "126"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-340-bns-127",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "340"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "127"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-342-bns-127",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "342"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "127"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    },
+    {
+      "mapping_id": "ipc-343-bns-127",
+      "source_provisions": [
+        {
+          "code": "IPC",
+          "section": "343"
+        }
+      ],
+      "target_provisions": [
+        {
+          "code": "BNS",
+          "section": "127"
+        }
+      ],
+      "mapping_type": "REVIEWER_MUST_SET",
+      "offence_names": [
+        "REVIEWER_MUST_SET"
+      ],
+      "plain_language_description": "REVIEWER_MUST_SET",
+      "change_notes": "REVIEWER_MUST_SET",
+      "official_source_url": "https://cytrain.ncrb.gov.in/staticpage/web_pages/SectionTableBNS.html",
+      "official_source_id": "ncrb_sankalan_ipc_bns",
+      "reviewed_by": "REVIEWER_MUST_SET",
+      "reviewed_at": "REVIEWER_MUST_SET",
+      "review_status": "pending_human_review",
+      "_sankalan_hint": "corresponding_provision",
+      "_bns_text_in_corpus": true
+    }
+  ]
+}

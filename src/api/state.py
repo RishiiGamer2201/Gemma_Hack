@@ -21,7 +21,7 @@ from src.audio.integrity import PINNED_MODEL_REVISION as ASR_PINNED_REVISION
 from src.config import Settings
 from src.legal_aid.finder import LegalAidFinder, LegalAidFinderError
 from src.legal_time.deadlines import load_deadlines
-from src.legal_time.mapping import MappingCatalog
+from src.legal_time.mapping import MappingCatalog, load_reviewed_mappings
 from src.models.schemas import LegalDomain
 from src.ocr import DEFAULT_TESSERACT_PATH, OCRConfig, OCRLanguage
 from src.retrieval import CorpusLoadError, RetrievalDocument, corpus_sha256, load_processed_corpus
@@ -36,6 +36,7 @@ DEFAULT_CHECKLISTS_PATH = ROOT / "config" / "evidence_checklists.json"
 DEFAULT_TESSDATA_DIR = ROOT / "models" / "ocr" / "tessdata"
 DEFAULT_ASR_MODEL_DIR = ROOT / "models" / "asr" / "faster-whisper-small"
 DEFAULT_DEADLINES_PATH = ROOT / "config" / "deadlines.json"
+DEFAULT_MAPPINGS_PATH = ROOT / "config" / "ipc_bns_mappings.json"
 
 # The IPC/BNS catalogue is deliberately empty. data/processed/mappings holds
 # `pending_human_review` candidates only, and an unreviewed candidate must never
@@ -83,6 +84,7 @@ class ApiState:
     index_dir: Path = Path("data/indexes")
     asr_model_dir: Path = Path("models/asr/faster-whisper-small")
     deadlines_path: Path = DEFAULT_DEADLINES_PATH
+    mappings_path: Path = DEFAULT_MAPPINGS_PATH
     asr_model_revision: str = ASR_PINNED_REVISION
     # Off by default so constructing state never reaches the local runtime. The
     # real server turns it on in build_state(); tests stay hermetic and fast.
@@ -98,7 +100,7 @@ class ApiState:
     _embedder: LocalEmbedder | None = None
     _deadlines: tuple | None = None
     _client: OllamaClient | None = None
-    _mappings: MappingCatalog = field(default_factory=lambda: MappingCatalog(CURATED_MAPPINGS))
+    _mappings: MappingCatalog | None = None
 
     # ---- corpus -----------------------------------------------------------------
 
@@ -224,9 +226,20 @@ class ApiState:
                     ) from exc
             return self._checklists
 
-    @property
     def mapping_catalog(self) -> MappingCatalog:
-        return self._mappings
+        """Only mappings a human reviewer has signed off are ever served.
+
+        The worksheet in docs/ipc_bns_worksheet.md holds candidates; a candidate is
+        not a mapping. Until a reviewer marks a record `reviewed`, this catalogue is
+        empty and every lookup resolves to not_found.
+        """
+
+        with self._lock:
+            if self._mappings is None:
+                self._mappings = MappingCatalog(
+                    load_reviewed_mappings(self.mappings_path)
+                )
+            return self._mappings
 
     def ocr_config(self) -> OCRConfig:
         return OCRConfig(

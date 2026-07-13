@@ -8,10 +8,12 @@ merged, partial, omitted, or have no direct equivalent.
 
 from __future__ import annotations
 
+import json
 import re
 from collections.abc import Iterable
 from datetime import date
 from enum import StrEnum
+from pathlib import Path
 from typing import Annotated
 
 from pydantic import Field, HttpUrl, model_validator
@@ -261,3 +263,38 @@ def _unique_provisions(provisions: Iterable[ProvisionReference]) -> tuple[Provis
             seen.add(key)
             unique.append(provision)
     return tuple(unique)
+
+
+def load_reviewed_mappings(path: str | Path) -> tuple[LegalMapping, ...]:
+    """Load ONLY mappings a human reviewer has signed off.
+
+    A mapping is a legal judgement: provisions were split, merged, reworded, and
+    dropped when the IPC became the BNS, so a matching number is not a matching
+    offence. A record that still carries a REVIEWER_MUST_SET placeholder, or whose
+    review_status is not "reviewed", is skipped -- never served as a mapping.
+
+    Skipping is right here, unlike deadlines: an unreviewed mapping is an expected
+    state of the file (that is what the worksheet is for), not a corruption.
+    """
+
+    source = Path(path)
+    if not source.is_file():
+        return ()
+    try:
+        payload = json.loads(source.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError(f"could not read the mapping file: {source}") from exc
+
+    approved: list[LegalMapping] = []
+    for item in payload.get("mappings", []):
+        if not isinstance(item, dict) or item.get("review_status") != "reviewed":
+            continue
+        record = {key: value for key, value in item.items() if not key.startswith("_")}
+        record.pop("review_status", None)
+        if any(value == "REVIEWER_MUST_SET" for value in record.values()):
+            raise ValueError(
+                f"{record.get('mapping_id')} is marked reviewed but still has "
+                "unfilled REVIEWER_MUST_SET fields"
+            )
+        approved.append(LegalMapping.model_validate(record))
+    return tuple(approved)

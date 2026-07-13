@@ -48,6 +48,7 @@ from src.audio.models import (
 from src.documents.pdf import MAX_PDF_BYTES, PdfError, PdfErrorCode, extract_pdf_text
 from src.intake import process_text_intake
 from src.legal_aid.finder import LegalAidFinderError, LegalAidSearchResult
+from src.legal_time.converter import convert
 from src.legal_time.mapping import MappingLookupResult
 from src.models.schemas import ConfirmedFacts, LegalDomain
 from src.ocr import MAX_IMAGE_BYTES, OCRError, OCRErrorCode, extract_image_bytes
@@ -876,21 +877,40 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
         tags=["mapping"],
     )
     async def mapping(payload: MappingRequest) -> MappingResponse:
-        """Look up the CURATED catalogue only.
+        """Date-routed IPC/BNS conversion over APPROVED mappings only.
 
-        The curated catalogue is empty in this build. Only ``pending_human_review``
-        candidates exist on disk, and serving one as a mapping would present an
-        unreviewed IPC/BNS equivalence as reviewed law. Every lookup therefore
-        returns ``not_found`` with an explicit warning.
+        On 1 July 2024 the IPC was replaced by the BNS, so which code governs depends
+        on the incident date. Without the date this asks for it rather than guessing.
+
+        A mapping is never inferred from a section number: provisions were split,
+        merged, reworded and dropped, so a matching number is not a matching offence.
+        Only mappings a human reviewer signed off are served, and the reviewed
+        catalogue is empty in this build.
+
+        The IPC itself is NOT in this corpus. For a pre-BNS incident there is no text
+        here to quote, and the response says so instead of substituting the BNS.
         """
 
-        catalog = state.mapping_catalog
+        catalog = state.mapping_catalog()
+        documents = state.documents if state.corpus_loaded else ()
+        conversion = convert(
+            payload.query,
+            incident_date=payload.incident_date,
+            catalog=catalog,
+            documents=documents,
+        )
         result: MappingLookupResult = catalog.lookup(
             payload.query, incident_date=payload.incident_date
         )
+        warnings = [result.warning, *conversion.warnings]
+        if not catalog.mappings:
+            warnings.append(NO_REVIEWED_MAPPING_WARNING)
         return MappingResponse(
             result=result,
-            warnings=(result.warning, NO_REVIEWED_MAPPING_WARNING),
+            governing_code=conversion.governing_code,
+            grounded_bns_sections=conversion.grounded_bns_sections,
+            questions=conversion.questions,
+            warnings=tuple(dict.fromkeys(warnings)),
             curated_mapping_count=len(catalog.mappings),
         )
 

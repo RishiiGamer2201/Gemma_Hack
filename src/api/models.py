@@ -340,9 +340,14 @@ class MappingRequest(ApiModel):
 
 
 class MappingResponse(ApiModel):
-    """A lookup over the curated catalogue only, which is currently empty."""
+    """A date-routed IPC/BNS lookup over APPROVED mappings only."""
 
     result: MappingLookupResult
+    # Which code governs, once the incident date is known: "IPC", "BNS", or null.
+    governing_code: str | None = None
+    # Approved BNS sections whose text this build actually holds.
+    grounded_bns_sections: tuple[str, ...] = ()
+    questions: tuple[str, ...] = ()
     warnings: tuple[str, ...]
     curated_mapping_count: int
 

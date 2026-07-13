@@ -34,7 +34,7 @@ hardware, evaluation, or end-to-end demo gates from backend primitives alone.
 
 ### Locked differentiators
 
-- [ ] BNS ↔ IPC converter with incident-date awareness.
+- [x] BNS ↔ IPC converter with incident-date awareness.
 - [x] Devil's Advocate mode using sequential roles on one loaded Gemma model.
 - [x] Rights Card image generator with section citations, helplines, disclaimer, and QR link.
 - [x] “What happens if I do nothing?” citation-grounded consequence explanation.
@@ -220,8 +220,8 @@ Owner: Member B with Member D review
 Dependency: official criminal-law corpus
 
 - [x] Obtain NCRB Sankalan old/new-law comparison material.
-- [ ] Select 50 high-value IPC sections for the first mapping set.
-- [ ] Include sections relevant to theft, cheating, breach of trust, assault, harassment, intimidation, public-order offences, and document scenarios.
+- [x] Select 50 high-value IPC sections for the first mapping set.
+- [x] Include sections relevant to theft, cheating, breach of trust, assault, harassment, intimidation, public-order offences, and document scenarios.
 - [x] Generate pending-review candidates containing old/new references and official snapshot provenance.
 - [x] Define a curated mapping schema for exact, partial, split, merged, omitted, or no direct equivalent.
 - [x] Require change notes in the curated schema rather than claiming every mapping is one-to-one.
@@ -279,7 +279,7 @@ Dependency: processed corpus
 - [ ] Recall@5 ≥ 0.85 on the reviewed MVP evaluation set.
 - [ ] Current-law routing accuracy ≥ 0.95 on BNS/IPC tests.
 - [ ] Hybrid retrieval beats both BM25-only and vector-only baselines. (Now measured true on both metrics — Recall@5 0.850 and MRR 0.729 vs BM25 0.700/0.496 and vector 0.800/0.717 — but the 20-query set is still `pending_independent_review`, so the gate is not certified.)
-- [ ] No repealed-law result is presented as current without an explicit warning.
+- [x] No repealed-law result is presented as current without an explicit warning.
 
 ## 10. Phase F — Intake and confirmation workflow
 
@@ -568,7 +568,7 @@ The project is ready to submit only when all boxes below are checked:
 - [ ] Works with Wi-Fi disabled.
 - [ ] All three scenarios complete successfully.
 - [ ] User confirms extracted facts before receiving legal information.
-- [ ] Current/repealed law is routed using incident date.
+- [x] Current/repealed law is routed using incident date.
 - [ ] Every legal claim is cited or removed.
 - [x] Every deadline has an official source.
 - [ ] False-premise questions are corrected or refused.
