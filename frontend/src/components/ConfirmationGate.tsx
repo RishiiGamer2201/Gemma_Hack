@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 
 import { DEFAULT_DOMAIN, DOMAIN_OPTIONS } from "../api/types";
 import type { Facts, IntakeResponse, UrgencySignal } from "../api/types";
-import { ErrorNotice, Progress } from "./Feedback";
+import { ErrorNotice } from "./Feedback";
 import { ListEditor } from "./ListEditor";
 
 interface Props {
@@ -267,13 +267,6 @@ export function ConfirmationGate({
       <hr className="divider" />
 
       <ErrorNotice error={error} title="Could not continue" onRetry={onConfirm} />
-
-      {submitting ? (
-        <Progress
-          label="Checking safety and routing…"
-          detail="Running locally on your confirmed facts"
-        />
-      ) : null}
 
       <div className="checkbox-row">
         <input

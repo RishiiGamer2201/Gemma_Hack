@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useState } from "react";
 
 import type { EvidenceItem } from "../api/types";
 
@@ -20,18 +20,23 @@ function value(input: string | number | null | undefined, fallback = "not stated
   return String(input);
 }
 
-export function EvidenceCard({
-  item,
-  index,
-  defaultOpen,
-}: {
+/** Stable DOM id so a verified claim can link straight to the source it cites. */
+export function evidenceDomId(sourceId: string): string {
+  return `evidence-${sourceId.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
+}
+
+interface Props {
   item: EvidenceItem;
   index: number;
-  defaultOpen?: boolean;
-}) {
-  const [open, setOpen] = useState(Boolean(defaultOpen));
+  open: boolean;
+  onToggle: () => void;
+  /** Set when the user arrived here by following a claim's citation. */
+  highlighted?: boolean;
+}
+
+export function EvidenceCard({ item, index, open, onToggle, highlighted }: Props) {
   const [copied, setCopied] = useState(false);
-  const bodyId = useId();
+  const bodyId = `${evidenceDomId(item.source_id)}-body`;
 
   async function copyCitation() {
     const citation = [
@@ -59,14 +64,22 @@ export function EvidenceCard({
   }
 
   return (
-    <article className="evidence-card">
+    <article
+      className="evidence-card"
+      id={evidenceDomId(item.source_id)}
+      style={
+        highlighted
+          ? { borderColor: "var(--brand)", boxShadow: "0 0 0 3px var(--brand-tint)" }
+          : undefined
+      }
+    >
       <h3 style={{ margin: 0 }}>
         <button
           type="button"
           className="evidence-summary"
           aria-expanded={open}
           aria-controls={bodyId}
-          onClick={() => setOpen((current) => !current)}
+          onClick={onToggle}
         >
           <span>
             <span className="card-subtle">Source {index + 1} — </span>
@@ -93,8 +106,7 @@ export function EvidenceCard({
         <blockquote className="excerpt">{item.excerpt}</blockquote>
         {item.excerpt_truncated ? (
           <p className="hint" style={{ color: "var(--warn)", fontWeight: 600 }}>
-            This excerpt is truncated. Open the official source before relying on
-            it.
+            This excerpt is truncated. Open the official source before relying on it.
           </p>
         ) : null}
 
@@ -125,9 +137,7 @@ export function EvidenceCard({
           </div>
         </dl>
 
-        {item.sha256 ? (
-          <p className="hashline">Chunk SHA-256: {item.sha256}</p>
-        ) : null}
+        {item.sha256 ? <p className="hashline">Chunk SHA-256: {item.sha256}</p> : null}
 
         <div className="row" style={{ marginTop: 10 }}>
           {item.official_url ? (

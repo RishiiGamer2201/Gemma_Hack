@@ -14,7 +14,7 @@ import {
  */
 export const DOMAIN_FACT_KEYS = new Set(["legal_domain", "domain"]);
 export const DATE_FACT_KEYS = new Set(["incident_date"]);
-import { ErrorNotice, Progress } from "./Feedback";
+import { ErrorNotice } from "./Feedback";
 import { LegalAidPanel } from "./LegalAidPanel";
 
 /**
@@ -235,8 +235,6 @@ export function NeedsInformationPanel({
         })}
 
         <ErrorNotice error={error} title="Could not continue" onRetry={onSubmit} />
-
-        {submitting ? <Progress label="Re-checking with your new answers…" /> : null}
 
         <div className="row row-end">
           <button

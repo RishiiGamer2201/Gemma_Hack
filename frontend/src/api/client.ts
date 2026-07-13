@@ -2,6 +2,7 @@
 // to the local FastAPI backend at http://127.0.0.1:8000. No absolute remote URLs anywhere.
 
 import type {
+  AnswerResponse,
   ApiErrorBody,
   ChecklistIndexResponse,
   ChecklistSummary,
@@ -93,7 +94,11 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
       cache: "no-store",
       referrerPolicy: "no-referrer",
     });
-  } catch {
+  } catch (caught) {
+    // A user-initiated cancel must not be reported as a backend failure.
+    if (caught instanceof DOMException && caught.name === "AbortError") {
+      throw caught;
+    }
     throw new OfflineBackendError(BACKEND_DOWN_MESSAGE);
   }
   if (!response.ok) {
@@ -150,6 +155,30 @@ export function postEvidence(
   return postJson<EvidenceResponse>(
     "/api/evidence",
     { facts, approved_profiles: approvedProfiles, limit },
+    signal,
+  );
+}
+
+/**
+ * The full journey in one call: safety route -> retrieval -> grounded drafting ->
+ * independent claim verification. Runs several sequential local model calls and
+ * routinely takes 30-120s, so callers MUST pass an AbortSignal and show progress.
+ * There is no streaming: this resolves once, at the end.
+ */
+export function postAnswer(
+  facts: ConfirmedFacts,
+  confirmedUrgencies: string[],
+  limit: number,
+  signal?: AbortSignal,
+): Promise<AnswerResponse> {
+  return postJson<AnswerResponse>(
+    "/api/answer",
+    {
+      facts,
+      confirmed_urgencies: confirmedUrgencies,
+      approved_profiles: [],
+      limit,
+    },
     signal,
   );
 }

@@ -763,3 +763,65 @@ button:disabled {
   padding: 0 6px;
   white-space: nowrap;
 }
+
+/* ---------- Verifier trace (claims) ---------- */
+
+.claim-row {
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--line-strong);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  background: #fff;
+}
+
+.claim-row[data-verdict="supported"] {
+  border-left-color: var(--ok);
+  background: #fbfefc;
+}
+
+.claim-row[data-verdict="contradicted"] {
+  border-left-color: var(--danger);
+  background: var(--danger-tint);
+}
+
+.claim-row[data-verdict="insufficient"] {
+  border-left-color: var(--warn-line);
+  background: var(--warn-tint);
+}
+
+.claim-head {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 6px;
+}
+
+.claim-head .badge {
+  flex: none;
+  margin-top: 2px;
+}
+
+.claim-text {
+  margin: 0;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.claim-reason {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.pill-link {
+  cursor: pointer;
+  color: var(--brand);
+  font-weight: 600;
+  border-color: var(--brand);
+  background: var(--brand-tint);
+}
+
+.pill-link:hover {
+  background: #fff;
+}

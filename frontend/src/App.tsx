@@ -1,22 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import {
-  getHealth,
-  postEvidence,
-  postIntake,
-  postRoute,
-} from "./api/client";
+import { getHealth, postAnswer, postIntake } from "./api/client";
 import type {
-  ConfirmedFacts,
-  EvidenceResponse,
+  AnswerResponse,
   Facts,
   HealthResponse,
   IntakeResponse,
-  RouteResponse,
 } from "./api/types";
 import { DEFAULT_DOMAIN, DOMAIN_OPTIONS, toConfirmedFacts } from "./api/types";
+import { AnswerProgress } from "./components/AnswerProgress";
+import { AnswerView } from "./components/AnswerView";
 import { ConfirmationGate } from "./components/ConfirmationGate";
-import { EvidencePanel } from "./components/EvidencePanel";
 import { HealthStatus } from "./components/HealthStatus";
 import { IntakePanel } from "./components/IntakePanel";
 import { LandingPanel } from "./components/LandingPanel";
@@ -28,8 +22,10 @@ import {
 } from "./components/RoutingPanels";
 import { SidePanel } from "./components/SidePanel";
 import { Steps, type StepId } from "./components/Steps";
+import { WithheldNotice } from "./components/WithheldNotice";
 
-const EVIDENCE_LIMIT = 8;
+/** AnswerRequest.limit accepts 1-8 and defaults to 6. */
+const EVIDENCE_LIMIT = 6;
 
 /**
  * Maps a backend `missing_questions[].fact_key` onto the Facts field it fills.
@@ -106,16 +102,15 @@ export function App() {
   /** Stamped the moment the user clicks "Yes, this is correct". */
   const [confirmedAt, setConfirmedAt] = useState<string | null>(null);
 
-  const [route, setRoute] = useState<RouteResponse | null>(null);
-  const [routeBusy, setRouteBusy] = useState(false);
-  const [routeError, setRouteError] = useState<unknown>(null);
+  /** The single /api/answer result: safety route, answer, claims, evidence, warnings. */
+  const [result, setResult] = useState<AnswerResponse | null>(null);
+  const [answerBusy, setAnswerBusy] = useState(false);
+  const [answerError, setAnswerError] = useState<unknown>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
 
-  const [evidence, setEvidence] = useState<EvidenceResponse | null>(null);
-  const [evidenceBusy, setEvidenceBusy] = useState(false);
-  const [evidenceError, setEvidenceError] = useState<unknown>(null);
-
   const mainRef = useRef<HTMLDivElement>(null);
+  /** Lets the user cancel the long (30-120s) answer run. */
+  const abortRef = useRef<AbortController | null>(null);
 
   const refreshHealth = useCallback(async () => {
     setHealthLoading(true);
@@ -139,65 +134,68 @@ export function App() {
     mainRef.current?.focus();
   }, [step]);
 
-  const fetchEvidence = useCallback(async (payload: ConfirmedFacts) => {
-    setEvidenceBusy(true);
-    setEvidenceError(null);
-    try {
-      setEvidence(await postEvidence(payload, [], EVIDENCE_LIMIT));
-    } catch (error) {
-      setEvidenceError(error);
-      setEvidence(null);
-    } finally {
-      setEvidenceBusy(false);
-    }
-  }, []);
-
   /**
-   * The single path from confirmed facts to any legal content. `stamp` is the
-   * confirmation time; it is only ever set by the user's explicit confirmation.
+   * The one path from confirmed facts to any legal content. /api/answer runs the whole
+   * journey (safety route -> retrieval -> drafting -> claim verification) in a single
+   * call, so there is no separate /api/route or /api/evidence step any more.
    */
-  const runRoute = useCallback(
+  const runAnswer = useCallback(
     async (currentFacts: Facts, urgencies: string[], stamp: string) => {
       const payload = toConfirmedFacts(
         currentFacts,
         intake?.language.language ?? "en",
         stamp,
       );
-      setRouteBusy(true);
-      setRouteError(null);
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+
+      setAnswerBusy(true);
+      setAnswerError(null);
       try {
-        const result = await postRoute(payload, urgencies);
-        setRoute(result);
+        const response = await postAnswer(
+          payload,
+          urgencies,
+          EVIDENCE_LIMIT,
+          controller.signal,
+        );
+        setResult(response);
         setStep("result");
-        if (result.priority === "standard") {
-          await fetchEvidence(payload);
-        } else {
-          setEvidence(null);
-        }
       } catch (error) {
-        setRouteError(error);
+        // A cancel is a user action, not an error to shout about.
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+        setAnswerError(error);
       } finally {
-        setRouteBusy(false);
+        if (abortRef.current === controller) {
+          abortRef.current = null;
+        }
+        setAnswerBusy(false);
       }
     },
-    [fetchEvidence, intake],
+    [intake],
   );
 
-  /** Called by the confirmation gate. Stamps the confirmation time, then routes. */
+  function cancelAnswer() {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setAnswerBusy(false);
+  }
+
+  /** Called by the confirmation gate. Stamps the confirmation time, then runs. */
   function handleConfirm() {
     const stamp = new Date().toISOString();
     setConfirmedAt(stamp);
-    void runRoute(facts, confirmedUrgencies, stamp);
+    void runAnswer(facts, confirmedUrgencies, stamp);
   }
 
-  function retryEvidence() {
-    fetchEvidence(
-      toConfirmedFacts(
-        facts,
-        intake?.language.language ?? "en",
-        confirmedAt ?? new Date().toISOString(),
-      ),
-    ).catch(() => undefined);
+  function retryAnswer() {
+    void runAnswer(
+      facts,
+      confirmedUrgencies,
+      confirmedAt ?? new Date().toISOString(),
+    );
   }
 
   async function handleIntake() {
@@ -209,8 +207,8 @@ export function App() {
       setFacts(normalizeFacts(result.facts));
       setConfirmedUrgencies([]); // urgency is never auto-applied
       setConfirmedAt(null); // re-confirmation is required after any re-intake
-      setRoute(null);
-      setEvidence(null);
+      setResult(null);
+      setAnswerError(null);
       setAnswers({});
       setStep("confirm");
     } catch (error) {
@@ -221,13 +219,13 @@ export function App() {
   }
 
   function handleAnswersSubmit() {
-    if (!route) {
+    if (!result) {
       return;
     }
     let next: Facts = { ...facts };
     const extraFacts: string[] = [];
 
-    for (const question of route.missing_questions) {
+    for (const question of result.route.missing_questions) {
       const answer = (answers[question.fact_key] ?? "").trim();
       if (!answer) {
         continue;
@@ -256,24 +254,26 @@ export function App() {
 
     setFacts(next);
     setAnswers({});
-    void runRoute(next, confirmedUrgencies, confirmedAt ?? new Date().toISOString());
+    void runAnswer(next, confirmedUrgencies, confirmedAt ?? new Date().toISOString());
   }
 
   function clearSession() {
+    abortRef.current?.abort();
+    abortRef.current = null;
     setText("");
     setIntake(null);
     setFacts(emptyFacts());
     setConfirmedUrgencies([]);
     setConfirmedAt(null);
-    setRoute(null);
-    setRouteError(null);
+    setResult(null);
+    setAnswerError(null);
     setIntakeError(null);
-    setEvidence(null);
-    setEvidenceError(null);
     setAnswers({});
+    setAnswerBusy(false);
     setStep("landing");
   }
 
+  const route = result?.route ?? null;
   const urgent = route?.priority === "immediate_human_help";
 
   return (
@@ -353,50 +353,96 @@ export function App() {
           ) : null}
 
           {step === "confirm" && intake ? (
-            <ConfirmationGate
-              intake={intake}
-              facts={facts}
-              onFactsChange={setFacts}
-              confirmedUrgencies={confirmedUrgencies}
-              onUrgenciesChange={setConfirmedUrgencies}
-              onConfirm={handleConfirm}
-              onEditText={() => setStep("intake")}
-              submitting={routeBusy}
-              error={routeError}
-            />
+            <>
+              {answerBusy ? <AnswerProgress onCancel={cancelAnswer} /> : null}
+              <ConfirmationGate
+                intake={intake}
+                facts={facts}
+                onFactsChange={setFacts}
+                confirmedUrgencies={confirmedUrgencies}
+                onUrgenciesChange={setConfirmedUrgencies}
+                onConfirm={handleConfirm}
+                onEditText={() => setStep("intake")}
+                submitting={answerBusy}
+                error={answerError}
+              />
+            </>
           ) : null}
 
-          {step === "result" && route ? (
+          {step === "result" && result && route ? (
             <>
-              {route.priority === "hard_abstain" ? (
-                <AbstainPanel
-                  route={route}
-                  onRestart={clearSession}
-                  onEditFacts={() => setStep("confirm")}
-                />
+              {answerBusy ? <AnswerProgress onCancel={cancelAnswer} /> : null}
+
+              {/*
+                `published` is the ONLY field that authorises showing legal content.
+                When it is false the answer was withheld on purpose and `answer`/`claims`
+                are empty by design — so we explain why and show the route panels.
+                We never fall back to rendering raw evidence as if it were an answer.
+              */}
+              {!answerBusy && !result.published ? (
+                <div className="stack">
+                  <WithheldNotice result={result} />
+
+                  {route.priority === "hard_abstain" ? (
+                    <AbstainPanel
+                      route={route}
+                      onRestart={clearSession}
+                      onEditFacts={() => setStep("confirm")}
+                    />
+                  ) : null}
+
+                  {route.priority === "needs_information" ? (
+                    <NeedsInformationPanel
+                      questions={route.missing_questions}
+                      answers={answers}
+                      onAnswersChange={setAnswers}
+                      onSubmit={handleAnswersSubmit}
+                      onEditFacts={() => setStep("confirm")}
+                      submitting={answerBusy}
+                      error={answerError}
+                    />
+                  ) : null}
+
+                  {route.priority === "standard" ? (
+                    <section className="card">
+                      <p className="card-subtle" style={{ marginBottom: 12 }}>
+                        You can correct the facts and try again, or take this to a
+                        person using the Legal Aid Finder in the side panel.
+                      </p>
+                      <div className="row row-end">
+                        <button
+                          type="button"
+                          className="btn-secondary"
+                          onClick={() => setStep("confirm")}
+                        >
+                          Correct my facts
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-secondary"
+                          onClick={retryAnswer}
+                        >
+                          Try again
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-primary"
+                          onClick={clearSession}
+                        >
+                          Start over
+                        </button>
+                      </div>
+                    </section>
+                  ) : null}
+                </div>
               ) : null}
 
-              {route.priority === "needs_information" ? (
-                <NeedsInformationPanel
-                  questions={route.missing_questions}
-                  answers={answers}
-                  onAnswersChange={setAnswers}
-                  onSubmit={handleAnswersSubmit}
-                  onEditFacts={() => setStep("confirm")}
-                  submitting={routeBusy}
-                  error={routeError}
-                />
-              ) : null}
-
-              {route.priority === "standard" ? (
+              {!answerBusy && result.published ? (
                 <div className="stack">
                   <RouteContext route={route} />
-                  <EvidencePanel
+                  <AnswerView
+                    result={result}
                     facts={facts}
-                    evidence={evidence}
-                    loading={evidenceBusy}
-                    error={evidenceError}
-                    onRetry={retryEvidence}
                     onEditFacts={() => setStep("confirm")}
                     onRestart={clearSession}
                   />
@@ -405,10 +451,10 @@ export function App() {
             </>
           ) : null}
 
-          {step === "result" && !route ? (
+          {step === "result" && !result && !answerBusy ? (
             <section className="card">
               <h2>Nothing to show yet</h2>
-              <p>The routing result was lost. Please start again.</p>
+              <p>The result was lost. Please start again.</p>
               <button type="button" className="btn-primary" onClick={clearSession}>
                 Start over
               </button>

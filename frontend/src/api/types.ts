@@ -238,6 +238,59 @@ export interface OcrResponse {
   processing_seconds?: number;
 }
 
+/** ClaimVerdict — the independent verifier's finding for one claim. */
+export type ClaimVerdict = "supported" | "contradicted" | "insufficient";
+
+/** ClaimView — a drafted claim plus the verifier's verdict. Top-level `claims`. */
+export interface ClaimView {
+  claim_id: string;
+  text: string;
+  cited_source_ids: string[];
+  verdict: ClaimVerdict;
+  verdict_reason: string;
+  evidence_source_ids: string[];
+}
+
+/** LegalClaim — the raw claim inside StructuredLegalAnswer (no verdict). */
+export interface LegalClaim {
+  claim_id: string;
+  text: string;
+  cited_source_ids: string[];
+}
+
+/**
+ * StructuredLegalAnswer. Every list may legitimately be empty: an empty
+ * `deadlines` means the sources state no deadline. Never fill an empty list.
+ */
+export interface StructuredLegalAnswer {
+  situation: string;
+  applicable_law: string[];
+  rights: string[];
+  options: string[];
+  evidence_to_preserve: string[];
+  deadlines: string[];
+  consequences_of_inaction: string[];
+  next_steps: string[];
+  limitations: string[];
+  claims: LegalClaim[];
+}
+
+/**
+ * AnswerResponse from POST /api/answer — the full journey
+ * (safety route -> retrieval -> grounded drafting -> claim verification).
+ */
+export interface AnswerResponse {
+  stage: string;
+  /** THE ONLY field that authorises showing legal content. */
+  published: boolean;
+  route: RouteResponse;
+  answer: StructuredLegalAnswer | null;
+  claims: ClaimView[];
+  evidence: EvidenceItem[];
+  warnings: string[];
+  query: string | null;
+}
+
 /** ErrorResponse: {code, message, field?}. */
 export interface ApiErrorBody {
   code?: string;
