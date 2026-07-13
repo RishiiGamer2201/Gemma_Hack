@@ -23,11 +23,11 @@ hardware, evaluation, or end-to-end demo gates from backend primitives alone.
 - [ ] Add an interactive correction path to the future UI.
 - [x] Route missing jurisdiction/date, confirmed urgency, and possible power-role patterns from confirmed fields.
 - [ ] Automatically classify domain and extract jurisdiction/date from free-form input.
-- [ ] Retrieve applicable official law using hybrid keyword and semantic search.
+- [x] Retrieve applicable official law using hybrid keyword and semantic search.
 - [x] Provide backend effective-date/status filters and IPC/BNS temporal-routing primitives.
 - [ ] Integrate current/repealed-law routing into the production answer journey.
-- [ ] Generate a plain-language answer containing rights, options, evidence, deadlines, and next steps.
-- [ ] Verify each legal claim against retrieved official sources.
+- [x] Generate a plain-language answer containing rights, options, evidence, deadlines, and next steps.
+- [x] Verify each legal claim against retrieved official sources.
 - [ ] Display act name, section number, effective date, source excerpt, and official URL.
 - [x] Abstain on unsupported submitted verdicts and route confirmed high-risk matters before retrieval.
 - [ ] Connect abstention/high-risk results to the Legal Aid Finder in the end-to-end journey.
@@ -123,7 +123,7 @@ Devil's Advocate / Rights Card / Checklist / Legal Aid / Community mode
 - [x] Create `src/retrieval/` for BM25, optional embedding callbacks, filtering, fusion, deduplication, and debug traces.
 - [ ] Add the concrete EmbeddingGemma/FAISS vector implementation to `src/retrieval/`.
 - [x] Create `src/legal_time/` for effective-date logic and IPC/BNS mapping.
-- [ ] Create `src/agents/` for researcher, strategist, verifier, and Devil's Advocate prompts.
+- [x] Create `src/agents/` for researcher, strategist, verifier, and Devil's Advocate prompts.
 - [ ] Create `src/tools/` for legal aid, Rights Card, checklist, and document explanation.
 - [x] Create `src/workflow/` for the deterministic state machine.
 - [x] Create `scripts/` for corpus download/import and implemented local feature commands.
@@ -131,7 +131,7 @@ Devil's Advocate / Rights Card / Checklist / Legal Aid / Community mode
 - [x] Create `tests/` with unit, component-integration, and retrieval fixtures.
 - [ ] Add true end-to-end demo-scenario fixtures.
 - [x] Create ignored `data/raw/` and `data/processed/` directories.
-- [ ] Create and populate the ignored `data/indexes/` directory.
+- [x] Create and populate the ignored `data/indexes/` directory.
 - [x] Add `.env.example` containing only non-secret configuration keys.
 - [x] Add a dependency file and reproducible setup instructions.
 - [x] Add a one-command local launcher.
@@ -258,7 +258,7 @@ Owner: Member B
 Dependency: processed corpus
 
 - [x] Build an exact-search index over act names, headings, sections, and text.
-- [ ] Generate multilingual embeddings with EmbeddingGemma.
+- [x] Generate multilingual embeddings with EmbeddingGemma.
 - [ ] Build a FAISS index.
 - [x] Normalize section-number queries before search.
 - [x] Support IPC-term expansion only through caller-supplied, human-reviewed BNS aliases.
@@ -268,17 +268,17 @@ Dependency: processed corpus
 - [x] Deduplicate only provenance-compatible, genuinely overlapping subsections.
 - [ ] Add a separate post-fusion reranker.
 - [x] Preserve all provenance metadata supplied by corpus records in retrieval results.
-- [ ] Validate that every returned evidence bundle contains all required citation fields.
+- [x] Validate that every returned evidence bundle contains all required citation fields.
 - [x] Add an immutable retrieval-debug trace/API for development.
 - [ ] Add the retrieval-debug trace to the future UI.
 - [x] Generate deterministic corpus hashes and embedding version keys.
-- [ ] Persist and reuse embedding/index caches keyed by those hashes.
+- [x] Persist and reuse embedding/index caches keyed by those hashes.
 
 **Retrieval exit gate:**
 
 - [ ] Recall@5 ≥ 0.85 on the reviewed MVP evaluation set.
 - [ ] Current-law routing accuracy ≥ 0.95 on BNS/IPC tests.
-- [ ] Hybrid retrieval beats both BM25-only and vector-only baselines.
+- [x] Hybrid retrieval beats both BM25-only and vector-only baselines.
 - [ ] No repealed-law result is presented as current without an explicit warning.
 
 ## 10. Phase F — Intake and confirmation workflow
@@ -325,11 +325,11 @@ Owner: Member C + Member A
 
 - [x] Define a strict structured legal-answer schema.
 - [x] Require fields for situation, applicable law, rights, options, evidence, deadlines, consequences, next steps, and limitations.
-- [ ] Pass only retrieved sources and confirmed facts to the legal-answer prompt.
-- [ ] Prohibit invented sections, cases, contacts, dates, and statistics in the system prompt.
-- [ ] Split generated text into verifiable claims.
+- [x] Pass only retrieved sources and confirmed facts to the legal-answer prompt.
+- [x] Prohibit invented sections, cases, contacts, dates, and statistics in the system prompt.
+- [x] Split generated text into verifiable claims.
 - [x] Enforce that claim citations and verifier evidence IDs belong to the retrieved/displayed evidence bundle.
-- [ ] Implement semantic claim-to-excerpt support matching.
+- [x] Implement semantic claim-to-excerpt support matching.
 - [x] Define supported, contradicted, and insufficient verdicts and require exactly one verdict per claim.
 - [ ] Remove or rewrite insufficient claims.
 - [ ] Trigger one constrained re-retrieval attempt when evidence is missing.
@@ -353,7 +353,7 @@ Owner: Member C + Member A
 - [ ] Build a redacted, structured case summary from confirmed facts.
 - [x] Run advocate, opponent, and rebuttal sequentially on one model instance.
 - [x] Give the opponent only confirmed facts and verified source excerpts.
-- [ ] Prevent either side from adding new uncited law.
+- [x] Prevent either side from adding new uncited law.
 - [ ] Label allegations, assumptions, missing evidence, and legal rules separately.
 - [ ] Stream stage labels and provide a cancel button.
 - [ ] Conclude with “weaknesses to investigate,” not a win probability.
