@@ -12,12 +12,14 @@ Design rules enforced here:
 from __future__ import annotations
 
 import json
+import os
+import tempfile
 from collections.abc import AsyncIterator, Iterator
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, File, Form, Request, UploadFile
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response, StreamingResponse
@@ -31,6 +33,15 @@ from src.agents.researcher import ResearchError, retrieve_evidence
 from src.applicability.delhi_rent import (
     DelhiRentApplicabilityResult,
     evaluate_delhi_rent_applicability,
+)
+from src.audio.asr import transcribe_audio
+from src.audio.models import (
+    MAX_AUDIO_BYTES,
+    ASRConfig,
+    ASRError,
+    ASRErrorCode,
+    LanguageHint,
+    TranscriptionResult,
 )
 from src.intake import process_text_intake
 from src.legal_aid.finder import LegalAidFinderError, LegalAidSearchResult
@@ -93,6 +104,20 @@ _OCR_STATUS: dict[OCRErrorCode, int] = {
     OCRErrorCode.OCR_TIMEOUT: 504,
     OCRErrorCode.OCR_FAILED: 500,
     OCRErrorCode.INTERNAL_ERROR: 500,
+}
+
+_ASR_STATUS: dict[ASRErrorCode, int] = {
+    ASRErrorCode.INVALID_REQUEST: 400,
+    ASRErrorCode.AUDIO_NOT_FOUND: 400,
+    ASRErrorCode.UNSUPPORTED_FORMAT: 415,
+    ASRErrorCode.AUDIO_LIMIT_EXCEEDED: 413,
+    ASRErrorCode.INVALID_AUDIO: 400,
+    ASRErrorCode.MODEL_NOT_FOUND: 503,
+    ASRErrorCode.MODEL_INTEGRITY_FAILED: 503,
+    ASRErrorCode.BACKEND_UNAVAILABLE: 503,
+    ASRErrorCode.INFERENCE_FAILED: 500,
+    ASRErrorCode.OUTPUT_LIMIT_EXCEEDED: 413,
+    ASRErrorCode.INTERNAL_ERROR: 500,
 }
 
 _STATE_STATUS: dict[str, int] = {
@@ -467,6 +492,63 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
             media_type="text/event-stream",
             headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
         )
+
+    @app.post(
+        "/api/transcribe",
+        response_model=TranscriptionResult,
+        responses=_ERROR_RESPONSES,
+        tags=["intake"],
+    )
+    async def transcribe(
+        file: UploadFile = File(...),
+        language: str = Form("auto"),
+    ) -> TranscriptionResult:
+        """Transcribe a short local WAV/FLAC clip. The transcript is a DRAFT.
+
+        The result is never treated as confirmed fact: it feeds the same intake and
+        confirmation gate as typed text. The upload is held in memory, written only to
+        a securely created temporary file the ASR backend must read from, and that
+        file is deleted before the response returns.
+        """
+
+        try:
+            hint = LanguageHint(language)
+        except ValueError as exc:
+            raise ApiError(
+                400, "invalid_request", "language must be one of: auto, hi, en", field="language"
+            ) from exc
+
+        suffix = Path(file.filename or "").suffix.lower()
+        if suffix not in {".wav", ".flac"}:
+            raise ApiError(
+                415, "unsupported_format", "only .wav and .flac audio is accepted", field="file"
+            )
+        data = await file.read(MAX_AUDIO_BYTES + 1)
+        if len(data) > MAX_AUDIO_BYTES:
+            raise ApiError(413, "audio_limit_exceeded", "audio exceeds the size limit", field="file")
+
+        descriptor, temp_name = tempfile.mkstemp(suffix=suffix)
+        temp_path = Path(temp_name)
+        try:
+            with os.fdopen(descriptor, "wb") as handle:
+                handle.write(data)
+            config = ASRConfig(
+                model_path=state.asr_model_dir,
+                model_revision=state.asr_model_revision,
+                device="cpu",
+                compute_type="int8",
+            )
+            return transcribe_audio(temp_path, config, language=hint)
+        except ASRError as exc:
+            status = _ASR_STATUS.get(exc.detail.code, 500)
+            raise ApiError(status, exc.detail.code.value, exc.detail.message, field=exc.detail.field)
+        finally:
+            # The clip must not outlive the request. Delete it whether or not the
+            # backend succeeded.
+            try:
+                temp_path.unlink(missing_ok=True)
+            except OSError:
+                pass
 
     @app.post("/api/rights-card", responses=_ERROR_RESPONSES, tags=["answer"])
     async def rights_card(payload: RightsCardRequest) -> Response:

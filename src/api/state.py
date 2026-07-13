@@ -17,6 +17,7 @@ from pathlib import Path
 
 from src.actions.checklists import ChecklistCatalog, ChecklistError
 from src.agents.ollama import OllamaClient
+from src.audio.integrity import PINNED_MODEL_REVISION as ASR_PINNED_REVISION
 from src.config import Settings
 from src.legal_aid.finder import LegalAidFinder, LegalAidFinderError
 from src.legal_time.mapping import MappingCatalog
@@ -32,6 +33,7 @@ DEFAULT_CORPUS_DIR = ROOT / "data" / "processed" / "sections"
 DEFAULT_CONTACTS_PATH = ROOT / "data" / "processed" / "contacts" / "delhi_dlsa.json"
 DEFAULT_CHECKLISTS_PATH = ROOT / "config" / "evidence_checklists.json"
 DEFAULT_TESSDATA_DIR = ROOT / "models" / "ocr" / "tessdata"
+DEFAULT_ASR_MODEL_DIR = ROOT / "models" / "asr" / "faster-whisper-small"
 
 # The IPC/BNS catalogue is deliberately empty. data/processed/mappings holds
 # `pending_human_review` candidates only, and an unreviewed candidate must never
@@ -77,6 +79,8 @@ class ApiState:
     # and answer generation is refused with a clear error.
     embedding_model: str = DEFAULT_EMBEDDING_MODEL
     index_dir: Path = Path("data/indexes")
+    asr_model_dir: Path = Path("models/asr/faster-whisper-small")
+    asr_model_revision: str = ASR_PINNED_REVISION
     # Off by default so constructing state never reaches the local runtime. The
     # real server turns it on in build_state(); tests stay hermetic and fast.
     use_embeddings: bool = False
@@ -236,6 +240,7 @@ def build_state() -> ApiState:
         contacts_path=Path(os.getenv("NYAYA_CONTACTS_PATH", str(DEFAULT_CONTACTS_PATH))),
         checklists_path=Path(os.getenv("NYAYA_CHECKLISTS_PATH", str(DEFAULT_CHECKLISTS_PATH))),
         tessdata_dir=Path(os.getenv("NYAYA_TESSDATA_DIR", str(DEFAULT_TESSDATA_DIR))),
+        asr_model_dir=Path(os.getenv("NYAYA_ASR_MODEL_DIR", str(DEFAULT_ASR_MODEL_DIR))),
         tesseract_path=Path(os.getenv("NYAYA_TESSERACT_PATH", str(DEFAULT_TESSERACT_PATH))),
         index_dir=index_dir,
         # The served application uses the semantic channel; it degrades to
