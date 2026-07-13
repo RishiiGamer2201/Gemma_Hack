@@ -285,3 +285,33 @@ def test_english_is_the_default_and_an_unknown_language_falls_back_to_it() -> No
             output_language=language,
         )
         assert "clear, simple English" in client.prompts[0], language
+
+
+def test_detail_level_changes_how_much_is_said_not_what_may_be_said() -> None:
+    """"Detailed" must not buy latitude to assert what the sources do not support."""
+
+    source = evidence()
+    for level, marker in (("simple", "Keep it short"), ("detailed", "Be thorough")):
+        client = FakeClient(
+            [answer_payload("Wages must be paid on time.", [source.source_id])]
+        )
+        draft_answer(
+            client,
+            model="gemma4",
+            facts=facts(),
+            evidence=[source],
+            detail_level=level,
+        )
+        prompt = client.prompts[0]
+        assert marker in prompt, level
+        # The absolute rules travel with every request regardless of detail level.
+        assert "Never invent an Act" in client.systems[0]
+
+    # Detailed must explicitly forbid padding from general legal knowledge.
+    client = FakeClient([answer_payload("Wages must be paid on time.", [source.source_id])])
+    draft_answer(
+        client, model="gemma4", facts=facts(), evidence=[source], detail_level="detailed"
+    )
+    assert "never\nfrom general legal knowledge" in client.prompts[0] or (
+        "never" in client.prompts[0] and "general legal knowledge" in client.prompts[0]
+    )

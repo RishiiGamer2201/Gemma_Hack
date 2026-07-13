@@ -167,12 +167,14 @@ export function postEvidence(
  * There is no streaming: this resolves once, at the end.
  */
 export type OutputLanguage = "en" | "hi";
+export type DetailLevel = "simple" | "detailed";
 
 export function postAnswer(
   facts: ConfirmedFacts,
   confirmedUrgencies: string[],
   limit: number,
   outputLanguage: OutputLanguage = "en",
+  detailLevel: DetailLevel = "simple",
   signal?: AbortSignal,
 ): Promise<AnswerResponse> {
   return postJson<AnswerResponse>(
@@ -185,6 +187,8 @@ export function postAnswer(
       // Only the explanation is translated. The official excerpts stay in the
       // language of the source.
       output_language: outputLanguage,
+      // Changes how much is said, never what may be said.
+      detail_level: detailLevel,
     },
     signal,
   );

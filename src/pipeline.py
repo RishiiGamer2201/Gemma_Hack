@@ -78,6 +78,7 @@ def run_confirmed_request(
     approved_profiles: frozenset[str] = frozenset(),
     evidence_limit: int = 6,
     output_language: str = "en",
+    detail_level: str = "simple",
 ) -> PipelineResult:
     """Run confirmed facts through safety routing, retrieval, drafting, verification."""
 
@@ -141,6 +142,7 @@ def run_confirmed_request(
             evidence_limit=evidence_limit,
             repair_notes=repair_notes,
             output_language=output_language,
+            detail_level=detail_level,
         )
     except DraftError as exc:
         return _abstain(workflow, route, f"A grounded answer could not be drafted: {exc}", bundle)
@@ -194,6 +196,7 @@ def _draft_verify_repair(
     evidence_limit: int,
     repair_notes: list[str],
     output_language: str = "en",
+    detail_level: str = "simple",
 ) -> tuple[EvidenceBundle, StructuredLegalAnswer, tuple[ClaimVerification, ...]]:
     """Draft and verify, with exactly one repair attempt. Never more than one."""
 
@@ -203,6 +206,7 @@ def _draft_verify_repair(
         facts=facts,
         evidence=bundle.evidence,
         output_language=output_language,
+        detail_level=detail_level,
     )
     verifications = verify_answer(
         client, model=model, answer=answer, evidence=bundle.evidence
@@ -238,6 +242,7 @@ def _draft_verify_repair(
         evidence=wider.evidence,
         rejected_claims=rejected,
         output_language=output_language,
+        detail_level=detail_level,
     )
     repaired_verifications = verify_answer(
         client, model=model, answer=repaired, evidence=wider.evidence

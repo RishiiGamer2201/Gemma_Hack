@@ -402,7 +402,7 @@ Owner: Member C
 - [ ] Show urgency notices above normal content.
 - [ ] Render answers as situation → law → options → checklist → sources.
 - [x] Make citations expandable and copyable.
-- [ ] Add Simple/Detailed output toggle.
+- [x] Add Simple/Detailed output toggle.
 - [x] Add English/Hindi output toggle.
 - [x] Add Devil's Advocate as an optional action after the verified answer.
 - [x] Add Rights Card, community version, and legal-aid buttons.

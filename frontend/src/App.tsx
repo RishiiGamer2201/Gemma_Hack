@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { getHealth, type OutputLanguage, postAnswer, postIntake } from "./api/client";
+import {
+  type DetailLevel,
+  getHealth,
+  type OutputLanguage,
+  postAnswer,
+  postIntake,
+} from "./api/client";
 import type {
   AnswerResponse,
   ConfirmedFacts,
@@ -109,6 +115,7 @@ export function App() {
   // Only the explanation is translated; the official excerpts always stay in the
   // language of the source.
   const [outputLanguage, setOutputLanguage] = useState<OutputLanguage>("en");
+  const [detailLevel, setDetailLevel] = useState<DetailLevel>("simple");
   const [answerBusy, setAnswerBusy] = useState(false);
   const [answerError, setAnswerError] = useState<unknown>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -166,6 +173,7 @@ export function App() {
           urgencies,
           EVIDENCE_LIMIT,
           outputLanguage,
+          detailLevel,
           controller.signal,
         );
         setResult(response);
@@ -183,7 +191,7 @@ export function App() {
         setAnswerBusy(false);
       }
     },
-    [intake, outputLanguage],
+    [intake, outputLanguage, detailLevel],
   );
 
   function cancelAnswer() {
@@ -401,6 +409,37 @@ export function App() {
                   <p className="hint">
                     The explanation is written in this language. The law itself is
                     always shown in the words of the official source.
+                  </p>
+                </div>
+
+                <div className="field">
+                  <span className="field-label">How much detail</span>
+                  <div className="row" role="radiogroup" aria-label="Detail level">
+                    {(
+                      [
+                        { value: "simple", label: "Simple" },
+                        { value: "detailed", label: "Detailed" },
+                      ] as Array<{ value: DetailLevel; label: string }>
+                    ).map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        role="radio"
+                        aria-checked={detailLevel === option.value}
+                        className={
+                          detailLevel === option.value ? "btn-primary" : "btn-secondary"
+                        }
+                        disabled={answerBusy}
+                        onClick={() => setDetailLevel(option.value)}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="hint">
+                    This changes how much is said, never what may be said. Both
+                    levels use the same official sources and every claim is checked
+                    the same way.
                   </p>
                 </div>
               </section>

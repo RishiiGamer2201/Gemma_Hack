@@ -238,6 +238,28 @@ def _language_instruction(language: str) -> str:
     return _LANGUAGE_INSTRUCTIONS.get(language.casefold(), _LANGUAGE_INSTRUCTIONS["en"])
 
 
+# Detail level changes how much is said, never what may be said. Both levels draw on
+# the same excerpts and both are verified claim by claim, so "detailed" cannot buy
+# extra latitude to assert something the sources do not support.
+_DETAIL_INSTRUCTIONS = {
+    "simple": (
+        "Keep it short. Use everyday words and short sentences. Give the two or "
+        "three things that matter most and leave out procedural detail. Do not add "
+        "anything the excerpts do not support in order to fill space."
+    ),
+    "detailed": (
+        "Be thorough. Explain the procedure, the conditions, and the exceptions the "
+        "excerpts actually state. Extra length must come from the excerpts, never "
+        "from general legal knowledge: if the excerpts are thin, the answer stays "
+        "thin and 'limitations' says so."
+    ),
+}
+
+
+def _detail_instruction(level: str) -> str:
+    return _DETAIL_INSTRUCTIONS.get(level.casefold(), _DETAIL_INSTRUCTIONS["simple"])
+
+
 def draft_answer(
     client: OllamaClient,
     *,
@@ -248,6 +270,7 @@ def draft_answer(
     max_output_tokens: int = MAX_OUTPUT_TOKENS,
     rejected_claims: Sequence[tuple[str, str]] = (),
     output_language: str = "en",
+    detail_level: str = "simple",
 ) -> StructuredLegalAnswer:
     """Draft a structured answer that cites only the supplied official evidence.
 
@@ -273,6 +296,7 @@ def draft_answer(
         "records that commencement is not proven, say that the provision may not yet "
         "be in force rather than stating it applies."
         f"\n\n{_language_instruction(output_language)}"
+        f"\n{_detail_instruction(detail_level)}"
     )
     if rejected_claims:
         rejected = "\n".join(

@@ -146,6 +146,9 @@ class AnswerRequest(ApiModel):
     # The explanation is written in this language. The official excerpts are never
     # translated: a translated statute is no longer the statute.
     output_language: Literal["en", "hi"] = "en"
+    # Changes how much is said, never what may be said: both levels draw on the
+    # same excerpts and both are verified claim by claim.
+    detail_level: Literal["simple", "detailed"] = "simple"
 
 
 class ClaimView(ApiModel):
