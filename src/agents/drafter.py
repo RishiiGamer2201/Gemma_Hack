@@ -217,6 +217,27 @@ def _evidence_record(item: SourceEvidence) -> dict[str, object]:
     }
 
 
+# The excerpts stay in the language of the official source. Only the explanation is
+# written in the reader's language: a translated statute is no longer the statute,
+# and the citation card must always show the official text verbatim.
+_LANGUAGE_INSTRUCTIONS = {
+    "en": (
+        "Write every field in clear, simple English a person with no legal training "
+        "can follow."
+    ),
+    "hi": (
+        "Write every field in simple Hindi (Devanagari script) that a person with no "
+        "legal training can follow. Keep Act names, section numbers, and the "
+        "source_id values exactly as they appear in the excerpts — do not translate "
+        "or transliterate them. Do not translate the excerpts themselves."
+    ),
+}
+
+
+def _language_instruction(language: str) -> str:
+    return _LANGUAGE_INSTRUCTIONS.get(language.casefold(), _LANGUAGE_INSTRUCTIONS["en"])
+
+
 def draft_answer(
     client: OllamaClient,
     *,
@@ -226,6 +247,7 @@ def draft_answer(
     context_tokens: int = 8192,
     max_output_tokens: int = MAX_OUTPUT_TOKENS,
     rejected_claims: Sequence[tuple[str, str]] = (),
+    output_language: str = "en",
 ) -> StructuredLegalAnswer:
     """Draft a structured answer that cites only the supplied official evidence.
 
@@ -250,6 +272,7 @@ def draft_answer(
         "the excerpts above. Cite source_id values in every claim. Where an excerpt "
         "records that commencement is not proven, say that the provision may not yet "
         "be in force rather than stating it applies."
+        f"\n\n{_language_instruction(output_language)}"
     )
     if rejected_claims:
         rejected = "\n".join(

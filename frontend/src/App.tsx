@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { getHealth, postAnswer, postIntake } from "./api/client";
+import { getHealth, type OutputLanguage, postAnswer, postIntake } from "./api/client";
 import type {
   AnswerResponse,
   ConfirmedFacts,
@@ -106,6 +106,9 @@ export function App() {
   /** The single /api/answer result: safety route, answer, claims, evidence, warnings. */
   const [result, setResult] = useState<AnswerResponse | null>(null);
   const [answerFacts, setAnswerFacts] = useState<ConfirmedFacts | null>(null);
+  // Only the explanation is translated; the official excerpts always stay in the
+  // language of the source.
+  const [outputLanguage, setOutputLanguage] = useState<OutputLanguage>("en");
   const [answerBusy, setAnswerBusy] = useState(false);
   const [answerError, setAnswerError] = useState<unknown>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -162,6 +165,7 @@ export function App() {
           payload,
           urgencies,
           EVIDENCE_LIMIT,
+          outputLanguage,
           controller.signal,
         );
         setResult(response);
@@ -179,7 +183,7 @@ export function App() {
         setAnswerBusy(false);
       }
     },
-    [intake],
+    [intake, outputLanguage],
   );
 
   function cancelAnswer() {
@@ -360,6 +364,44 @@ export function App() {
           {step === "confirm" && intake ? (
             <>
               {answerBusy ? <AnswerProgress onCancel={cancelAnswer} /> : null}
+
+              {/*
+                Output language. Only the explanation is written in the chosen
+                language — the official excerpts are always shown in the language of
+                the source, because a translated statute is no longer the statute.
+              */}
+              <section className="card">
+                <div className="field">
+                  <span className="field-label">Answer language</span>
+                  <div className="row" role="radiogroup" aria-label="Answer language">
+                    {(
+                      [
+                        { value: "en", label: "English" },
+                        { value: "hi", label: "हिंदी (Hindi)" },
+                      ] as Array<{ value: OutputLanguage; label: string }>
+                    ).map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        role="radio"
+                        aria-checked={outputLanguage === option.value}
+                        className={
+                          outputLanguage === option.value ? "btn-primary" : "btn-secondary"
+                        }
+                        disabled={answerBusy}
+                        onClick={() => setOutputLanguage(option.value)}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="hint">
+                    The explanation is written in this language. The law itself is
+                    always shown in the words of the official source.
+                  </p>
+                </div>
+              </section>
+
               <ConfirmationGate
                 intake={intake}
                 facts={facts}

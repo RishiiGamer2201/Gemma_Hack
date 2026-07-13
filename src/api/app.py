@@ -398,6 +398,7 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
                 requested_output=payload.requested_output,
                 approved_profiles=frozenset(payload.approved_profiles),
                 evidence_limit=payload.limit,
+                output_language=payload.output_language,
             )
         except PipelineError as exc:
             raise ApiError(422, "pipeline_error", str(exc)) from exc

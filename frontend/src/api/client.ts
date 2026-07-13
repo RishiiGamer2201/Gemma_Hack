@@ -166,10 +166,13 @@ export function postEvidence(
  * routinely takes 30-120s, so callers MUST pass an AbortSignal and show progress.
  * There is no streaming: this resolves once, at the end.
  */
+export type OutputLanguage = "en" | "hi";
+
 export function postAnswer(
   facts: ConfirmedFacts,
   confirmedUrgencies: string[],
   limit: number,
+  outputLanguage: OutputLanguage = "en",
   signal?: AbortSignal,
 ): Promise<AnswerResponse> {
   return postJson<AnswerResponse>(
@@ -179,6 +182,9 @@ export function postAnswer(
       confirmed_urgencies: confirmedUrgencies,
       approved_profiles: [],
       limit,
+      // Only the explanation is translated. The official excerpts stay in the
+      // language of the source.
+      output_language: outputLanguage,
     },
     signal,
   );

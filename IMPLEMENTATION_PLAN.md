@@ -403,7 +403,7 @@ Owner: Member C
 - [ ] Render answers as situation → law → options → checklist → sources.
 - [x] Make citations expandable and copyable.
 - [ ] Add Simple/Detailed output toggle.
-- [ ] Add English/Hindi output toggle.
+- [x] Add English/Hindi output toggle.
 - [x] Add Devil's Advocate as an optional action after the verified answer.
 - [x] Add Rights Card, community version, and legal-aid buttons.
 - [ ] Display progress for retrieval, generation, and verification.

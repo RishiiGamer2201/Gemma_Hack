@@ -248,3 +248,40 @@ def test_an_unsupported_claim_forces_the_workflow_to_abstain() -> None:
 
     assert snapshot.stage.value == "abstained"
     assert unsupported_claims(answer, verdicts) == answer.claims
+
+
+def test_hindi_output_translates_the_explanation_but_never_the_excerpt() -> None:
+    """A translated statute is no longer the statute: excerpts stay in the source's words."""
+
+    source = evidence()
+    client = FakeClient([answer_payload("Wages must be paid on time.", [source.source_id])])
+
+    draft_answer(
+        client,
+        model="gemma4",
+        facts=facts(),
+        evidence=[source],
+        output_language="hi",
+    )
+
+    prompt = client.prompts[0]
+    assert "simple Hindi (Devanagari script)" in prompt
+    assert "Do not translate the excerpts themselves" in prompt
+    # The excerpt itself must reach the model verbatim, in English.
+    assert "All wages shall be paid within the prescribed wage period." in prompt
+
+
+def test_english_is_the_default_and_an_unknown_language_falls_back_to_it() -> None:
+    source = evidence()
+    for language in ("en", "fr", "zz"):
+        client = FakeClient(
+            [answer_payload("Wages must be paid on time.", [source.source_id])]
+        )
+        draft_answer(
+            client,
+            model="gemma4",
+            facts=facts(),
+            evidence=[source],
+            output_language=language,
+        )
+        assert "clear, simple English" in client.prompts[0], language

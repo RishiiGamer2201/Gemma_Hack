@@ -143,6 +143,9 @@ class AnswerRequest(ApiModel):
     untrusted_document_texts: tuple[str, ...] = ()
     requested_output: str | None = None
     limit: Annotated[int, Field(ge=1, le=MAX_EVIDENCE)] = 6
+    # The explanation is written in this language. The official excerpts are never
+    # translated: a translated statute is no longer the statute.
+    output_language: Literal["en", "hi"] = "en"
 
 
 class ClaimView(ApiModel):
