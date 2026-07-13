@@ -302,6 +302,7 @@ def _source_metadata(
         "target_instrument_title": source.target_instrument_title,
         "gazette_reference": source.gazette_reference,
         "review_note": source.review_note,
+        "applicability_profile_id": source.applicability_profile_id,
         "audit_status": "pending_human_review",
     }
 

@@ -50,6 +50,9 @@ class OfficialSource(BaseModel):
     target_instrument_title: str | None = Field(default=None, max_length=500)
     gazette_reference: str | None = Field(default=None, max_length=160)
     review_note: str | None = Field(default=None, max_length=1000)
+    applicability_profile_id: str | None = Field(
+        default=None, pattern=r"^[a-z0-9_]+$", max_length=120
+    )
     required: bool = True
     allowed_hosts: tuple[str, ...] = Field(min_length=1)
 

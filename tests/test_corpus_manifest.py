@@ -171,6 +171,16 @@ class ManifestTests(unittest.TestCase):
         self.assertIsNone(corrigendum.effective_from)
         self.assertEqual(corrigendum.relationship, "corrigendum")
 
+    def test_only_delhi_rent_source_uses_the_drc_applicability_profile(self) -> None:
+        manifest = load_manifest("config/official_sources.json")
+        profiled = [
+            source.source_id for source in manifest.sources if source.applicability_profile_id
+        ]
+        self.assertEqual(profiled, ["delhi_rent_control_act_1958_en"])
+        source = next(source for source in manifest.sources if source.source_id == profiled[0])
+        self.assertEqual(source.applicability_profile_id, "delhi_rent_control_act_1958")
+        self.assertEqual(source.effective_from.isoformat(), "1959-02-09")
+
 
 if __name__ == "__main__":
     unittest.main()

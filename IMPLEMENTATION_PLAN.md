@@ -183,7 +183,7 @@ Blocker for: trustworthy answers
 - [x] Download and process the Consumer Protection Act 2019.
 - [x] Download and review relevant current Consumer Protection rules.
 - [x] Download and process the Delhi Rent Control Act 1958.
-- [ ] Record substantive Delhi Rent Control Act applicability limitations for retrieval.
+- [x] Record substantive Delhi Rent Control Act applicability limitations for retrieval.
 - [x] Download Code on Wages 2019.
 - [x] Download Code on Wages implementation material and Central Rules 2026.
 - [x] Download current Ministry of Labour FAQs.

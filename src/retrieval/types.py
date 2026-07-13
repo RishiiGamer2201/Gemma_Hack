@@ -7,13 +7,15 @@ citation and effective-date checks.
 
 from __future__ import annotations
 
+import re
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from types import MappingProxyType
-from typing import Any, Mapping
-
+from typing import Any
 
 DateLike = date | datetime | str
+_PROFILE_ID = re.compile(r"^[a-z0-9_]+$")
 
 
 def _freeze_metadata(value: Any) -> Any:
@@ -63,6 +65,8 @@ class SearchFilters:
     ``effective_on`` selects material in force on that date. An absent
     ``effective_to`` means the source remains in force. Metadata dates must be
     ISO dates or ``date`` objects; malformed dates are excluded, not guessed.
+    A document declaring ``applicability_profile_id`` is excluded unless that
+    exact profile appears in ``applicability_profiles`` after a separate facts gate.
     """
 
     jurisdiction: str | None = None
@@ -71,6 +75,7 @@ class SearchFilters:
     act: str | None = None
     document_type: str | None = None
     effective_on: DateLike | None = None
+    applicability_profiles: frozenset[str] = frozenset()
 
     def __post_init__(self) -> None:
         for field_name in ("jurisdiction", "language", "status", "act", "document_type"):
@@ -84,6 +89,13 @@ class SearchFilters:
             "effective_on",
             _as_date(self.effective_on, field_name="effective_on"),
         )
+        if not isinstance(self.applicability_profiles, frozenset):
+            raise TypeError("applicability_profiles must be a frozenset")
+        if any(
+            not isinstance(item, str) or not _PROFILE_ID.fullmatch(item)
+            for item in self.applicability_profiles
+        ):
+            raise ValueError("applicability_profiles entries must be lowercase profile IDs")
 
     @staticmethod
     def _matches_text(actual: Any, expected: str | None) -> bool:
@@ -105,6 +117,10 @@ class SearchFilters:
             return False
         if not self._matches_text(metadata.get("document_type"), self.document_type):
             return False
+        profile = metadata.get("applicability_profile_id")
+        if profile is not None:
+            if not isinstance(profile, str) or profile not in self.applicability_profiles:
+                return False
 
         if self.effective_on is None:
             return True

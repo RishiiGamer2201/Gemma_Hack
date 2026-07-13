@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable, Sequence
-from dataclasses import fields
 import hashlib
 import json
 import math
+from collections.abc import Callable, Iterable, Sequence
+from dataclasses import fields
 
 from .bm25 import BM25Index
 from .debug import (
@@ -19,19 +19,26 @@ from .query import QueryExpander
 from .tokenize import tokenize
 from .types import RetrievalDocument, RetrievalResult, SearchFilters
 
-
 EmbeddingCallback = Callable[[Sequence[str]], Sequence[Sequence[float]]]
 
 
 def _cosine(left: Sequence[float], right: Sequence[float]) -> float:
     if len(left) != len(right):
         raise ValueError("embedding dimensions do not match")
-    dot = sum(float(a) * float(b) for a, b in zip(left, right))
+    dot = sum(float(a) * float(b) for a, b in zip(left, right, strict=True))
     left_norm = math.sqrt(sum(float(value) ** 2 for value in left))
     right_norm = math.sqrt(sum(float(value) ** 2 for value in right))
     if left_norm == 0 or right_norm == 0:
         return 0.0
     return dot / (left_norm * right_norm)
+
+
+def _debug_filter_value(value: object) -> object:
+    if hasattr(value, "isoformat"):
+        return value.isoformat()  # type: ignore[union-attr]
+    if isinstance(value, (set, frozenset)):
+        return tuple(sorted(value))
+    return value
 
 
 class HybridRetriever:
@@ -263,13 +270,10 @@ class HybridRetriever:
         candidate_limit: int,
     ) -> DebugSearchResult:
         active_filters = {
-            item.name: (
-                getattr(filters, item.name).isoformat()
-                if hasattr(getattr(filters, item.name), "isoformat")
-                else getattr(filters, item.name)
-            )
+            item.name: _debug_filter_value(getattr(filters, item.name))
             for item in fields(filters)
             if getattr(filters, item.name) is not None
+            and getattr(filters, item.name) != frozenset()
         }
         config = {
             "rrf_k": self.rrf_k,
@@ -295,7 +299,6 @@ class HybridRetriever:
                 retriever_config=config,
             ),
         )
-
     @staticmethod
     def _deduplicate(
         ordered: list[str], by_id: dict[str, RetrievalDocument]
@@ -333,7 +336,9 @@ class HybridRetriever:
         query_vector = query_vectors[0]
         active_filters = filters or SearchFilters()
         scored = []
-        for document, vector in zip(self.documents, self._document_embeddings):
+        for document, vector in zip(
+            self.documents, self._document_embeddings, strict=True
+        ):
             if not active_filters.matches(document):
                 continue
             score = _cosine(query_vector, vector)

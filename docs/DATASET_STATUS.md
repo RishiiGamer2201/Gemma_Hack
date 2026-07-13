@@ -10,6 +10,9 @@ manifests, downloaders, receipts, and processing code are versioned.
 - [x] Download and process the current 2026 Hindi-English diglot Constitution.
 - [x] Download and process BNS, BNSS, BSA, Consumer Protection Act, Delhi Rent Control Act, Code on
   Wages, 2026 Central Rules, implementation material, and wage/labour FAQs.
+- [x] Attach a fail-closed Delhi Rent Control Act applicability profile grounded in
+  sections 1(2) and 3; ordinary retrieval excludes the Act until material premises
+  facts explicitly approve the profile.
 - [x] Download, receipt-verify, and process 12 current citizen-facing Consumer Protection
   rules/regulations/corrigenda/amendments with explicit amendment relationships.
 - [x] Add a bilingual-Gazette chunker that separates bundled instruments and emits the
