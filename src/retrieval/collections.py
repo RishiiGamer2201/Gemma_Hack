@@ -15,21 +15,22 @@ from src.models.schemas import LegalDomain
 
 from .types import RetrievalDocument
 
-# Sources in scope for every domain. These describe entitlement to legal help
-# rather than the merits of a dispute, and they are small enough not to crowd out
-# the statute that actually governs the case.
+# No source is in scope for every domain.
 #
-# The Constitution is deliberately NOT universal, despite being the supreme law.
-# Measured on a labelled query set, adding its ~4,900 chunks (English plus the
-# Hindi-English diglot) to every collection swamped the governing statute and
-# halved Recall@5. It remains priority 1 and is retrieved for constitutional
-# questions; a fundamental-rights issue inside another domain is a human-review
-# question, not something to paper over by degrading every other search.
-UNIVERSAL_SOURCE_IDS: tuple[str, ...] = (
-    "legal_services_authorities_act_en",
-    "nalsa_free_legal_services_regulations_2010_en",
-    "nalsa_lok_adalat_regulations_2009_en",
-)
+# The Constitution is excluded despite being the supreme law: measured on a
+# labelled query set, adding its ~4,900 chunks (English plus the Hindi-English
+# diglot) to every collection swamped the governing statute and halved Recall@5.
+# It remains priority 1 and is retrieved for constitutional questions.
+#
+# The legal-aid statutes are excluded too. They describe entitlement to free legal
+# help, not the merits of a dispute, and observed on a real deposit query they
+# ranked Legal Services Authorities Act sections above the governing law. Legal aid
+# is served by the dedicated finder, which reads a verified contact directory; it
+# is not a retrieval concern.
+#
+# A fundamental-rights or legal-aid question arising inside another domain is a
+# human-review matter. It is not worth degrading every merits search to cover it.
+UNIVERSAL_SOURCE_IDS: tuple[str, ...] = ()
 
 _DOMAIN_SOURCE_PREFIXES: dict[LegalDomain, tuple[str, ...]] = {
     LegalDomain.CRIMINAL: ("bns_2023", "bnss_2023", "bsa_2023"),

@@ -50,11 +50,38 @@ _VERDICT_SCHEMA = {
     "type": "object",
     "properties": {
         "verdict": {"type": "string", "enum": ["supported", "contradicted", "insufficient"]},
-        "reason": {"type": "string"},
-        "evidence_source_ids": {"type": "array", "items": {"type": "string"}},
+        "reason": {"type": "string", "minLength": 1},
+        "evidence_source_ids": {"type": "array", "items": {"type": "string", "minLength": 1}},
     },
     "required": ["verdict", "reason", "evidence_source_ids"],
 }
+
+# A cited chunk can be enormous (the Consumer Protection Act definitions section runs
+# to tens of thousands of characters). Several of those overflow the context, the
+# runtime silently truncates the prompt, and the verifier's own JSON comes back cut
+# off. The excerpt the verifier reads is therefore bounded.
+#
+# This bound can only make verification stricter. If the passage that would have
+# supported a claim falls outside the window, the verifier cannot see it and returns
+# "insufficient", and the answer is withheld. It can never manufacture support from
+# text it did not read.
+MAX_VERIFY_EXCERPT_CHARACTERS = 3_000
+VERIFY_OUTPUT_TOKENS = 300
+PROMPT_TOKEN_OVERHEAD = 256
+BYTES_PER_TOKEN = 3
+
+
+def _bounded(text: str) -> str:
+    if len(text) <= MAX_VERIFY_EXCERPT_CHARACTERS:
+        return text
+    window = text[:MAX_VERIFY_EXCERPT_CHARACTERS]
+    boundary = window.rfind(" ")
+    cut = window[:boundary] if boundary > MAX_VERIFY_EXCERPT_CHARACTERS // 2 else window
+    return cut.rstrip()
+
+
+def _estimated_tokens(text: str) -> int:
+    return len(text.encode("utf-8")) // BYTES_PER_TOKEN + 1
 
 
 class VerificationError(RuntimeError):
@@ -126,7 +153,7 @@ def _verify_claim(
             "source_id": item.source_id,
             "act": item.act,
             "section": item.section or "n/a",
-            "excerpt": item.excerpt,
+            "excerpt": _bounded(item.excerpt),
         }
         for item in cited
     ]
@@ -137,12 +164,36 @@ def _verify_claim(
         f"CLAIM\n{claim.text}\n\n"
         "Do these excerpts support this exact claim?"
     )
+
+    required = (
+        _estimated_tokens(prompt)
+        + _estimated_tokens(VERIFIER_SYSTEM)
+        + VERIFY_OUTPUT_TOKENS
+        + PROMPT_TOKEN_OVERHEAD
+    )
+    if required > context_tokens:
+        # Fail closed. A claim whose evidence cannot even be presented to the
+        # verifier has not been verified, and must not be published as if it had.
+        return ClaimVerification(
+            claim_id=claim.claim_id,
+            verdict=ClaimVerdict.INSUFFICIENT,
+            evidence_source_ids=(),
+            reason=(
+                "The cited excerpts are too large to verify within the model's "
+                "context, so support for this claim could not be established."
+            ),
+        )
+
     try:
         response = client.generate(
             model=model,
             prompt=prompt,
             system=VERIFIER_SYSTEM,
-            options={"temperature": 0, "num_predict": 300, "num_ctx": context_tokens},
+            options={
+                "temperature": 0,
+                "num_predict": VERIFY_OUTPUT_TOKENS,
+                "num_ctx": context_tokens,
+            },
             format=_VERDICT_SCHEMA,
             keep_alive="10m",
             think=False,

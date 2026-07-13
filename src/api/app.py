@@ -24,6 +24,7 @@ from pydantic import ValidationError
 from starlette.formparsers import MultiPartParser
 
 from src.actions.checklists import ChecklistError, ChecklistTemplate
+from src.agents.ollama import OllamaError
 from src.agents.researcher import ResearchError, retrieve_evidence
 from src.applicability.delhi_rent import (
     DelhiRentApplicabilityResult,
@@ -34,13 +35,17 @@ from src.legal_aid.finder import LegalAidFinderError, LegalAidSearchResult
 from src.legal_time.mapping import MappingLookupResult
 from src.models.schemas import ConfirmedFacts
 from src.ocr import MAX_IMAGE_BYTES, OCRError, OCRErrorCode, OCRResult, extract_image_bytes
+from src.pipeline import PipelineError, run_confirmed_request
 from src.retrieval import CorpusLoadError
 from src.retrieval.collections import CollectionError
 from src.safety import SafetyRouteDecision, route_confirmed_case
 from src.workflow import WorkflowError
 
 from .models import (
+    AnswerRequest,
+    AnswerResponse,
     ChecklistListResponse,
+    ClaimView,
     DelhiRentRequest,
     ErrorResponse,
     EvidenceRequest,
@@ -300,6 +305,7 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
             approved_profiles=frozenset(payload.approved_profiles),
             limit=payload.limit,
             include_undated_sources=payload.include_undated_sources,
+            embedding_callback=state.embedding_callback(),
         )
         trace = bundle.trace
         return EvidenceResponse(
@@ -318,6 +324,76 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
                 deduplicated_count=len(trace.deduplications),
                 retriever_config=dict(trace.retriever_config),
             ),
+        )
+
+    @app.post(
+        "/api/answer",
+        response_model=AnswerResponse,
+        responses=_ERROR_RESPONSES,
+        tags=["answer"],
+    )
+    async def answer(payload: AnswerRequest) -> AnswerResponse:
+        """Run the full journey. Every gate lives in the pipeline, not here.
+
+        This endpoint deliberately contains no safety logic of its own. It adapts a
+        PipelineResult to JSON; the confirmation gate, urgency routing, refusal,
+        abstention, and claim verification are all enforced upstream, so there is no
+        path through this handler that can publish an unverified answer.
+        """
+
+        _require_confirmed(payload.facts)
+        documents = state.documents_for_domain(payload.facts.domain)
+        try:
+            result = run_confirmed_request(
+                payload.facts,
+                documents,
+                client=state.model_client(),
+                model=state.settings.ollama_model,
+                confirmed_urgencies=payload.confirmed_urgencies,
+                untrusted_document_texts=payload.untrusted_document_texts,
+                requested_output=payload.requested_output,
+                approved_profiles=frozenset(payload.approved_profiles),
+                evidence_limit=payload.limit,
+            )
+        except PipelineError as exc:
+            raise ApiError(422, "pipeline_error", str(exc)) from exc
+        except OllamaError as exc:
+            raise ApiError(
+                503,
+                "model_unavailable",
+                "The local model runtime could not be reached, so no grounded answer "
+                "can be generated. Retrieved sources are still available.",
+            ) from exc
+
+        verdicts = {item.claim_id: item for item in result.verifications}
+        claims = (
+            tuple(
+                ClaimView(
+                    claim_id=claim.claim_id,
+                    text=claim.text,
+                    cited_source_ids=claim.cited_source_ids,
+                    verdict=verdicts[claim.claim_id].verdict,
+                    verdict_reason=verdicts[claim.claim_id].reason,
+                    evidence_source_ids=verdicts[claim.claim_id].evidence_source_ids,
+                )
+                for claim in result.answer.claims
+                if claim.claim_id in verdicts
+            )
+            if result.answer is not None
+            else ()
+        )
+        bundle = result.evidence_bundle
+        return AnswerResponse(
+            stage=result.stage.value,
+            published=result.published,
+            route=result.route,
+            # An unpublished answer is withheld on purpose and must not be sent to
+            # the client, where it could still be rendered.
+            answer=result.answer if result.published else None,
+            claims=claims if result.published else (),
+            evidence=bundle.evidence if bundle else (),
+            warnings=result.warnings,
+            query=bundle.query if bundle else None,
         )
 
     @app.post(

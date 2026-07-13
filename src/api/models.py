@@ -18,7 +18,14 @@ from src.applicability.delhi_rent import DelhiRentApplicabilityFacts
 from src.intake import LanguageAssessment, UrgencyCategory, UrgencySignal
 from src.intake.models import IntakeFacts
 from src.legal_time.mapping import MappingLookupResult
-from src.models.schemas import ConfirmedFacts, LegalDomain, SourceEvidence
+from src.models.schemas import (
+    ClaimVerdict,
+    ConfirmedFacts,
+    LegalDomain,
+    SourceEvidence,
+    StructuredLegalAnswer,
+)
+from src.safety.models import SafetyRouteDecision
 
 ShortText = Annotated[str, Field(min_length=1, max_length=500)]
 NarrativeText = Annotated[str, Field(min_length=1, max_length=20_000)]
@@ -124,6 +131,48 @@ class EvidenceResponse(ApiModel):
     warnings: tuple[str, ...]
     undated_source_ids: tuple[str, ...]
     trace: RetrievalTraceSummary
+
+
+# --------------------------------------------------------------------------- answer
+
+
+class AnswerRequest(ApiModel):
+    facts: ConfirmedFacts
+    approved_profiles: tuple[Annotated[str, Field(pattern=r"^[a-z0-9_]+$")], ...] = ()
+    confirmed_urgencies: tuple[UrgencyCategory, ...] = ()
+    untrusted_document_texts: tuple[str, ...] = ()
+    requested_output: str | None = None
+    limit: Annotated[int, Field(ge=1, le=MAX_EVIDENCE)] = 6
+
+
+class ClaimView(ApiModel):
+    """A claim paired with the verdict an independent verifier gave it."""
+
+    claim_id: str
+    text: str
+    cited_source_ids: tuple[str, ...]
+    verdict: ClaimVerdict
+    verdict_reason: str
+    evidence_source_ids: tuple[str, ...]
+
+
+class AnswerResponse(ApiModel):
+    """The result of the full journey.
+
+    ``published`` is the only field that authorises showing legal content. When it
+    is false the answer was withheld on purpose -- because the case needs a human,
+    because the request was refused, or because a claim could not be supported --
+    and the client must render the route and warnings instead.
+    """
+
+    stage: str
+    published: bool
+    route: SafetyRouteDecision
+    answer: StructuredLegalAnswer | None = None
+    claims: tuple[ClaimView, ...] = ()
+    evidence: tuple[SourceEvidence, ...] = ()
+    warnings: tuple[str, ...] = ()
+    query: str | None = None
 
 
 # -------------------------------------------------------------------------- legal aid

@@ -183,10 +183,25 @@ def test_domain_scoping_excludes_other_domains_but_keeps_universal_sources() -> 
         collection_for_domain(documents[:1], LegalDomain.CRIMINAL)
 
 
-def test_universal_legal_aid_sources_stay_in_every_domain() -> None:
+def test_legal_aid_statutes_do_not_pollute_a_merits_collection() -> None:
+    """Legal-aid law describes entitlement to help, not the merits of a dispute.
+
+    Observed on a real deposit query, the Legal Services Authorities Act ranked
+    above the governing statute. Legal aid is served by the dedicated finder over a
+    verified contact directory; it is not a retrieval concern.
+    """
+
     documents = (
         RetrievalDocument(
             source_id="w:1", text="wages", metadata={"corpus_source_id": "code_on_wages_2019_en"}
+        ),
+        RetrievalDocument(
+            source_id="c:1", text="theft", metadata={"corpus_source_id": "bns_2023_en"}
+        ),
+        RetrievalDocument(
+            source_id="p:1",
+            text="defective goods",
+            metadata={"corpus_source_id": "consumer_protection_act_2019_en"},
         ),
         RetrievalDocument(
             source_id="aid:1",
@@ -196,7 +211,8 @@ def test_universal_legal_aid_sources_stay_in_every_domain() -> None:
     )
     for domain in (LegalDomain.LABOUR, LegalDomain.CRIMINAL, LegalDomain.CONSUMER):
         selected = {item.source_id for item in collection_for_domain(documents, domain)}
-        assert "aid:1" in selected
+        assert "aid:1" not in selected
+        assert selected
 
 
 def test_undated_source_is_excluded_by_default_and_warned_about_when_admitted() -> None:

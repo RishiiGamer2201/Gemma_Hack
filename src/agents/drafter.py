@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import re
 from collections.abc import Sequence
+from typing import Any
 
 from pydantic import ValidationError
 
@@ -19,7 +20,11 @@ from src.models.schemas import ConfirmedFacts, SourceEvidence, StructuredLegalAn
 from .ollama import OllamaClient, OllamaError
 
 MAX_EVIDENCE = 8
-MAX_OUTPUT_TOKENS = 1200
+# A structured answer carries nine populated lists plus per-claim citations. At the
+# project's 1,200-token general ceiling the JSON was being cut off mid-object on a
+# four-excerpt bundle, which surfaced as an unexplained drafting failure. 2,048
+# still sits well inside the 8,192-token context proven in docs/model_feasibility.md.
+MAX_OUTPUT_TOKENS = 2048
 
 DRAFTER_SYSTEM = (
     "You are a cautious Indian legal-information assistant. You provide legal "
@@ -42,7 +47,19 @@ DRAFTER_SYSTEM = (
 
 
 def _string_list(description: str) -> dict[str, object]:
-    return {"type": "array", "items": {"type": "string"}, "description": description}
+    # minLength forbids the sampler from emitting an empty string, which parses as
+    # JSON but fails the answer contract and surfaces as an unexplained drafting
+    # failure.
+    #
+    # There is deliberately no minItems here. Requiring at least one entry in every
+    # list would force the model to produce a deadline even when the excerpts state
+    # none, and an invented deadline is exactly the fabrication this system exists
+    # to prevent. An empty list is a truthful answer: "the sources do not say".
+    return {
+        "type": "array",
+        "items": {"type": "string", "minLength": 1},
+        "description": description,
+    }
 
 
 # Ollama compiles `format` into a sampling grammar and cannot resolve the
@@ -53,7 +70,7 @@ def _string_list(description: str) -> dict[str, object]:
 ANSWER_SCHEMA: dict[str, object] = {
     "type": "object",
     "properties": {
-        "situation": {"type": "string"},
+        "situation": {"type": "string", "minLength": 1},
         "applicable_law": _string_list("Acts and sections drawn only from the excerpts."),
         "rights": _string_list("What the person may do, grounded in the excerpts."),
         "options": _string_list("Available courses of action."),
@@ -68,12 +85,12 @@ ANSWER_SCHEMA: dict[str, object] = {
             "items": {
                 "type": "object",
                 "properties": {
-                    "claim_id": {"type": "string"},
-                    "text": {"type": "string"},
+                    "claim_id": {"type": "string", "minLength": 1},
+                    "text": {"type": "string", "minLength": 1},
                     "cited_source_ids": {
                         "type": "array",
                         "minItems": 1,
-                        "items": {"type": "string"},
+                        "items": {"type": "string", "minLength": 1},
                     },
                 },
                 "required": ["claim_id", "text", "cited_source_ids"],
@@ -99,6 +116,76 @@ class DraftError(RuntimeError):
     """A bounded failure while drafting a grounded answer."""
 
 
+# A statute chunk can be very large -- the Consumer Protection Act definitions
+# section runs to tens of thousands of characters. Feeding several of those to an
+# 8,192-token context overflows it, and the runtime then silently truncates the
+# prompt, so the model never sees the task at the end of it. The excerpt shown to
+# the drafter is therefore bounded. The citation card still displays the full
+# excerpt, and the verifier still checks claims against the full excerpt, so the
+# bound narrows what the model may draft from, never what the user may read.
+MAX_GROUNDING_EXCERPT_CHARACTERS = 1_200
+PROMPT_TOKEN_OVERHEAD = 256
+
+# Bytes are a true upper bound on Gemma's token count only in the byte-fallback
+# worst case, and using them as the estimate rejected prompts that fit comfortably.
+# Three bytes per token is conservative for both English (~4 chars/token, 1 byte per
+# char) and Devanagari (3 bytes per char, roughly a token per character or two).
+BYTES_PER_TOKEN = 3
+
+
+def _estimated_tokens(text: str) -> int:
+    return len(text.encode("utf-8")) // BYTES_PER_TOKEN + 1
+
+
+def _bounded_excerpt(text: str) -> tuple[str, bool]:
+    if len(text) <= MAX_GROUNDING_EXCERPT_CHARACTERS:
+        return text, False
+    window = text[:MAX_GROUNDING_EXCERPT_CHARACTERS]
+    boundary = window.rfind(" ")
+    cut = window[:boundary] if boundary > MAX_GROUNDING_EXCERPT_CHARACTERS // 2 else window
+    return cut.rstrip(), True
+
+
+def _enforce_prompt_budget(
+    prompt: str, *, context_tokens: int, max_output_tokens: int
+) -> None:
+    """Refuse a prompt that cannot fit, instead of letting it be truncated silently."""
+
+    estimated = _estimated_tokens(prompt) + _estimated_tokens(DRAFTER_SYSTEM)
+    required = estimated + max_output_tokens + PROMPT_TOKEN_OVERHEAD
+    if required > context_tokens:
+        raise DraftError(
+            "the grounded prompt cannot fit the model context without truncation "
+            f"(needs about {required} of {context_tokens} tokens); retrieve fewer "
+            "excerpts for this request"
+        )
+
+
+def _with_unique_claim_ids(raw: str) -> dict[str, Any]:
+    """Assign claim identifiers ourselves instead of trusting the model to.
+
+    The answer contract requires unique claim_id values, and the model routinely
+    reuses one (every claim comes back as "c1"), which failed validation and
+    withheld an otherwise sound answer. A claim_id is an internal handle used to
+    pair a claim with its verdict; it carries no legal meaning, so renumbering is
+    safe. The claim text and its citations are never touched.
+    """
+
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise DraftError("the local model did not return valid JSON") from exc
+    if not isinstance(payload, dict):
+        raise DraftError("the local model did not return a JSON object")
+
+    claims = payload.get("claims")
+    if isinstance(claims, list):
+        for index, claim in enumerate(claims, start=1):
+            if isinstance(claim, dict):
+                claim["claim_id"] = f"claim-{index}"
+    return payload
+
+
 def _grounding(facts: ConfirmedFacts, evidence: Sequence[SourceEvidence]) -> str:
     payload = {
         "confirmed_facts": {
@@ -110,21 +197,24 @@ def _grounding(facts: ConfirmedFacts, evidence: Sequence[SourceEvidence]) -> str
             "parties": list(facts.parties),
             "language": facts.input_language,
         },
-        "official_evidence": [
-            {
-                "source_id": item.source_id,
-                "act": item.act,
-                "section": item.section or "n/a",
-                "heading": item.heading or "n/a",
-                "status": item.status,
-                "effective_from": item.effective_from.isoformat() if item.effective_from else None,
-                "commencement_proven": item.effective_from is not None,
-                "excerpt": item.excerpt,
-            }
-            for item in evidence
-        ],
+        "official_evidence": [_evidence_record(item) for item in evidence],
     }
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)
+
+
+def _evidence_record(item: SourceEvidence) -> dict[str, object]:
+    excerpt, shortened = _bounded_excerpt(item.excerpt)
+    return {
+        "source_id": item.source_id,
+        "act": item.act,
+        "section": item.section or "n/a",
+        "heading": item.heading or "n/a",
+        "status": item.status,
+        "effective_from": item.effective_from.isoformat() if item.effective_from else None,
+        "commencement_proven": item.effective_from is not None,
+        "excerpt": excerpt,
+        "excerpt_shortened": shortened or item.excerpt_truncated,
+    }
 
 
 def draft_answer(
@@ -156,6 +246,9 @@ def draft_answer(
         "records that commencement is not proven, say that the provision may not yet "
         "be in force rather than stating it applies."
     )
+    _enforce_prompt_budget(
+        prompt, context_tokens=context_tokens, max_output_tokens=max_output_tokens
+    )
 
     try:
         response = client.generate(
@@ -175,9 +268,27 @@ def draft_answer(
         raise DraftError("the local model could not draft an answer") from exc
 
     try:
-        answer = StructuredLegalAnswer.model_validate_json(response.text)
+        answer = StructuredLegalAnswer.model_validate(_with_unique_claim_ids(response.text))
     except ValidationError as exc:
-        raise DraftError("the local model did not return a valid structured answer") from exc
+        # A grammar-constrained response that fails to parse has almost always been
+        # cut off at the output-token ceiling mid-object. Say so, rather than
+        # reporting a generic invalid answer that sends the next person hunting
+        # through the prompt.
+        if not response.text.rstrip().endswith("}"):
+            raise DraftError(
+                "the answer was cut off before it was complete; the output-token "
+                f"limit of {max_output_tokens} was too small for this evidence bundle"
+            ) from exc
+        # Name the offending field. The location and rule come from our own schema,
+        # never from the user's facts, so this is safe to surface.
+        errors = exc.errors()
+        detail = ""
+        if errors:
+            location = ".".join(str(part) for part in errors[0]["loc"])
+            detail = f" ({location}: {errors[0]['msg']})"
+        raise DraftError(
+            f"the local model did not return a valid structured answer{detail}"
+        ) from exc
 
     unknown = {
         source_id

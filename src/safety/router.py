@@ -83,23 +83,31 @@ _INJECTION_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
 )
 
 _DISALLOWED_REQUESTS: tuple[re.Pattern[str], ...] = (
+    # The interrogative and the noun are both matched in singular and plural.
+    # "What are my chances of winning?" is the ordinary way a citizen asks this,
+    # and an earlier revision matched only "what is ... chance of winning", so the
+    # commonest phrasing of the one question the product must never answer went
+    # straight through to the model.
     re.compile(
-        r"\b(?:what(?:'s| is)|estimate|assess|rate|calculate|predict|give|tell)\b"
-        r".{0,50}\b(?:win probability|chance of winning|odds of winning)\b",
+        r"\b(?:what(?:'s| is| are)|estimate|assess|rate|calculate|predict|give|tell)\b"
+        r".{0,50}\b(?:win probability|chances? of (?:winning|success|succeeding)"
+        r"|odds of (?:winning|success|succeeding))\b",
         re.I,
     ),
     re.compile(
-        r"\b(?:predict|estimate|tell me|what(?:'s| is)|how (?:many|long))\b"
+        r"\b(?:predict|estimate|tell me|what(?:'s| is| are)|how (?:many|long|much))\b"
         r".{0,50}\b(?:sentence|punishment|years? (?:in )?(?:jail|prison))\b",
         re.I,
     ),
     re.compile(r"\bguarantee (?:that )?(?:i|we) (?:will )?win\b", re.I),
     re.compile(
         r"\b(?:what(?:'s| is| are)|estimate|assess|calculate|predict|give|tell)\b"
-        r".{0,50}\b(?:probability|chance|odds|likelihood) (?:of )?(?:success|succeeding)\b",
+        r".{0,50}\b(?:probability|chances?|odds|likelihood)\b"
+        r"(?:\s+\w+){0,3}?\s+(?:of|for)\s+(?:success|succeeding|winning|a win)\b",
         re.I,
     ),
-    re.compile(r"\bwill (?:i|we) (?:win|succeed)\b", re.I),
+    re.compile(r"\b(?:will|would|can|do you think) (?:i|we) (?:will )?(?:win|succeed)\b", re.I),
+    re.compile(r"\b(?:how (?:likely|strong)|how good) (?:is|are) (?:my|our)\b", re.I),
 )
 
 
@@ -280,12 +288,16 @@ def _contains_term(text: str, term: str) -> bool:
 def _requests_disallowed_output(text: str) -> bool:
     for pattern in _DISALLOWED_REQUESTS:
         for match in pattern.finditer(text):
-            prefix = text[max(0, match.start() - 30):match.start()]
+            prefix = text[max(0, match.start() - 40):match.start()]
             if re.search(r"\b(?:do not|don't|avoid|without)\s*$", prefix, re.I):
                 continue
+            # A question *about* the refusal ("explain why you cannot tell me my
+            # chances of winning") is not a request for a prediction. The exemption
+            # must inspect the text before the match as well as the match itself:
+            # the disallowed phrasing can begin after the "why ... cannot" clause.
             if re.search(
                 r"\b(?:why|explain why)\b.{0,25}\b(?:cannot|can't|won't|shouldn't|must not)\b",
-                match.group(),
+                prefix + match.group(),
                 re.I,
             ):
                 continue
