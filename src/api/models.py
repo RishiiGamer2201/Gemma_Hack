@@ -205,6 +205,16 @@ class CommunityRequest(ApiModel):
     limit: Annotated[int, Field(ge=1, le=MAX_EVIDENCE)] = 4
 
 
+class PdfResponse(ApiModel):
+    """Text lifted from an uploaded PDF. A DRAFT for the user to correct."""
+
+    text: str
+    page_count: int
+    pages_with_text: int
+    scanned_pages: tuple[int, ...]
+    truncated: bool
+
+
 class CommunityResponse(ApiModel):
     heading: str
     what_help_is_needed: str

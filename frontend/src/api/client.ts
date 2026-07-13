@@ -393,6 +393,26 @@ export async function postOcr(file: File, signal?: AbortSignal): Promise<OcrResp
   });
 }
 
+export const PDF_TYPE = "application/pdf";
+export const MAX_PDF_BYTES = 15 * 1024 * 1024;
+
+export interface PdfResponse {
+  text: string;
+  page_count: number;
+  pages_with_text: number;
+  scanned_pages: number[];
+  truncated: boolean;
+}
+
+export async function postPdf(file: File, signal?: AbortSignal): Promise<PdfResponse> {
+  if (file.size > MAX_PDF_BYTES) {
+    throw new ApiError(400, "file_too_large", "The PDF is larger than 15 MB.", "file");
+  }
+  const form = new FormData();
+  form.append("file", file, file.name);
+  return request<PdfResponse>("/api/pdf", { method: "POST", body: form, signal });
+}
+
 // The backend accepts only WAV/FLAC; the browser's MediaRecorder produces
 // WebM/Opus, which it rejects. So mic audio is captured as raw PCM and encoded
 // into a 16 kHz mono 16-bit WAV here, entirely in the browser. Nothing is uploaded

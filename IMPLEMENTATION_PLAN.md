@@ -17,7 +17,7 @@ hardware, evaluation, or end-to-end demo gates from backend primitives alone.
 
 - [x] Accept English, Hindi, and Hinglish text input through the local intake interface.
 - [x] Accept Hindi/English voice input and display the transcript before legal processing.
-- [ ] Accept a photo/PDF of an FIR, notice, summons, wage document, or rental document.
+- [x] Accept a photo/PDF of an FIR, notice, summons, wage document, or rental document.
 - [ ] Extract a structured case summary: people, dates, location, dispute, documents, urgency, and missing facts.
 - [x] Restate explicit facts in plain language and require confirmation before backend retrieval.
 - [ ] Add an interactive correction path to the future UI.
@@ -289,7 +289,7 @@ Owner: Member A + Member C
 - [x] Normalize line endings while preserving names, quoted text, dates, money, and section numbers.
 - [x] Implement local voice transcription.
 - [ ] Show the transcript and allow correction before extraction.
-- [ ] Implement digital PDF text extraction.
+- [x] Implement digital PDF text extraction.
 - [ ] Implement OCR fallback for scanned PDFs/images.
 - [ ] Use Gemma vision to cross-check OCR and identify document type.
 - [ ] Preserve page references for extracted facts.
@@ -396,7 +396,7 @@ Owner: Member C + Member A
 Owner: Member C
 
 - [ ] Build a landing screen explaining privacy, offline operation, and limitations.
-- [ ] Add text, microphone, image, and PDF input controls. (Text, microphone, and image done; PDF upload control not built.)
+- [x] Add text, microphone, image, and PDF input controls.
 - [ ] Show connectivity/local-model status.
 - [ ] Show the confirmation card before analysis.
 - [ ] Show urgency notices above normal content.

@@ -3,7 +3,10 @@ import { useRef, useState } from "react";
 import {
   ALLOWED_UPLOAD_TYPES,
   MAX_UPLOAD_BYTES,
+  PDF_TYPE,
+  type PdfResponse,
   postOcr,
+  postPdf,
 } from "../api/client";
 import type { OcrResponse } from "../api/types";
 import { ErrorNotice, Progress } from "./Feedback";
@@ -32,25 +35,38 @@ export function IntakePanel({
   const [ocrBusy, setOcrBusy] = useState(false);
   const [ocrError, setOcrError] = useState<unknown>(null);
   const [ocrResult, setOcrResult] = useState<OcrResponse | null>(null);
+  const [pdfResult, setPdfResult] = useState<PdfResponse | null>(null);
   const [lastFileName, setLastFileName] = useState<string | null>(null);
 
   const tooShort = text.trim().length < MIN_CHARS;
 
+  function appendText(recognized: string) {
+    const trimmed = recognized.trim();
+    if (trimmed) {
+      const separator = text.trim() ? "\n\n" : "";
+      onTextChange(`${text}${separator}${trimmed}`);
+    }
+  }
+
+  /** A PDF is read for its text; an image goes through OCR. Both stay in memory. */
   async function handleFile(file: File | undefined) {
     if (!file) {
       return;
     }
     setOcrError(null);
     setOcrResult(null);
+    setPdfResult(null);
     setLastFileName(file.name);
     setOcrBusy(true);
     try {
-      const result = await postOcr(file);
-      setOcrResult(result);
-      const recognized = result.text.trim();
-      if (recognized) {
-        const separator = text.trim() ? "\n\n" : "";
-        onTextChange(`${text}${separator}${recognized}`);
+      if (file.type === PDF_TYPE || file.name.toLowerCase().endsWith(".pdf")) {
+        const result = await postPdf(file);
+        setPdfResult(result);
+        appendText(result.text);
+      } else {
+        const result = await postOcr(file);
+        setOcrResult(result);
+        appendText(result.text);
       }
     } catch (error) {
       setOcrError(error);
@@ -127,34 +143,35 @@ export function IntakePanel({
 
         <div className="field">
           <label htmlFor="intake-file">
-            Or upload a photo of a notice, FIR, or letter (optional)
+            Or upload a photo or PDF of a notice, FIR, or letter (optional)
           </label>
           <input
             ref={fileInputRef}
             id="intake-file"
             type="file"
-            accept={ALLOWED_UPLOAD_TYPES.join(",")}
+            accept={[...ALLOWED_UPLOAD_TYPES, PDF_TYPE].join(",")}
             onChange={(event) => void handleFile(event.target.files?.[0])}
             disabled={ocrBusy || submitting}
             aria-describedby="intake-file-help"
           />
           <p className="hint" id="intake-file-help">
-            PNG or JPEG, up to {Math.round(MAX_UPLOAD_BYTES / (1024 * 1024))} MB.
-            The text is read on this machine and added to the box above so you
-            can correct it. The image itself is not stored.
+            PNG, JPEG, or PDF, up to{" "}
+            {Math.round(MAX_UPLOAD_BYTES / (1024 * 1024))} MB. The text is read on
+            this machine and added to the box above so you can correct it. The file
+            itself is not stored.
           </p>
         </div>
 
         {ocrBusy ? (
           <Progress
-            label="Reading the image…"
+            label={lastFileName?.toLowerCase().endsWith(".pdf") ? "Reading the PDF…" : "Reading the image…"}
             detail={lastFileName ? `Processing ${lastFileName} locally` : undefined}
           />
         ) : null}
 
         <ErrorNotice
           error={ocrError}
-          title="Could not read that image"
+          title="Could not read that file"
           onRetry={() => {
             setOcrError(null);
             fileInputRef.current?.click();
@@ -185,6 +202,33 @@ export function IntakePanel({
               <strong>Please read it and correct any mistakes</strong> before
               continuing. OCR errors in dates, names, and section numbers change
               the legal answer.
+            </p>
+          </div>
+        ) : null}
+
+        {pdfResult ? (
+          <div
+            className={`alert ${pdfResult.scanned_pages.length ? "alert-warn" : "alert-info"}`}
+            role="status"
+          >
+            <h3>Text read from the PDF</h3>
+            <p>
+              Read {pdfResult.pages_with_text} of {pdfResult.page_count} page
+              {pdfResult.page_count === 1 ? "" : "s"}.
+              {pdfResult.scanned_pages.length ? (
+                <>
+                  {" "}
+                  Page{pdfResult.scanned_pages.length === 1 ? "" : "s"}{" "}
+                  {pdfResult.scanned_pages.join(", ")} had no readable text — those
+                  are probably scans. Photograph them and upload as images to read
+                  them.
+                </>
+              ) : null}
+              {pdfResult.truncated ? " The document was long and was cut short." : null}
+            </p>
+            <p>
+              <strong>Please read it and correct any mistakes</strong> before
+              continuing.
             </p>
           </div>
         ) : null}

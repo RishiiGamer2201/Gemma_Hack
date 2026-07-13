@@ -43,6 +43,7 @@ from src.audio.models import (
     LanguageHint,
     TranscriptionResult,
 )
+from src.documents.pdf import MAX_PDF_BYTES, PdfError, PdfErrorCode, extract_pdf_text
 from src.intake import process_text_intake
 from src.legal_aid.finder import LegalAidFinderError, LegalAidSearchResult
 from src.legal_time.mapping import MappingLookupResult
@@ -74,6 +75,7 @@ from .models import (
     LegalAidRequest,
     MappingRequest,
     MappingResponse,
+    PdfResponse,
     RetrievalTraceSummary,
     RightsCardRequest,
     RouteRequest,
@@ -121,6 +123,16 @@ _ASR_STATUS: dict[ASRErrorCode, int] = {
     ASRErrorCode.INFERENCE_FAILED: 500,
     ASRErrorCode.OUTPUT_LIMIT_EXCEEDED: 413,
     ASRErrorCode.INTERNAL_ERROR: 500,
+}
+
+_PDF_STATUS: dict[PdfErrorCode, int] = {
+    PdfErrorCode.INVALID_REQUEST: 400,
+    PdfErrorCode.UNSUPPORTED_FORMAT: 415,
+    PdfErrorCode.PDF_LIMIT_EXCEEDED: 413,
+    PdfErrorCode.ENCRYPTED_PDF: 422,
+    PdfErrorCode.INVALID_PDF: 400,
+    PdfErrorCode.NO_EXTRACTABLE_TEXT: 422,
+    PdfErrorCode.BACKEND_UNAVAILABLE: 503,
 }
 
 _STATE_STATUS: dict[str, int] = {
@@ -613,6 +625,36 @@ def _register_routes(app: FastAPI, state: ApiState) -> None:
             citations=brief.citations,
             caveats=brief.caveats,
             text=brief.as_text(),
+        )
+
+    @app.post(
+        "/api/pdf",
+        response_model=PdfResponse,
+        responses=_ERROR_RESPONSES,
+        tags=["intake"],
+    )
+    async def pdf(file: UploadFile = File(...)) -> PdfResponse:
+        """Lift text from an uploaded PDF notice, FIR, or summons.
+
+        Held in memory only; nothing is written to disk. The text is a draft that
+        goes into the intake box for the user to correct, and it never bypasses the
+        confirmation gate. A scanned PDF is refused with a clear instruction rather
+        than returning an empty string that would look like an empty document.
+        """
+
+        data = await file.read(MAX_PDF_BYTES + 1)
+        try:
+            result = extract_pdf_text(data, file.filename or "")
+        except PdfError as exc:
+            raise ApiError(
+                _PDF_STATUS.get(exc.code, 400), exc.code.value, exc.message, field=exc.field
+            ) from exc
+        return PdfResponse(
+            text=result.text,
+            page_count=result.page_count,
+            pages_with_text=result.pages_with_text,
+            scanned_pages=result.scanned_pages,
+            truncated=result.truncated,
         )
 
     @app.post("/api/rights-card", responses=_ERROR_RESPONSES, tags=["answer"])

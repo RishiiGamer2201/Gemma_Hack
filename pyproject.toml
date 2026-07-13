@@ -16,7 +16,7 @@ dependencies = [
 [project.optional-dependencies]
 ui = ["streamlit>=1.40,<2"]
 api = ["fastapi>=0.115,<1", "uvicorn>=0.32,<1", "python-multipart>=0.0.9"]
-corpus = ["pymupdf>=1.24,<2"]
+corpus = ["pymupdf>=1.24,<2", "pypdf>=5,<6"]
 retrieval = [
   "faiss-cpu>=1.9,<2; python_version < '3.13'",
   "sentence-transformers>=3.3,<4",
