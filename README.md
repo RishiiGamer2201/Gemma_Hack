@@ -9,53 +9,73 @@ legal advice.
 
 ## Current milestone
 
-The first implementation milestone provides:
+The system now runs end to end, on device: a citizen describes a situation in
+English, Hindi, or Hinglish (typed or spoken), confirms the extracted facts, and —
+for a case that is not routed to a human or refused — receives a plain-language
+answer in which every legal claim has been independently verified against retrieved
+official law, or the answer is withheld.
 
-- typed legal-intake, evidence, answer, and verification models;
-- a workflow state machine that blocks retrieval before user confirmation;
-- date-aware IPC/BNS mapping primitives;
-- dependency-light BM25 and hybrid retrieval interfaces;
-- a localhost-only optional Ollama adapter;
-- a command-line smoke-test application using a synthetic corpus;
-- a reviewed official-source manifest and hostile-network downloader;
-- receipt-verified local PDF extraction and deterministic section-aware JSONL builds;
-- a strict offline Delhi DLSA finder with NALSA and Tele-Law fallbacks;
-- validated evidence-preparation checklists for the three demo scenarios;
-- deterministic English, Hindi, and Hinglish text intake with a hard confirmation gate;
-- confirmed-facts safety and power routing with prompt-injection isolation;
-- provenance-safe retrieval expansion, deduplication, filters, hashes, and debug traces.
-- pinned offline English/Hindi ASR and English/Hindi image OCR adapters;
-- a verified-evidence-only, visibly streamed Devil's Advocate workflow;
-- page-level scan-review and OCR provenance in corpus builds.
+Working components:
 
-The fixture corpus is deliberately synthetic and must never be used for real legal
-answers. Official-source chunks remain marked `pending_human_review` until the corpus
-audit in `IMPLEMENTATION_PLAN.md` is complete.
+- typed legal-intake, evidence, answer, and verification models with a workflow
+  state machine that blocks retrieval before explicit user confirmation;
+- deterministic English/Hindi/Hinglish text intake and offline voice transcription
+  behind that same confirmation gate;
+- domain-scoped hybrid retrieval (dependency-free BM25 fused with local
+  EmbeddingGemma vectors) over 6,845 reviewed official-law chunks;
+- a grounded drafter and an **independent claim-level verifier**: the verifier sees
+  only a claim and the excerpts it cites, and a claim naming a provision its sources
+  do not contain is rejected deterministically before the model is even consulted;
+- confirmed-facts safety and power routing that refuses outcome predictions and
+  routes urgent cases to human help before any model call;
+- a visibly streamed Devil's Advocate stress test over a verified answer;
+- a Rights Card generator whose every line is sourced and whose QR links only to an
+  official government URL;
+- a strict offline Delhi DLSA finder (NALSA 15100 / Tele-Law 14454 fallbacks),
+  evidence checklists, IPC/BNS temporal-mapping primitives, and a Delhi Rent Control
+  applicability gate;
+- a loopback-only FastAPI layer and a local React client over all of the above.
 
-## Quick start
+Official-source chunks remain marked `pending_human_review`, several central acts
+carry an unverified-commencement warning that is displayed on every citation, and
+the IPC/BNS mapping catalogue is intentionally empty until a human reviewer approves
+entries. See `IMPLEMENTATION_PLAN.md` for the audited status of every item.
 
-Python 3.11 or newer is required.
+## Quick start — the app
+
+Python 3.11+, Node 20+, and a local [Ollama](https://ollama.com/download) with
+`gemma4:e4b-it-q4_K_M` and `embeddinggemma` pulled. The corpus, models, and indexes
+are Git-ignored; build them with the pipeline commands below or copy them from a
+prepared drive.
 
 ```powershell
-python -m src.app --query "old section mapping"
+# 1. Python environment and dependencies
+uv sync --extra api --extra retrieval --extra ocr --extra speech --extra card --extra dev
+
+# 2. Start the loopback-only API (127.0.0.1:8000)
+python scripts/serve_api.py --port 8000
+
+# 3. In a second terminal, the local React client (127.0.0.1:5173)
+cd frontend
+npm install
+npm run dev
+```
+
+Open http://127.0.0.1:5173. The whole flow runs on device; disable Wi-Fi and it
+still works. Set `NYAYA_USE_EMBEDDINGS=0` to fall back to lexical-only retrieval if
+the embedding model is unavailable.
+
+## Quick start — offline pipelines and CLIs
+
+```powershell
 python -m unittest discover -s tests -v
-python scripts/download_official_sources.py --manifest config/official_sources.json --list
-python scripts/download_official_snapshots.py --manifest config/official_web_sources.json --list
 python scripts/build_corpus.py --manifest config/official_sources.json --raw-dir data/raw/official_law --output-dir data/processed/sections
-python scripts/build_sankalan_candidates.py
+python scripts/build_index.py            # precompute EmbeddingGemma vectors per domain
 python scripts/build_legal_aid_directory.py
 python scripts/find_legal_aid.py --district "Rouse Avenue" --state Delhi
 python scripts/get_evidence_checklist.py --template unpaid_wages
-python scripts/process_text_intake.py --text "Mera rent deposit nahi mila" --domain tenancy_property --missing-fact "Incident date"
-python scripts/route_safety.py --summary "My landlord has my deposit" --incident-date 2026-06-01 --jurisdiction Delhi --domain tenancy_property --party Tenant --party Landlord --confirmed-at 2026-07-13T02:30:00+05:30
 python scripts/transcribe_audio.py --audio request.wav --model-path models/asr/faster-whisper-small --model-revision 536b0662742c02347bc0e980a01041f333bce120 --language hi --device cpu --compute-type int8
 python scripts/extract_image_text.py --image notice.jpg --tessdata-dir models/ocr/tessdata --language eng+hin
-```
-
-Optional dependencies can later be installed with:
-
-```powershell
-uv sync --extra corpus --extra ui --extra retrieval --extra speech --extra ocr --extra dev
 ```
 
 Ollama is optional. When enabled, the adapter accepts only loopback hosts such as
